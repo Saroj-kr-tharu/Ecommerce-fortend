@@ -43,4 +43,6 @@ __screenshots__/
 Thumbs.db
 
 
-src\app\environments
+
+
+/src/environments/

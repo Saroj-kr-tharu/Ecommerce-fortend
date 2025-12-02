@@ -1,18 +1,25 @@
-import { Component, ElementRef, HostListener, signal, ViewChild } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
-import { IsMobileView } from '../../directives/is-mobile-view';
-
+import { Component, ElementRef, HostListener, inject, Signal, signal, ViewChild } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { HotToastService } from '@ngxpert/hot-toast';
+import { LoginState } from '../../../core/models/auth.model';
+import { logoutAction } from '../../../store/auth/auth.actions';
+import { selectLogin } from '../../../store/auth/auth.selectors';
+import { Searchbar } from "../searchbar/searchbar";
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, RouterLinkActive, IsMobileView],
+  imports: [RouterLink, RouterLinkActive, Searchbar],
   templateUrl: './header.html',
   styleUrl: './header.css',
 })
 export class Header {
    @ViewChild('mobileMenu') mobileMenu!: ElementRef;
    isMobileMenuOpen = signal(false);
-   isLogin = signal(false);
-   isAdmin = signal(false);
+  loginState: Signal<LoginState>;
+  router = inject(Router)
+  toast = inject(HotToastService)
+
+  
 
 
      @HostListener('document:click', ['$event'])
@@ -24,14 +31,18 @@ export class Header {
       }
     }
   }
+
+   constructor(private store: Store<{LoginReducer : LoginState }> ) {
+          this.loginState = this.store.selectSignal(selectLogin);
+        }
    
 getVisibleLinks() {
-  if (this.isAdmin()) {
+  if (this.loginState().isAdmin) {
     return [
       {text: 'Admin Dashboard', to: '/dashboard'},
       {text: 'Logout', to: '/logout'}
     ];
-  } else if (this.isLogin()) {
+  } else if (this.loginState().isLogin) {
     return [
       {text: 'Logout', to: '/logout'}
     ];
@@ -46,6 +57,15 @@ getVisibleLinks() {
   
 toggleMobileMenu() {
     this.isMobileMenuOpen.update(value => !value);
+}
+
+logoutFn() {
+        this.store.dispatch(  logoutAction.logout() );
+  
+          if(!this.loginState().isLogin ){
+            this.router.navigateByUrl('\login')
+            this.toast.success('logout Sucessfully')
+          }
 }
 
 }

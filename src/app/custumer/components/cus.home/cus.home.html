@@ -1,0 +1,98 @@
+<div class="mt-14 sm:mt-18   flex flex-col  w-full  ">
+
+    <div class="w-full flex justify-center">
+
+        <div class="flex justify-center   w-full md:w-4/5">
+            <app-carousel />
+        </div>
+    </div>
+
+
+
+
+    <div class="flex justify-baseline sm:justify-center">
+        <div class="w-full items-center sm:items-start flex flex-col md:w-4/5">
+            <!-- Section title -->
+            <h2 class="text-2xl ml-0 sm:ml-20 font-bold text-gray-50 capitalize ">
+                best seller
+            </h2>
+
+            <div class="w-full overflow-visible">
+                <app-typecarousel [productsItem]="products" />
+            </div>
+        </div>
+    </div>
+
+
+    <div class="flex justify-baseline sm:justify-center">
+        <div class="w-full items-center sm:items-start flex flex-col md:w-4/5">
+            <!-- Section title -->
+            <h2 class="text-2xl ml-0 sm:ml-20 font-bold text-gray-50 capitalize ">
+                Popular items
+            </h2>
+
+            <div class="w-full overflow-visible">
+                <app-typecarousel [productsItem]="products" />
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="flex justify-baseline sm:justify-center">
+        <div class="w-full items-center sm:items-start flex flex-col md:w-4/5">
+            <!-- Section title -->
+            <h2 class="text-2xl ml-0 sm:ml-20 font-bold text-gray-50 capitalize ">
+                Categories
+            </h2>
+
+            <div class="w-full overflow-visible">
+                <app-typecarousel [productsItem]="products" />
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="flex justify-baseline sm:justify-center overflow-hidden">
+        <div class="w-full items-center sm:items-start flex flex-col md:w-4/5">
+            <!-- Section title -->
+            <h2 class="text-2xl font-bold text-gray-50 capitalize mb-4">
+                Just for you
+            </h2>
+
+            <!-- Product items grid -->
+            <div class="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
+                @for (item of products; track $index) {
+                <app-producet-item [ProductItem]="item"></app-producet-item>
+                }
+            </div>
+
+            <!-- Paginator - -->
+            <div class="w-full bg-gray-800 py-4 px-4 flex justify-center">
+                <p-paginator (onPageChange)="onPageChange($event)" [first]="first" [rows]="rows" [totalRecords]="120"
+                    [rowsPerPageOptions]="[10, 20, 30]" styleClass="!bg-transparent !border-0" />
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>

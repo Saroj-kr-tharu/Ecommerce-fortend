@@ -1,8 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { HotToastService } from '@ngxpert/hot-toast';
-import { FormSignin, ValidationConfig } from '../../../core/models/auth.model';
+import { FormSignin, LoginState, ValidationConfig } from '../../../core/models/auth.model';
+import { loginAction } from '../../../store/auth/auth.actions';
+import { selectLogin } from '../../../store/auth/auth.selectors';
 
 
 @Component({
@@ -16,6 +19,12 @@ export class LoginComponent {
   toast = inject(HotToastService)
   router = inject(Router)
   
+  loginState: Signal<LoginState>;
+
+   constructor(private store: Store<{LoginReducer : LoginState }> ) {
+        this.loginState = this.store.selectSignal(selectLogin);
+    }
+  
    signupForm: FormGroup = new FormGroup({
         email: new FormControl('', [Validators.required, Validators.minLength(5), Validators.email]),
         password: new FormControl('', [Validators.required, Validators.minLength(6), ]), 
@@ -24,7 +33,8 @@ export class LoginComponent {
 
         
    signupFormConfig : FormSignin[] = [
-    { type: 'email', id: 'email', label: 'Email Address', placeholder:'email ... ', autocomplete: 'email', validation: { 'required': 'Email is required', 'email': 'Please enter a valid email address' } },
+    { type: 'email', id: 'email', label: 'Email Address', placeholder:'email ... ', autocomplete: 'email', 
+      validation: { 'required': 'Email is required', 'email': 'Please enter a valid email address' } },
     { type: 'password', id: 'password', label: 'password', placeholder:'password .. ', autocomplete: 'current-password', validation: { 'required': 'password is required', 'minlength': 'password must be at least 6 characters long' } },
   ];
 
@@ -34,10 +44,26 @@ export class LoginComponent {
 
     onSaveUser(){
 
-     
 
-      const formValue = this.signupForm.value;
-      console.log('form value ', formValue)
+        if (this.signupForm.invalid || this.loginState().loading) {
+          console.log('form is invalid ')
+          return;
+        }
+
+        
+        const formValue = this.signupForm.value;
+        
+        const data = {
+          email: formValue.email , 
+          password: formValue.password ,
+        }
+        this.signupForm.markAllAsTouched();
+        
+        this.store.dispatch( loginAction.login({payload : data}))
+            
+        this.signupForm.reset();
+
       
     }
+
 }

@@ -1,59 +1,78 @@
-<nav class="shadow fixed left-0 right-0 z-50 h-15 sm:h-18  bg-[#14b8a6] ">
-    <div class="max-w-7xl mx-auto py-0 sm:py-1  px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
+<nav class="shadow fixed left-0 right-0 z-50 bg-[#14b8a6]">
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+        <div class="flex justify-between items-center h-14 sm:h-16 md:h-18">
+
             <!-- Logo on the left -->
-            <a routerLink="/" class="flex items-center">
-                <img src="assets/images/logo of marketmandu.png" alt="Logo" class="h-12 sm:h-18 w-auto " />
-                <span class=" font-bold tracking-tight hover:text-white">
-                    <span class="text-xl sm:text-3xl font-semibold text-[#481B74] hover:text-white transition ">
+            <a routerLink="/" class="flex items-center flex-shrink-0">
+                <img src="assets/images/logo of marketmandu.png" alt="Logo" class="h-10 sm:h-12 md:h-14 w-auto" />
+                <span class="hidden lg:block ml-2 font-bold tracking-tight hover:text-white">
+                    <span
+                        class="text-lg sm:text-2xl md:text-3xl font-semibold text-[#481B74] hover:text-white transition">
                         MarketMandu
                     </span>
                 </span>
             </a>
 
-            <!-- Mobile menu button -->
-            <div class="md:hidden">
-                <button (click)="toggleMobileMenu()" class="text-gray-700 hover:text-[#481B74] focus:outline-none">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        @if (!isMobileMenuOpen()) {
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 6h16M4 12h16M4 18h16" />
-                        }
-                        @if (isMobileMenuOpen()) {
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
-                        }
-                    </svg>
+            <!-- Search Bar  -->
+            <div class="flex-1 mx-3 md:mx-4 md:max-w-md lg:max-w-lg">
+                <app-searchbar />
+            </div>
+
+            <!-- Desktop Links -->
+            <div class="hidden md:flex md:items-center md:space-x-2 lg:space-x-4">
+                @for (link of getVisibleLinks(); track $index) {
+                @if(link.text === 'Logout'){
+                <a (click)="logoutFn()" routerLink={{link.to}} routerLinkActive="text-white bg-[#481B74]"
+                    class="text-gray-700 hover:text-white hover:bg-[#481B74] px-3 lg:px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap">
+                    {{link.text}}
+                </a>
+                }
+                @else {
+                <a routerLink={{link.to}} routerLinkActive="text-white bg-[#481B74]"
+                    class="text-gray-700 hover:text-white hover:bg-[#481B74] px-3 lg:px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap">
+                    {{link.text}}
+                </a>
+                }
+                }
+            </div>
+
+            <!-- Mobile menu button with PrimeNG icons -->
+            <div class="md:hidden flex-shrink-0">
+                <button (click)="toggleMobileMenu()" class="text-gray-700 hover:text-[#481B74] focus:outline-none p-2">
+                    @if (!isMobileMenuOpen()) {
+                    <i class="pi pi-bars text-2xl"></i>
+                    }
+                    @if (isMobileMenuOpen()) {
+                    <i class="pi pi-times text-2xl"></i>
+                    }
                 </button>
             </div>
 
-
-            <!-- Desktop Links -->
-            <div class="hidden md:flex md:items-center md:space-x-4">
-
-                @for (link of getVisibleLinks(); track $index) {
-
-
-                <a routerLink={{link.to}} routerLinkActive="text-white bg-[#481B74]"
-                    class="text-gray-700 hover:text-white hover:bg-[#481B74] px-4 py-4 rounded-md text-sm font-medium">{{link.text}}</a>
-
-                }
-            </div>
         </div>
 
         <!-- Mobile menu -->
-        @if(isMobileMenuOpen() ){
-        <div #mobileMenu>
-            <div class=" px-3 py-1  bg-[#14b8a6] ">
+        @if(isMobileMenuOpen()) {
+        <div #mobileMenu class="md:hidden border-t border-teal-600">
+            <!-- Mobile Navigation Links -->
+            <div class="px-2 py-3 space-y-1 bg-[#14b8a6]">
                 @for (link of getVisibleLinks(); track $index) {
-                <a (click)="toggleMobileMenu()" routerLink={{link.to}} routerLinkActive="text-white bg-[#481B74]"
-                    class="text-gray-700 hover:text-white hover:bg-[#481B74]  block px-3 py-2 rounded-md text-sm font-medium">{{link.text}}</a>
+                @if(link.text === 'Logout'){
+                <a (click)="toggleMobileMenu(); logoutFn()" routerLink={{link.to}}
+                    routerLinkActive="text-white bg-[#481B74]"
+                    class="text-gray-700 hover:text-white hover:bg-[#481B74] block px-3 py-2 rounded-md text-base font-medium">
+                    {{link.text}}
+                </a>
                 }
-
+                @else {
+                <a (click)="toggleMobileMenu()" routerLink={{link.to}} routerLinkActive="text-white bg-[#481B74]"
+                    class="text-gray-700 hover:text-white hover:bg-[#481B74] block px-3 py-2 rounded-md text-base font-medium">
+                    {{link.text}}
+                </a>
+                }
+                }
             </div>
         </div>
         }
-
 
     </div>
 </nav>

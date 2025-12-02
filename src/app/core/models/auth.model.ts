@@ -11,3 +11,48 @@ export interface FormSignin {
   placeholder?: string;
   validation?: ValidationConfig;
 }
+
+
+export interface registerType {
+  email: string;
+  password: string;
+  role?: string;
+  username?: string;
+}
+
+export interface loginType {
+  email: string;
+  password: string;
+}
+
+
+
+export interface RegisterState {
+  loading: boolean;
+  success: boolean;
+  error: string | null;
+}
+
+export interface sucessLoginType {
+  email: string, 
+  id: number , 
+  role ?: string, 
+  username?: string , 
+  jwt: string 
+}
+
+
+export interface LoginState {
+  loading: boolean;
+  success: boolean;
+  error: string | null;
+
+  isAdmin : boolean, 
+  isLogin: boolean, 
+  users: sucessLoginType | null 
+}
+
+
+export interface errorType {
+    
+}

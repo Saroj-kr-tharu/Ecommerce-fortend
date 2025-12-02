@@ -1,0 +1,13 @@
+<div class="px-4 sm:px-6 py-4">
+    <p-carousel class="product-carousel" #carousel [value]="products" [numVisible]="4" [numScroll]="4" [circular]="true"
+        [responsiveOptions]="responsiveOptions" autoplayInterval="5000" [showNavigators]="true" [showIndicators]="false"
+        [indicatorsContentStyle]="{'display': isMobile ? 'none' : 'flex'}">
+
+        <ng-template let-product #item>
+            <div class="px-2 sm:px-3 ">
+                <app-producet-item [ProductItem]="product"></app-producet-item>
+            </div>
+        </ng-template>
+
+    </p-carousel>
+</div>

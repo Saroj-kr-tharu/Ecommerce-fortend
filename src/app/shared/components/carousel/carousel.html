@@ -1,0 +1,30 @@
+<p-carousel #carousel [value]="products" [numVisible]="1" [numScroll]="1" [circular]="true"
+    [responsiveOptions]="responsiveOptions" autoplayInterval="3000" [showNavigators]="false"
+    [indicatorsContentStyle]="{'display': isMobile ? 'none' : 'flex'}">
+    <ng-template let-product #item>
+
+        <div class=" rounded  hover:cursor-pointer ">
+
+            <div class="  relative w-full h-full   ">
+                <img src="{{ product.url }}" [alt]="product.name" class="w-full h-full  object-contain" />
+
+                <!-- PREV BUTTON -->
+                <button (click)="carousel.navBackward($event)" class="absolute left-0  top-1/2 -translate-y-1/2  hover:bg-black/50
+                   text-white py-2 px-2 rounded-full bg-black/20  transition hover:cursor-pointer">
+                    <i class="pi  pi-chevron-left text-xl" style="color:white size; font-size:1rem ">
+                    </i>
+                </button>
+
+                <!-- NEXT BUTTON -->
+                <button (click)="carousel.navForward($event)" class="absolute right-0  top-1/2 -translate-y-1/2  hover:bg-black/50
+                   text-white py-2 px-2 rounded-full bg-black/20  transition hover:cursor-pointer">
+                    <i class="pi  pi-chevron-right text-xl" style="color:white size; font-size:1rem "> </i>
+                </button>
+            </div>
+
+
+
+        </div>
+    </ng-template>
+
+</p-carousel>

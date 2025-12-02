@@ -1,0 +1,36 @@
+<div class="w-full bg-white/50 border border-gray-200 rounded-xl overflow-hidden 
+         transition-all duration-500 hover:shadow-xl hover:border-black cursor-pointer group">
+
+    <!-- IMAGE -->
+    <div class="w-full">
+        <img [src]="ProductItem.images[0]" alt="Product Image"
+            class="w-full h-32 sm:h-40 md:h-44 object-fit rounded-t-xl transition-all duration-300" />
+    </div>
+
+    <!-- CONTENT -->
+    <div class="p-2 sm:py-3 sm:px-2 space-y-1.5">
+
+        <!-- DESCRIPTION -->
+        <div class="text-xs sm:text-sm text-gray-700 group-hover:text-gray-900 
+             tracking-tight line-clamp-2 text-justify">
+            {{ ProductItem.description }}
+        </div>
+
+        <!-- PRICE -->
+        <div class="text-lg sm:text-xl font-semibold tracking-tight text-[#14b8a6]">
+            {{ ProductItem.price | currency: 'NPR ':'code':'1.2-2' }}
+        </div>
+
+        <!-- RATINGS -->
+        @if (ProductItem.ratings) {
+        <div class="flex items-center gap-1.5 text-[#14b8a6]">
+            <p-rating [disabled]="true" [(ngModel)]="ProductItem.ratings" styleClass="text-xs sm:text-sm">
+            </p-rating>
+
+            <div class="text-xs sm:text-sm">
+                ({{ ProductItem.totalRatings }})
+            </div>
+        </div>
+        }
+    </div>
+</div>
