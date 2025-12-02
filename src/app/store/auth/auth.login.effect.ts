@@ -13,45 +13,78 @@ export class AuthLoginEffect {
   private authServices = inject(AuthServices);
   private toast = inject(HotToastService);
 
-   login$ = createEffect(() =>
-     this.actions$.pipe(
-       ofType(loginAction.login),
+  //  login$ = createEffect(() =>
+  //    this.actions$.pipe(
+  //      ofType(loginAction.login),
        
       
-       exhaustMap((action: any) =>
+  //      exhaustMap((action: any) =>
 
-         this.authServices.loginService(action.payload).pipe(
+  //        this.authServices.loginService(action.payload).pipe(
              
-           this.toast.observe({
-             loading: 'Loging...',
-             success: 'Sucessfully login',
-             error: 'Login failed!',
-           }),
+  //          this.toast.observe({
+  //            loading: 'Loging...',
+  //            success: 'Sucessfully login',
+  //            error: 'Login failed!',
+  //          }),
  
-           map((res: any) =>
-             loginAction.sucessLogin({payload: res?.data})
-           ),
+  //          map((res: any) =>
+  //            loginAction.sucessLogin({payload: res?.data})
+  //          ),
  
            
-           catchError((error) => {
-             const errorMessage =
-               error?.error?.message ||   
-               error?.message ||          
-               'Login failed!'; 
+  //          catchError((error) => {
+  //            const errorMessage =
+  //              error?.error?.message ||   
+  //              error?.message ||          
+  //              'Login failed!'; 
  
-             this.toast.error(errorMessage); 
+  //            this.toast.error(errorMessage); 
  
-             return of(
-               loginAction.failedLogin()
-             );
-           })
-         )
-       )
-     )
-   );
+  //            return of(
+  //              loginAction.failedLogin()
+  //            );
+  //          })
+  //        )
+  //      )
+  //    )
+  //  );
 
 
   
+  login$ = createEffect(() =>
+  this.actions$.pipe(
+    ofType(loginAction.login),
+
+    exhaustMap((action: any) =>
+      this.authServices.loginService(action.payload).pipe(
+
+        // toast loader inside pipe
+        this.toast.observe({
+          loading: 'Logging...',
+          success: 'Successfully logged in',
+          error: 'Login failed!'
+        }),
+
+        map((res: any) =>
+          loginAction.sucessLogin({ payload: res?.data })
+        ),
+
+        catchError((error) => {
+          const errorMessage =
+            error?.error?.message ||
+            error?.message ||
+            'Login failed!';
+
+          // toast on error
+          this.toast.error(errorMessage);
+
+          return of(loginAction.failedLogin());
+        })
+      )
+    )
+  )
+);
 
 
   

@@ -8,10 +8,12 @@ import { FormSignin, RegisterState, ValidationConfig } from '../../../core/model
 import { registerAction } from '../../../store/auth/auth.actions';
 import { selectRegister } from '../../../store/auth/auth.selectors';
 
+import { ProgressSpinner } from 'primeng/progressspinner';
+
 
 @Component({
   selector: 'app-register.component',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, ProgressSpinner],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css',
 })

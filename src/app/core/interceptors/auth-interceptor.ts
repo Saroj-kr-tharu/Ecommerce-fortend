@@ -1,35 +1,24 @@
 import { HttpInterceptorFn } from '@angular/common/http';
-import { selectLogin } from '../../store/auth/auth.selectors';
-import { sucessLoginType } from '../models/auth.model';
-
-
 import { inject } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { map, switchMap } from 'rxjs/operators';
+import { selectLogin } from '../../store/auth/auth.selectors';
+
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const store = inject(Store);
+  
+  let token: string | null = store.selectSignal(selectLogin)()?.users?.jwt || null;
+  
+  if (!token) {
+    const stored = localStorage.getItem('marketManduAuth');
+    if (stored) 
+        token = JSON.parse(stored)?.jwt || null;
+  }
 
-  return store.select(selectLogin).pipe(
-    map((data) => {
-      let token = data?.users?.jwt;
-      // console.log('data => ', token )
-      
-      if (!token) {
-        const localData: sucessLoginType | null = JSON.parse(localStorage.getItem('marketManduAuth') || 'null');
-        token = localData?.jwt;
-        // console.log('datatoken  => ', token )
-      }
+ 
+  const newReq = token
+    ? req.clone({ setHeaders: { 'x-access-token': token } })
+    : req;
 
-      const newReq = req.clone({
-        setHeaders: {
-          'x-access-token': token || '',
-        }
-      });
-      return newReq;
-    }),
-    switchMap((newReq) => next(newReq))
-  );
-
-
+  return next(newReq);
 };

@@ -13,11 +13,12 @@ export const adminGuard: CanActivateFn = (route, state) => {
   
    return store.select(selectLogin).pipe(
      map((state) => {
-      //  console.log('auth guard => here  ')
        if (!state?.isLogin) {
-        toast.warning('please login   ! ');
+         toast.warning('please login   ! ');
+         console.log('auth guard => here  ', state?.isLogin)
         return false ;
        }
+       
        // 1. Check store
        if (state?.isAdmin) return true;
  

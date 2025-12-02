@@ -39,7 +39,9 @@ export class Header {
 getVisibleLinks() {
   if (this.loginState().isAdmin) {
     return [
-      {text: 'Admin Dashboard', to: '/dashboard'},
+      {text: 'Admin Dashboard', to: '/admin/dashboard'},
+      {text: 'Products', to: '/admin/products'},
+      {text: 'Orders', to: '/admin/orders'},
       {text: 'Logout', to: '/logout'}
     ];
   } else if (this.loginState().isLogin) {
