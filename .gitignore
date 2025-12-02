@@ -8,8 +8,21 @@
 
 # Node
 /node_modules
-npm-debug.log
-yarn-error.log
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# TypeScript
+*.tsbuildinfo
+
+# Linters
+.eslintcache
+.stylelintcache
 
 # IDEs and editors
 .idea/
@@ -19,6 +32,7 @@ yarn-error.log
 *.launch
 .settings/
 *.sublime-workspace
+*.iml
 
 # Visual Studio Code
 .vscode/
@@ -29,14 +43,28 @@ yarn-error.log
 .sass-cache/
 /connect.lock
 /coverage
+/storybooks-static
+/.nyc_output
+/.cache
 /libpeerconnection.log
 testem.log
 /typings
 __screenshots__/
 
+# Testing artifacts
+/playwright-report/
+/test-results/
+/cypress/videos/
+/cypress/screenshots/
+/cypress/downloads/
+
 # System files
 .DS_Store
 Thumbs.db
+ehthumbs.db
+Desktop.ini
 
 # Environment files
-/src/app/environments/
+.env
+.env.local
+.env.*.local
