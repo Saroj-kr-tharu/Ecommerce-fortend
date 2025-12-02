@@ -1,11 +1,14 @@
 
-import { Component } from '@angular/core';
+import { Component, effect, Signal } from '@angular/core';
+import { Store } from '@ngrx/store';
 import type { PaginatorState } from 'primeng/paginator';
 import { PaginatorModule } from 'primeng/paginator';
-import { ProductType } from '../../../core/models/product.model';
+import { loadProductInitalType, ProductType } from '../../../core/models/product.model';
 import { Carousel } from "../../../shared/components/carousel/carousel";
 import { ProducetItem } from "../../../shared/components/producet-item/producet-item";
 import { Typecarousel } from "../../../shared/components/typecarousel/typecarousel";
+import { getAllProductsAction } from '../../../store/custumer/cus.action';
+import { selectGetAllProduct } from '../../../store/custumer/cus.selectors';
 
 
 @Component({
@@ -16,306 +19,58 @@ import { Typecarousel } from "../../../shared/components/typecarousel/typecarous
 })
 export class CusHome   {
 
-  products :ProductType[] = [
-    {
-      brand: 'watch'  , 
-      category : 'Electronics'  , 
-      description:'Fire-Boltt Gladiator + 1.96” AMOLED Display Luxury Smartwatch with Silicone Strap, Rotating Crown, 115+ Sports Modes & Bluetooth Calling, AI Voice Assistant, Gaming' , 
-      id:1 , 
-      images:['https://img.drz.lazcdn.com/static/np/p/630f5773e948955019d08dfc5257cf5e.jpg_400x400q80.jpg_.avif'] , 
-      isActive:true , 
-      name: 'Fire-Boltt Gladiator', 
-      price: 1299.99 , 
-      stock: 12, 
-      totalRatings: 10 , 
-      ratings:3 , 
-      
-    },
-    {
-      brand: 'watch'  , 
-      category : 'Electronics'  , 
-      description:'Fire-Boltt Gladiator + 1.96” AMOLED Display Luxury Smartwatch with Silicone Strap, Rotating Crown, 115+ Sports Modes & Bluetooth Calling, AI Voice Assistant, Gaming' , 
-      id:1 , 
-      images:['https://img.drz.lazcdn.com/static/np/p/630f5773e948955019d08dfc5257cf5e.jpg_400x400q80.jpg_.avif'] , 
-      isActive:true , 
-      name: 'Fire-Boltt Gladiator', 
-      price: 1299.99 , 
-      stock: 12, 
-      totalRatings: 10 , 
-      ratings:3 , 
-      
-    },
-    {
-      brand: 'watch'  , 
-      category : 'Electronics'  , 
-      description:'Fire-Boltt Gladiator + 1.96” AMOLED Display Luxury Smartwatch with Silicone Strap, Rotating Crown, 115+ Sports Modes & Bluetooth Calling, AI Voice Assistant, Gaming' , 
-      id:1 , 
-      images:['https://img.drz.lazcdn.com/static/np/p/630f5773e948955019d08dfc5257cf5e.jpg_400x400q80.jpg_.avif'] , 
-      isActive:true , 
-      name: 'Fire-Boltt Gladiator', 
-      price: 1299.99 , 
-      stock: 12, 
-      totalRatings: 10 , 
-      ratings:3 , 
-      
-    },
-    {
-      brand: 'watch'  , 
-      category : 'Electronics'  , 
-      description:'Fire-Boltt Gladiator + 1.96” AMOLED Display Luxury Smartwatch with Silicone Strap, Rotating Crown, 115+ Sports Modes & Bluetooth Calling, AI Voice Assistant, Gaming' , 
-      id:1 , 
-      images:['https://img.drz.lazcdn.com/static/np/p/630f5773e948955019d08dfc5257cf5e.jpg_400x400q80.jpg_.avif'] , 
-      isActive:true , 
-      name: 'Fire-Boltt Gladiator', 
-      price: 1299.99 , 
-      stock: 12, 
-      totalRatings: 10 , 
-      ratings:3 , 
-      
-    },
-    {
-      brand: 'watch'  , 
-      category : 'Electronics'  , 
-      description:'Fire-Boltt Gladiator + 1.96” AMOLED Display Luxury Smartwatch with Silicone Strap, Rotating Crown, 115+ Sports Modes & Bluetooth Calling, AI Voice Assistant, Gaming' , 
-      id:1 , 
-      images:['https://img.drz.lazcdn.com/static/np/p/630f5773e948955019d08dfc5257cf5e.jpg_400x400q80.jpg_.avif'] , 
-      isActive:true , 
-      name: 'Fire-Boltt Gladiator', 
-      price: 1299.99 , 
-      stock: 12, 
-      totalRatings: 10 , 
-      ratings:3 , 
-      
-    },
-    {
-      brand: 'watch'  , 
-      category : 'Electronics'  , 
-      description:'Fire-Boltt Gladiator + 1.96” AMOLED Display Luxury Smartwatch with Silicone Strap, Rotating Crown, 115+ Sports Modes & Bluetooth Calling, AI Voice Assistant, Gaming' , 
-      id:1 , 
-      images:['https://img.drz.lazcdn.com/static/np/p/630f5773e948955019d08dfc5257cf5e.jpg_400x400q80.jpg_.avif'] , 
-      isActive:true , 
-      name: 'Fire-Boltt Gladiator', 
-      price: 1299.99 , 
-      stock: 12, 
-      totalRatings: 10 , 
-      ratings:3 , 
-      
-    },
-    {
-      brand: 'watch'  , 
-      category : 'Electronics'  , 
-      description:'Fire-Boltt Gladiator + 1.96” AMOLED Display Luxury Smartwatch with Silicone Strap, Rotating Crown, 115+ Sports Modes & Bluetooth Calling, AI Voice Assistant, Gaming' , 
-      id:1 , 
-      images:['https://img.drz.lazcdn.com/static/np/p/630f5773e948955019d08dfc5257cf5e.jpg_400x400q80.jpg_.avif'] , 
-      isActive:true , 
-      name: 'Fire-Boltt Gladiator', 
-      price: 1299.99 , 
-      stock: 12, 
-      totalRatings: 10 , 
-      ratings:3 , 
-      
-    },
-    {
-      brand: 'watch'  , 
-      category : 'Electronics'  , 
-      description:'Fire-Boltt Gladiator + 1.96” AMOLED Display Luxury Smartwatch with Silicone Strap, Rotating Crown, 115+ Sports Modes & Bluetooth Calling, AI Voice Assistant, Gaming' , 
-      id:1 , 
-      images:['https://img.drz.lazcdn.com/static/np/p/630f5773e948955019d08dfc5257cf5e.jpg_400x400q80.jpg_.avif'] , 
-      isActive:true , 
-      name: 'Fire-Boltt Gladiator', 
-      price: 1299.99 , 
-      stock: 12, 
-      totalRatings: 10 , 
-      ratings:3 , 
-      
-    },
-    {
-      brand: 'watch'  , 
-      category : 'Electronics'  , 
-      description:'Fire-Boltt Gladiator + 1.96” AMOLED Display Luxury Smartwatch with Silicone Strap, Rotating Crown, 115+ Sports Modes & Bluetooth Calling, AI Voice Assistant, Gaming' , 
-      id:1 , 
-      images:['https://img.drz.lazcdn.com/static/np/p/630f5773e948955019d08dfc5257cf5e.jpg_400x400q80.jpg_.avif'] , 
-      isActive:true , 
-      name: 'Fire-Boltt Gladiator', 
-      price: 1299.99 , 
-      stock: 12, 
-      totalRatings: 10 , 
-      ratings:3 , 
-      
-    },
-    {
-      brand: 'watch'  , 
-      category : 'Electronics'  , 
-      description:'Fire-Boltt Gladiator + 1.96” AMOLED Display Luxury Smartwatch with Silicone Strap, Rotating Crown, 115+ Sports Modes & Bluetooth Calling, AI Voice Assistant, Gaming' , 
-      id:1 , 
-      images:['https://img.drz.lazcdn.com/static/np/p/630f5773e948955019d08dfc5257cf5e.jpg_400x400q80.jpg_.avif'] , 
-      isActive:true , 
-      name: 'Fire-Boltt Gladiator', 
-      price: 1299.99 , 
-      stock: 12, 
-      totalRatings: 10 , 
-      ratings:3 , 
-      
-    },
-    {
-      brand: 'watch'  , 
-      category : 'Electronics'  , 
-      description:'Fire-Boltt Gladiator + 1.96” AMOLED Display Luxury Smartwatch with Silicone Strap, Rotating Crown, 115+ Sports Modes & Bluetooth Calling, AI Voice Assistant, Gaming' , 
-      id:1 , 
-      images:['https://img.drz.lazcdn.com/static/np/p/630f5773e948955019d08dfc5257cf5e.jpg_400x400q80.jpg_.avif'] , 
-      isActive:true , 
-      name: 'Fire-Boltt Gladiator', 
-      price: 1299.99 , 
-      stock: 12, 
-      totalRatings: 10 , 
-      ratings:3 , 
-      
-    },
-    {
-      brand: 'watch'  , 
-      category : 'Electronics'  , 
-      description:'Fire-Boltt Gladiator + 1.96” AMOLED Display Luxury Smartwatch with Silicone Strap, Rotating Crown, 115+ Sports Modes & Bluetooth Calling, AI Voice Assistant, Gaming' , 
-      id:1 , 
-      images:['https://img.drz.lazcdn.com/static/np/p/630f5773e948955019d08dfc5257cf5e.jpg_400x400q80.jpg_.avif'] , 
-      isActive:true , 
-      name: 'Fire-Boltt Gladiator', 
-      price: 1299.99 , 
-      stock: 12, 
-      totalRatings: 10 , 
-      ratings:3 , 
-      
-    },
-    {
-      brand: 'watch'  , 
-      category : 'Electronics'  , 
-      description:'Fire-Boltt Gladiator + 1.96” AMOLED Display Luxury Smartwatch with Silicone Strap, Rotating Crown, 115+ Sports Modes & Bluetooth Calling, AI Voice Assistant, Gaming' , 
-      id:1 , 
-      images:['https://img.drz.lazcdn.com/static/np/p/630f5773e948955019d08dfc5257cf5e.jpg_400x400q80.jpg_.avif'] , 
-      isActive:true , 
-      name: 'Fire-Boltt Gladiator', 
-      price: 1299.99 , 
-      stock: 12, 
-      totalRatings: 10 , 
-      ratings:3 , 
-      
-    },
-    {
-      brand: 'watch'  , 
-      category : 'Electronics'  , 
-      description:'Fire-Boltt Gladiator + 1.96” AMOLED Display Luxury Smartwatch with Silicone Strap, Rotating Crown, 115+ Sports Modes & Bluetooth Calling, AI Voice Assistant, Gaming' , 
-      id:1 , 
-      images:['https://img.drz.lazcdn.com/static/np/p/630f5773e948955019d08dfc5257cf5e.jpg_400x400q80.jpg_.avif'] , 
-      isActive:true , 
-      name: 'Fire-Boltt Gladiator', 
-      price: 1299.99 , 
-      stock: 12, 
-      totalRatings: 10 , 
-      ratings:3 , 
-      
-    },
-    {
-      brand: 'watch'  , 
-      category : 'Electronics'  , 
-      description:'Fire-Boltt Gladiator + 1.96” AMOLED Display Luxury Smartwatch with Silicone Strap, Rotating Crown, 115+ Sports Modes & Bluetooth Calling, AI Voice Assistant, Gaming' , 
-      id:1 , 
-      images:['https://img.drz.lazcdn.com/static/np/p/630f5773e948955019d08dfc5257cf5e.jpg_400x400q80.jpg_.avif'] , 
-      isActive:true , 
-      name: 'Fire-Boltt Gladiator', 
-      price: 1299.99 , 
-      stock: 12, 
-      totalRatings: 10 , 
-      ratings:3 , 
-      
-    },
-    {
-      brand: 'watch'  , 
-      category : 'Electronics'  , 
-      description:'Fire-Boltt Gladiator + 1.96” AMOLED Display Luxury Smartwatch with Silicone Strap, Rotating Crown, 115+ Sports Modes & Bluetooth Calling, AI Voice Assistant, Gaming' , 
-      id:1 , 
-      images:['https://img.drz.lazcdn.com/static/np/p/630f5773e948955019d08dfc5257cf5e.jpg_400x400q80.jpg_.avif'] , 
-      isActive:true , 
-      name: 'Fire-Boltt Gladiator', 
-      price: 1299.99 , 
-      stock: 12, 
-      totalRatings: 10 , 
-      ratings:3 , 
-      
-    },
-    {
-      brand: 'watch'  , 
-      category : 'Electronics'  , 
-      description:'Fire-Boltt Gladiator + 1.96” AMOLED Display Luxury Smartwatch with Silicone Strap, Rotating Crown, 115+ Sports Modes & Bluetooth Calling, AI Voice Assistant, Gaming' , 
-      id:1 , 
-      images:['https://img.drz.lazcdn.com/static/np/p/630f5773e948955019d08dfc5257cf5e.jpg_400x400q80.jpg_.avif'] , 
-      isActive:true , 
-      name: 'Fire-Boltt Gladiator', 
-      price: 1299.99 , 
-      stock: 12, 
-      totalRatings: 10 , 
-      ratings:3 , 
-      
-    },
-    {
-      brand: 'watch'  , 
-      category : 'Electronics'  , 
-      description:'Fire-Boltt Gladiator + 1.96” AMOLED Display Luxury Smartwatch with Silicone Strap, Rotating Crown, 115+ Sports Modes & Bluetooth Calling, AI Voice Assistant, Gaming' , 
-      id:1 , 
-      images:['https://img.drz.lazcdn.com/static/np/p/630f5773e948955019d08dfc5257cf5e.jpg_400x400q80.jpg_.avif'] , 
-      isActive:true , 
-      name: 'Fire-Boltt Gladiator', 
-      price: 1299.99 , 
-      stock: 12, 
-      totalRatings: 10 , 
-      ratings:3 , 
-      
-    },
-    {
-      brand: 'watch'  , 
-      category : 'Electronics'  , 
-      description:'Fire-Boltt Gladiator + 1.96” AMOLED Display Luxury Smartwatch with Silicone Strap, Rotating Crown, 115+ Sports Modes & Bluetooth Calling, AI Voice Assistant, Gaming' , 
-      id:1 , 
-      images:['https://img.drz.lazcdn.com/static/np/p/630f5773e948955019d08dfc5257cf5e.jpg_400x400q80.jpg_.avif'] , 
-      isActive:true , 
-      name: 'Fire-Boltt Gladiator', 
-      price: 1299.99 , 
-      stock: 12, 
-      totalRatings: 10 , 
-      ratings:3 , 
-      
-    },
 
-  ]
   
-  
- 
+  products :ProductType[] |undefined =[]
   
     first: number = 0;
 
     rows: number = 10;
 
-    // productState: Signal<ProductType[]>;
+    productState !: Signal<ProductType[]>;
+    allState !: Signal<loadProductInitalType> ;
 
+    bannerOffers = [
+                  {title: 'Best Seller', items: this.products , },
+                  {title: 'Popular Items', items: this.products , },
+                  {title: 'Categories', items: this.products , },
+                ]
     
-    //  constructor(private store: Store<{GetAllProductsReducer : loadProductInitalType }> ) {
-    //         this.productState = this.store.selectSignal(selectGetAllProduct)
-    //         console.log('products => ', this.productState())
-    //     }
+     constructor(private store: Store<{GetAllProductsReducer : loadProductInitalType }> ) {
+            this.allState = this.store.selectSignal(selectGetAllProduct)
+             effect(() => {
+                console.log('products updated => ', this.allState().data);
+                this.products = this.allState().data;
 
-    //     ngOnInit(): void {
-    //         const  data = {
-    //           limit: 5, 
-    //           page: 1, 
-    //         }
-    //         this.store.dispatch( getAllProductsAction.load({payload : data}))
+                
+            });
+        }
 
-    //     }
+        ngOnInit(): void {
+            const  data = {
+              limit: 10, 
+              page: 1, 
+            }
+            this.store.dispatch( getAllProductsAction.load({payload : data}))
 
-    onPageChange(event: PaginatorState) {
-        this.first = event.first ?? 0;
-        this.rows = event.rows ?? 10;
+           
 
-        console.log('pagination occured => ', )
-    }
+        }
+
+   onPageChange(event: PaginatorState) {
+    this.first = event.first ?? 0;
+    this.rows = event.rows ?? 10;
+
+    // calculate current page number
+    const page = Math.floor(this.first / this.rows) + 1;
+
+    const data = {
+      limit: this.rows, // rows per page
+      page: page,       // current page
+    };
+
+    this.store.dispatch(getAllProductsAction.load({ payload: data }));
+  }
 
     
   

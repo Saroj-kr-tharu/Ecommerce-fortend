@@ -11,7 +11,7 @@ import { ProducetItem } from '../producet-item/producet-item';
 })
 export class Typecarousel  implements OnInit{
 
-  @Input() productsItem: ProductType[] = [];
+  @Input() productsItem: ProductType[] | undefined = [];
    @Input() autoplay: number = 3000; 
 
   
