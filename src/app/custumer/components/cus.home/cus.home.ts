@@ -1,5 +1,6 @@
 
-import { Component, effect, Signal } from '@angular/core';
+import { Component, effect, OnInit, Signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import type { PaginatorState } from 'primeng/paginator';
 import { PaginatorModule } from 'primeng/paginator';
@@ -11,21 +12,23 @@ import { getAllProductsAction } from '../../../store/custumer/cus.action';
 import { selectGetAllProduct } from '../../../store/custumer/cus.selectors';
 
 
+
 @Component({
   selector: 'app-cus.home',
-  imports: [Carousel, Typecarousel, ProducetItem,PaginatorModule],
+  imports: [Carousel, Typecarousel, ProducetItem,PaginatorModule, RouterLink],
   templateUrl: './cus.home.html',
   styleUrl: './cus.home.css',
 })
-export class CusHome   {
+export class CusHome implements OnInit  {
 
-
+  
   
   products :ProductType[] |undefined =[]
   
     first: number = 0;
-
     rows: number = 10;
+    totalRecords: number = 0;
+    
 
     productState !: Signal<ProductType[]>;
     allState !: Signal<loadProductInitalType> ;
@@ -37,17 +40,24 @@ export class CusHome   {
                 ]
     
      constructor(private store: Store<{GetAllProductsReducer : loadProductInitalType }> ) {
+
+
             this.allState = this.store.selectSignal(selectGetAllProduct)
+
              effect(() => {
                 console.log('products updated => ', this.allState().data);
                 this.products = this.allState().data;
-
+                this.totalRecords = this.allState().totalRecords;
                 
             });
+
+
         }
 
         ngOnInit(): void {
-            const  data = {
+            
+          
+          const  data = {
               limit: 10, 
               page: 1, 
             }
@@ -61,12 +71,11 @@ export class CusHome   {
     this.first = event.first ?? 0;
     this.rows = event.rows ?? 10;
 
-    // calculate current page number
     const page = Math.floor(this.first / this.rows) + 1;
 
     const data = {
-      limit: this.rows, // rows per page
-      page: page,       // current page
+      limit: this.rows, 
+      page: page,       
     };
 
     this.store.dispatch(getAllProductsAction.load({ payload: data }));

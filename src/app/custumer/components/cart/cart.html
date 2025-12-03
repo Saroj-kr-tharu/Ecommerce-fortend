@@ -1,1 +1,169 @@
-<p class="mt-20">cart works!</p>
+<div class="min-h-[84vh] mt-14 bg-gray-100 py-6 px-4 sm:px-6 lg:px-8">
+
+
+    <div class="grid max-w-7xl mx-auto grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Cart Items Section (Left Side) -->
+        <div class="lg:col-span-2 space-y-4">
+            <!-- Header with Select All and Delete -->
+            <div class="bg-white rounded-lg shadow-sm p-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <p-checkbox inputId="selectAll" />
+                    <label for="selectAll" class="cursor-pointer font-medium text-gray-700">
+                        SELECT ALL ({{ cartStates().orderItems.length }} ITEM(S))
+                    </label>
+                </div>
+
+                <button
+                    class="flex items-center gap-2 text-red-600 hover:text-red-700 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors">
+                    <i class="pi pi-trash text-lg"></i>
+                    <span class="font-medium">DELETE</span>
+                </button>
+            </div>
+
+
+            <!-- main item  -->
+
+            <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                <!-- Items in this seller group -->
+                @for (item of cartItems(); track item.id) {
+                <div class="p-4 border-b border-gray-100 last:border-b-0">
+                    <div class="flex gap-4">
+                        <!-- Checkbox -->
+                        <div class="shrink-0 pt-1">
+                            <p-checkbox />
+                        </div>
+
+                        <!-- Product Image -->
+                        <div class="shrink-0">
+                            <div class="relative w-20 h-20 sm:w-24 sm:h-24">
+                                <img [src]="item.image" [alt]="item.name"
+                                    class="w-full h-full object-cover rounded-lg border border-gray-200" />
+
+                            </div>
+                        </div>
+
+                        <!-- Product Details -->
+                        <div class="flex-1 min-w-0">
+                            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                                <!-- Product Info -->
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="text-sm sm:text-base text-gray-800 font-medium line-clamp-2 mb-1">
+                                        {{ item.name }}
+                                    </h3>
+
+                                </div>
+
+                                <!-- Price and Actions -->
+                                <div class="flex flex-col items-end gap-3">
+                                    <div class="text-right">
+                                        <div class="text-lg sm:text-xl font-bold text-orange-500">
+                                            Rs. {{ item.price }}
+                                        </div>
+                                    </div>
+
+                                    <!-- Quantity Controls -->
+                                    <div class="flex items-center gap-2 border border-gray-300 rounded-lg">
+                                        <button
+                                            class="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:text-gray-300 disabled:cursor-not-allowed transition-colors rounded-l-lg">
+                                            <i class="pi pi-minus text-sm"></i>
+                                        </button>
+
+                                        <input type="text" [value]="item.quantity" readonly
+                                            class="w-12 h-8 text-center border-x border-gray-300 text-gray-800 font-medium bg-white" />
+
+                                        <button
+                                            class="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors rounded-r-lg">
+                                            <i class="pi pi-plus text-sm"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Action Buttons -->
+                                    <div class="flex items-center gap-3">
+                                        <button class="text-gray-500 hover:text-red-500 transition-colors"
+                                            title="Add to Wishlist">
+                                            <i class="pi pi-heart text-lg"></i>
+                                        </button>
+                                        <button class="text-gray-500 hover:text-red-500 transition-colors"
+                                            title="Remove">
+                                            <i class="pi pi-trash text-lg"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+
+
+
+
+            <!-- Empty Cart Message -->
+            @if (cartStates().orderItems.length == 0 ) {
+            <div class="bg-white rounded-lg shadow-sm p-12 text-center">
+                <i class="pi pi-shopping-cart text-6xl text-gray-300 mb-4"></i>
+                <h3 class="text-xl font-medium text-gray-800 mb-2">Your cart is empty</h3>
+                <p class="text-gray-600 mb-6">Add items to your cart to see them here</p>
+                <button
+                    class="bg-orange-500 text-white px-6 py-3 rounded-lg hover:bg-orange-600 transition-colors font-medium">
+                    Continue Shopping
+                </button>
+            </div>
+            }
+        </div>
+
+        <!-- Order Summary Section (Right Side) -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-lg shadow-sm p-6 sticky top-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">Order Summary</h2>
+
+                <!-- Summary Details -->
+                <div class="space-y-4 mb-6">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Subtotal ({{ cartStates().subtotal }} items)</span>
+                        <span class="font-semibold text-gray-800">Rs. {{ cartStates().subtotal }}</span>
+                    </div>
+
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Shipping Fee</span>
+                        <span class="font-semibold text-gray-800">Rs. 0 </span>
+                    </div>
+                </div>
+
+                <p-divider />
+
+                <!-- Total -->
+                <div class="flex justify-between items-center mt-6 mb-6">
+                    <span class="text-lg font-bold text-gray-800">Total</span>
+                    <span class="text-2xl font-bold text-orange-500">Rs. {{ cartStates().total }}</span>
+                </div>
+
+                <!-- Checkout Button -->
+                <button
+                    class="w-full bg-orange-500 text-white py-4 rounded-lg font-bold text-lg hover:bg-orange-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-lg hover:shadow-xl">
+                    PROCEED TO CHECKOUT
+                </button>
+
+                <!-- Additional Info -->
+                <div class="mt-6 space-y-3">
+                    <div class="flex items-center gap-2 text-sm text-gray-600">
+                        <i class="pi pi-shield text-teal-500"></i>
+                        <span>Secure Checkout</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm text-gray-600">
+                        <i class="pi pi-truck text-teal-500"></i>
+                        <span>Free shipping on orders over Rs. 2000</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm text-gray-600">
+                        <i class="pi pi-replay text-teal-500"></i>
+                        <span>Easy returns within 7 days</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>

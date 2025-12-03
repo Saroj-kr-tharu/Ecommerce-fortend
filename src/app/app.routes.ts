@@ -11,6 +11,14 @@ export const routes: Routes = [
         }
     }, 
     {
+        
+        path: 'product/:id/:slug',
+        pathMatch:'full',
+        loadComponent: () => {
+            return import('./custumer/components/productdetails/productdetails').then( (m) => m.Productdetails )
+        }
+    }, 
+    {
         path:'login',
         loadComponent: () => {
             return import('./auth/components/login.component/login.component').then( (m) => 

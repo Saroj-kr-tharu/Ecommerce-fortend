@@ -16,6 +16,7 @@ import { authInterceptor } from './core/interceptors/auth-interceptor';
 import { AuthLoginEffect } from './store/auth/auth.login.effect';
 import { loginReducer, registerReducer } from './store/auth/auth.reducer';
 import { AuthRegisterEffect } from './store/auth/auth.register.effect';
+import { cartReducer } from './store/custumer/cart.reducers';
 import { getProductsEffect } from './store/custumer/cus.getProducts.effect';
 import { getProductReducer } from './store/custumer/cus.reducer';
 
@@ -42,6 +43,7 @@ export const appConfig: ApplicationConfig = {
       RegisterReducer :registerReducer,
       LoginReducer :loginReducer,
       GetAllProductsReducer :getProductReducer,
+      CartReducer :cartReducer,
     }),
     provideStoreDevtools({
       maxAge: 25, 

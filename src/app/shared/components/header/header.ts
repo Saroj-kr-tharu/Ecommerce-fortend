@@ -1,9 +1,9 @@
-import { Component, ElementRef, HostListener, inject, Signal, signal, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, OnInit, Signal, signal, ViewChild } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { LoginState } from '../../../core/models/auth.model';
-import { logoutAction } from '../../../store/auth/auth.actions';
+import { logoutAction, restoreSessionAction } from '../../../store/auth/auth.actions';
 import { selectLogin } from '../../../store/auth/auth.selectors';
 import { Searchbar } from "../searchbar/searchbar";
 @Component({
@@ -12,17 +12,16 @@ import { Searchbar } from "../searchbar/searchbar";
   templateUrl: './header.html',
   styleUrl: './header.css',
 })
-export class Header {
+export class Header implements OnInit {
    @ViewChild('mobileMenu') mobileMenu!: ElementRef;
-   isMobileMenuOpen = signal(false);
+  
+  isMobileMenuOpen = signal(false);
   loginState: Signal<LoginState>;
   router = inject(Router)
   toast = inject(HotToastService)
 
   
-
-
-     @HostListener('document:click', ['$event'])
+  @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     if (this.isMobileMenuOpen()) {
       const menuEl = this.mobileMenu?.nativeElement;
@@ -34,7 +33,23 @@ export class Header {
 
    constructor(private store: Store<{LoginReducer : LoginState }> ) {
           this.loginState = this.store.selectSignal(selectLogin);
-        }
+
+  
+    
+    }
+
+    ngOnInit(): void {
+      const session = localStorage.getItem('marketManduAuth');
+        // console.log('session => ', session)
+
+    if (session) {
+        this.store.dispatch(restoreSessionAction.restoreSession({ payload:  JSON.parse(session)}));
+     }
+
+      
+
+
+    }
    
 getVisibleLinks() {
   if (this.loginState().isAdmin) {
@@ -46,7 +61,9 @@ getVisibleLinks() {
     ];
   } else if (this.loginState().isLogin) {
     return [
-      {text: 'Logout', to: '/logout'}
+      {text: 'Logout', to: '/logout'},  
+      {text: 'Cart', to: '/cart'} , 
+      {text: 'Checkout', to: '/checkout'}  
     ];
   } else {
     return [

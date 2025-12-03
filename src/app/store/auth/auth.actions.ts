@@ -22,6 +22,13 @@ export const loginAction = createActionGroup({
 
 })
 
+export const restoreSessionAction = createActionGroup({
+    source: 'auth login api', 
+    events: {   
+        'restore session': props<{payload: sucessLoginType }>(), 
+    }
+})
+
 
 export const logoutAction = createActionGroup({
     source: 'auth logout api', 

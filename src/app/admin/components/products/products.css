@@ -1,0 +1,16 @@
+/* small component CSS */
+.product-name {
+    display: flex;
+    align-items: center;
+}
+
+.product-name .thumb {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+:host ::ng-deep .p-dialog .p-fluid .p-field {
+    margin-bottom: 1rem;
+}

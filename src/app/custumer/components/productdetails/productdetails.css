@@ -1,0 +1,9 @@
+.custom-breadcrumb {
+    background-color: transparent;
+    /* inline equivalent */
+}
+
+.custom-breadcrumb:hover {
+    color: black;
+    /* hover effect */
+}

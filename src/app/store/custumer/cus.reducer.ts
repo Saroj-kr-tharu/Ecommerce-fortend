@@ -8,8 +8,11 @@ const productIntialState: loadProductInitalType = {
     loading: false,
     error: null,
     success: false,
+    totalRecords: 0,
     data: [] 
 };
+
+
 
 
 export const getProductReducer = createReducer(
@@ -18,6 +21,7 @@ export const getProductReducer = createReducer(
             ...state,
             loading: true,
             error: null,
+            totalRecords: 0,
             success: false,
              data: []
     })),
@@ -29,7 +33,8 @@ export const getProductReducer = createReducer(
             loading: false,
             error: null,
             success: true,
-            data: action.payload   
+            totalRecords:action.payload?.count , 
+            data: action.payload?.rows
             })),
 
 
@@ -37,6 +42,7 @@ export const getProductReducer = createReducer(
             ...state,
             loading: false,
             error: 'error occered' ,
+            totalRecords: 0,
             success: false,
              data: []
     })),
@@ -44,3 +50,4 @@ export const getProductReducer = createReducer(
 
     
 )
+

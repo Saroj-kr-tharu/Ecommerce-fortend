@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { of } from 'rxjs';
-import { catchError, exhaustMap, map } from 'rxjs/operators';
+import { catchError, exhaustMap, map, tap } from 'rxjs/operators';
 import { AuthServices } from '../../core/services/auth/auth-services';
 import { registerAction } from './auth.actions';
 
@@ -12,6 +13,7 @@ export class AuthRegisterEffect {
   private actions$ = inject(Actions);
   private authServices = inject(AuthServices);
   private toast = inject(HotToastService);
+  private  router = inject(Router)
 
   register$ = createEffect(() =>
     this.actions$.pipe(
@@ -34,8 +36,7 @@ export class AuthRegisterEffect {
           
           catchError((error) => {
             const errorMessage =
-              error?.error?.message ||   
-              error?.message ||          
+                       
               'Registration failed!'; 
 
             this.toast.error(errorMessage); 
@@ -48,6 +49,19 @@ export class AuthRegisterEffect {
       )
     )
   );
+
+
+  sucessRegister$ = createEffect(
+      () =>
+        this.actions$.pipe(
+          ofType(registerAction.sucessRegister),
+          tap((action) => {
+            
+              this.router.navigateByUrl('/login');
+          })
+        ),
+      { dispatch: false }
+    );
 
   
 }

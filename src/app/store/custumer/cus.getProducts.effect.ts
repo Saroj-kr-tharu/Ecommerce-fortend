@@ -29,14 +29,12 @@ export class getProductsEffect {
            }),
  
            map((res: any) =>
-             getAllProductsAction.sucessLoading({payload: res?.data?.rows})
+             getAllProductsAction.sucessLoading({payload: res?.data})
            ),
  
            
            catchError((error) => {
-             const errorMessage =
-               error?.error?.message ||   
-               error?.message ||          
+             const errorMessage =      
                'Loading failed!'; 
  
              this.toast.error(errorMessage); 

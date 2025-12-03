@@ -1,5 +1,5 @@
 export interface ProductType {
-   
+    count?:number,
     id: number;
     name: string;
     description: string;
@@ -29,6 +29,21 @@ export interface loadProductType {
 export interface loadProductInitalType {
     loading: boolean;
     error: string | null;
+    totalRecords: number,
     success: boolean;
     data?: ProductType[] ;
+}
+
+export interface sucessProductLoadType {
+     count: number,
+    rows: ProductType[]
+}
+
+export interface sucessProductLoadOriginType {
+     
+    message: string;
+    success: boolean;
+    data: ProductType;
+    err: Record<string, unknown>;
+
 }

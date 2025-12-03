@@ -21,6 +21,14 @@ export class CusServices {
       return this.httpClient.get(url, { params });
       
     }
-  
+    
+    getProductByIdService(data: number) {
+      const url = `${this.BaseUrl}/product?id=${data}`
+      
+    
+      const params = { id: data } as Record<string,  | number >;
+      return this.httpClient.get(url);
+      
+    }
   
 }

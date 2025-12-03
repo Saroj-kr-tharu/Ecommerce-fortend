@@ -76,5 +76,8 @@ export class LoginComponent {
     this.store.dispatch(loginAction.login({ payload: data }));
 
     this.signupForm.reset();
+
+    
+
   }
 }
