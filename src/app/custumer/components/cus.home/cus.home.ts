@@ -30,7 +30,6 @@ export class CusHome implements OnInit  {
     totalRecords: number = 0;
     
 
-    productState !: Signal<ProductType[]>;
     allState !: Signal<loadProductInitalType> ;
 
     bannerOffers = [

@@ -7,3 +7,7 @@
     color: black;
     /* hover effect */
 }
+
+::ng-deep .my-breadcrumb .p-menuitem-link:hover {
+    color: blue !important;
+}

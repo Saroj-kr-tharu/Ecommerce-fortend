@@ -19,9 +19,7 @@ export const cartsAction = createActionGroup({
         'setCart': props<{payload: CartState }>(), 
         'addItem': props<{payload: CartItem }>(), 
         'removeItem': props<{payload: CartItem }>(), 
-        'updateQuantity': props<{payload: CartItem }>(), 
-        'increaseQuantity': props<{payload: CartItem }>(), 
-        'decreaseQuantity': props <{payload: CartItem  }> (),
-        'clearCart': emptyProps
+        'updateQuantity': props<{payload: CartItem[] }>(), 
+
     }
 })

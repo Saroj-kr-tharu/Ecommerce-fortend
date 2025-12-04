@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 
 import { OnDestroy, OnInit } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 
 
@@ -14,6 +15,8 @@ import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 export class Searchbar implements OnInit, OnDestroy  {
  searchControl = new FormControl('');
   private destroy$ = new Subject<void>();
+  
+  router = inject(Router)
 
   ngOnInit(): void {
     // Optional: Listen to value changes with debounce
@@ -32,7 +35,11 @@ export class Searchbar implements OnInit, OnDestroy  {
     const searchText = this.searchControl.value?.trim();
     if (searchText) {
       console.log('Search submitted:', searchText);
-      // Call your search service here
+      this.router.navigate(['/search'], {
+        queryParams: {
+        q: searchText
+      }
+      })
     }
   }
 

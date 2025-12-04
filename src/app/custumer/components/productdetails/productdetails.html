@@ -9,11 +9,15 @@
 <div class="mt-12 bg-gray-50 py-6 px-4">
     <div class="max-w-4xl mx-auto">
 
-        <!-- PrimeNG Breadcrumb -->
-        <!-- <p-breadcrumb [model]="breadcrumbItems()" styleClass="!bg-transparent hover:text-black "></p-breadcrumb>
-          -->
 
-        <p-breadcrumb [model]="breadcrumbItems()" [style]="{'background-color': 'transparent', 'color': 'black'}" />
+
+        <p-breadcrumb [model]="breadcrumbItems()" styleClass="my-breadcrumb"
+            [style]="{'background-color': 'transparent'}" [pt]="{
+            itemLink: { 
+            style: { color: 'black',  },
+            class: 'hover:text-blue-600' 
+            }
+  }" />
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 

@@ -1,11 +1,15 @@
-import { Component, ElementRef, HostListener, inject, OnInit, Signal, signal, ViewChild } from '@angular/core';
+import { Component, effect, ElementRef, HostListener, inject, OnInit, Signal, signal, ViewChild } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { LoginState } from '../../../core/models/auth.model';
+import { CartState } from '../../../core/models/cart.model';
 import { logoutAction, restoreSessionAction } from '../../../store/auth/auth.actions';
 import { selectLogin } from '../../../store/auth/auth.selectors';
+import { selectCart } from '../../../store/custumer/cus.selectors';
 import { Searchbar } from "../searchbar/searchbar";
+
+
 @Component({
   selector: 'app-header',
   imports: [RouterLink, RouterLinkActive, Searchbar],
@@ -17,8 +21,10 @@ export class Header implements OnInit {
   
   isMobileMenuOpen = signal(false);
   loginState: Signal<LoginState>;
+  cartState: Signal<CartState>;
   router = inject(Router)
   toast = inject(HotToastService)
+  cartCount = signal(0);
 
   
   @HostListener('document:click', ['$event'])
@@ -31,11 +37,18 @@ export class Header implements OnInit {
     }
   }
 
-   constructor(private store: Store<{LoginReducer : LoginState }> ) {
-          this.loginState = this.store.selectSignal(selectLogin);
-
+   constructor(
+    private store: Store<{LoginReducer : LoginState }>, 
+    private cartstore: Store<{CartReducer : CartState }>, 
   
-    
+  ) {
+          this.loginState = this.store.selectSignal(selectLogin);
+          this.cartState = this.store.selectSignal(selectCart);
+          
+          effect( ()=> {
+            this.cartState = this.store.selectSignal(selectCart);
+          } );
+
     }
 
     ngOnInit(): void {
@@ -44,31 +57,32 @@ export class Header implements OnInit {
 
     if (session) {
         this.store.dispatch(restoreSessionAction.restoreSession({ payload:  JSON.parse(session)}));
+        
      }
 
       
-
+     
 
     }
    
 getVisibleLinks() {
   if (this.loginState().isAdmin) {
     return [
-      {text: 'Admin Dashboard', to: '/admin/dashboard'},
-      {text: 'Products', to: '/admin/products'},
-      {text: 'Orders', to: '/admin/orders'},
-      {text: 'Logout', to: '/logout'}
+      {text: 'Admin Dashboard', to: '/admin/dashboard', icon:null,},
+      {text: 'Products', to: '/admin/products', icon:null, },
+      {text: 'Orders', to: '/admin/orders', icon:null, },
+      {text: 'Logout', to: '/logout', icon:null} 
     ];
   } else if (this.loginState().isLogin) {
     return [
-      {text: 'Logout', to: '/logout'},  
-      {text: 'Cart', to: '/cart'} , 
+      {text: 'Logout', to: '/logout,'},  
+      {text: 'Cart', to: '/cart',} , 
       {text: 'Checkout', to: '/checkout'}  
     ];
   } else {
     return [
-      {text: 'Login', to: '/login'},
-      {text: 'Register', to: '/signup'}
+      {text: 'Login', to: '/login' ,},
+      {text: 'Register', to: '/signup' ,}
     ];
   }
 }  

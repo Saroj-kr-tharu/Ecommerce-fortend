@@ -1,1 +1,315 @@
-<p class="mt-20">checkout works!</p>
+<div class="min-h-[85vh] mt-15 bg-gray-50 py-8  px-4">
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">Checkout</h1>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- Main Content - Stepper -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <p-stepper [(value)]="activeStep" class="w-full">
+
+                        <!-- Stepper Header -->
+
+                        <p-step-list>
+
+                            @for (pitem of pStepValue; track $index) {
+                            <p-step [value]="pitem.value" class="flex flex-row flex-auto gap-2">
+                                <ng-template #content let-activateCallback="activateCallback" let-value="value">
+                                    <button class="bg-transparent border-0 inline-flex flex-col gap-2"
+                                        (click)="activateCallback()">
+                                        <span
+                                            class="rounded-full border-2 w-12 h-12 inline-flex items-center justify-center"
+                                            [ngClass]="{
+                      'bg-orange-500 text-white border-orange-500': value <= activeStep,
+                      'border-gray-300 text-gray-400': value > activeStep
+                    }">
+                                            <i class="pi {{pitem.icon}} text-xl"></i>
+                                        </span>
+                                        <span class="text-sm font-medium" [ngClass]="{
+                      'text-orange-500': value <= activeStep,
+                      'text-gray-400': value > activeStep
+                    }">{{pitem.value}}</span>
+                                    </button>
+                                </ng-template>
+                            </p-step>
+                            }
+
+
+
+
+
+                        </p-step-list>
+
+                        <!-- Stepper Panels -->
+                        <p-step-panels>
+                            <!-- Step 1: Address -->
+                            <p-step-panel [value]="1">
+                                <ng-template #content let-activateCallback="activateCallback">
+                                    <div class="mt-8">
+                                        <!-- Billing Address -->
+                                        <h2 class="text-xl font-semibold mb-6">Billing Address</h2>
+                                        <form [formGroup]="billingForm" class="space-y-4">
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                                                @for (item of billingFormConfig; track $index) {
+
+                                                <div id="{{ item.label }}">
+                                                    <label for="{{ item.label }}"
+                                                        class="block capitalize text-sm font-medium text-gray-700 mb-1">
+                                                        {{ item.label }}
+                                                    </label>
+
+                                                    <input type="{{ item.type }}" id="{{ item.id }}"
+                                                        name="{{ item.id }}" formControlName="{{ item.id }}"
+                                                        autocomplete="{{ item.type }}"
+                                                        class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500
+                         text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                                        placeholder="{{ item.placeholder }}" />
+
+                                                    @if(item.validation){ @if(billingForm.controls[item.id].touched){
+                                                    @for (validationKey of
+                                                    getValidationKeys(item.validation); track validationKey) {
+                                                    @if(billingForm.controls[item.id].errors?.[validationKey]){
+                                                    <p class="mt-1 text-sm text-red-600">{{
+                                                        item.validation[validationKey] }}</p>
+                                                    } } } }
+                                                </div>
+
+
+
+                                                }
+
+
+
+                                            </div>
+                                        </form>
+
+                                        <!-- Same as Billing Checkbox -->
+                                        <div class="mt-6 mb-6">
+                                            <p-checkbox [(ngModel)]="sameAsBilling" [binary]="true"
+                                                inputId="sameAsBilling" (onChange)="onSameAsBillingChange()"
+                                                label="Shipping address same as billing" />
+                                        </div>
+
+                                        <!-- Shipping Address -->
+                                        @if(!sameAsBilling){
+
+
+
+
+                                        <h2 class="text-xl font-semibold mb-6 mt-8">Shipping Address</h2>
+                                        <form [formGroup]="shippingForm" class="space-y-4">
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+
+                                                @for (item of billingFormConfig; track $index) {
+
+                                                <div id="{{ item.label }}">
+                                                    <label for="{{ item.label }}"
+                                                        class="block capitalize text-sm font-medium text-gray-700 mb-1">
+                                                        {{ item.label }}
+                                                    </label>
+
+                                                    <input type="{{ item.type }}" id="{{ item.id }}"
+                                                        name="{{ item.id }}" formControlName="{{ item.id }}"
+                                                        autocomplete="{{ item.type }}"
+                                                        class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500
+                         text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                                        placeholder="{{ item.placeholder }}" />
+
+                                                    @if(item.validation){
+                                                    @if(billingForm.controls[item.id].touched){
+                                                    @for (validationKey of
+                                                    getValidationKeys(item.validation); track validationKey) {
+                                                    @if(billingForm.controls[item.id].errors?.[validationKey]){
+                                                    <p class="mt-1 text-sm text-red-600">{{
+                                                        item.validation[validationKey] }}</p>
+                                                    } } } }
+                                                </div>
+
+
+
+                                                }
+
+
+
+                                            </div>
+                                        </form>
+
+
+
+                                        }
+
+
+                                    </div>
+
+                                    <div class="flex pt-6 justify-end mt-6 border-t">
+                                        <p-button (onClick)="onNextStep1(activateCallback)" label="Continue"
+                                            icon="pi pi-arrow-right" iconPos="right" styleClass="p-button-lg" />
+                                    </div>
+                                </ng-template>
+                            </p-step-panel>
+
+                            <!-- Step 2: Payment -->
+                            <p-step-panel [value]="2">
+                                <ng-template #content let-activateCallback="activateCallback">
+                                    <div class="mt-8">
+                                        <h2 class="text-xl font-semibold mb-6">Select Payment Method</h2>
+                                        <form [formGroup]="paymentForm">
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                                                @for (method of paymentMethods; track $index) {
+                                                <div class="border-2 rounded-lg p-4 cursor-pointer transition-all hover:border-gray-400"
+                                                    [ngClass]="{
+                            'border-orange-500 bg-orange-50': paymentForm.get('paymentMethod')?.value === method.id,
+                            'border-gray-200': paymentForm.get('paymentMethod')?.value !== method.id
+                          }" (click)="paymentForm.patchValue({paymentMethod: method.id})">
+
+                                                    <div class="flex items-center">
+                                                        <p-radioButton [name]="'payment'" [value]="method.id"
+                                                            formControlName="paymentMethod" [inputId]="method.id" />
+                                                        <i [class]="'pi ' + method.icon + ' text-2xl ml-3'"></i>
+                                                        <label [for]="method.id"
+                                                            class="ml-3 font-medium text-gray-900 cursor-pointer">
+                                                            {{ method.name }}
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+                                                }
+
+
+
+                                            </div>
+                                            @if (isFieldInvalid(paymentForm, 'paymentMethod')) {
+
+                                            <small class="text-red-500 block mt-2">
+                                                {{ getErrorMessage(paymentForm, 'paymentMethod') }}
+                                            </small>
+                                            }
+
+
+                                        </form>
+                                    </div>
+
+                                    <div class="flex pt-6 justify-between mt-6 border-t">
+                                        <p-button (onClick)="activateCallback(1)" label="Back" severity="secondary"
+                                            icon="pi pi-arrow-left" styleClass="p-button-lg" />
+                                        <p-button (onClick)="onNextStep2(activateCallback)" label="Continue"
+                                            icon="pi pi-arrow-right" iconPos="right" styleClass="p-button-lg" />
+                                    </div>
+                                </ng-template>
+                            </p-step-panel>
+
+                            <!-- Step 3: Review -->
+                            <p-step-panel [value]="3">
+                                <ng-template #content let-activateCallback="activateCallback">
+                                    <div class="mt-8">
+                                        <h2 class="text-xl font-semibold mb-6">Review Your Order</h2>
+
+                                        <div class="space-y-6">
+                                            <!-- Billing Address -->
+                                            <div class="bg-gray-50 p-4 rounded-lg">
+                                                <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
+                                                    <i class="pi pi-home mr-2"></i>
+                                                    Billing Address
+                                                </h3>
+                                                <p class="text-gray-700">
+                                                    {{ billingForm.value.firstName }} {{ billingForm.value.lastName
+                                                    }}<br />
+                                                    {{ billingForm.value.email }}<br />
+                                                    {{ billingForm.value.phone }}<br />
+                                                    {{ billingForm.value.address }}<br />
+                                                    {{ billingForm.value.city }}, {{ billingForm.value.zip }}
+                                                </p>
+                                            </div>
+
+                                            <!-- Shipping Address -->
+                                            <div class="bg-gray-50 p-4 rounded-lg">
+                                                <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
+                                                    <i class="pi pi-truck mr-2"></i>
+                                                    Shipping Address
+                                                </h3>
+                                                <p class="text-gray-700" *ngIf="sameAsBilling">
+                                                    Same as billing address
+                                                </p>
+                                                <p class="text-gray-700" *ngIf="!sameAsBilling">
+                                                    {{ shippingForm.value.firstName }} {{ shippingForm.value.lastName
+                                                    }}<br />
+                                                    {{ shippingForm.value.phone }}<br />
+                                                    {{ shippingForm.value.address }}<br />
+                                                    {{ shippingForm.value.city }}, {{ shippingForm.value.zip }}
+                                                </p>
+                                            </div>
+
+                                            <!-- Payment Method -->
+                                            <div class="bg-gray-50 p-4 rounded-lg">
+                                                <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
+                                                    <i class="pi pi-credit-card mr-2"></i>
+                                                    Payment Method
+                                                </h3>
+                                                <p class="text-gray-700">
+                                                    {{ ( paymentForm.value.paymentMethod)[0]?.name }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex pt-6 justify-between mt-6 border-t">
+                                        <p-button (onClick)="activateCallback(2)" label="Back" severity="secondary"
+                                            icon="pi pi-arrow-left" styleClass="p-button-lg" />
+                                        <p-button (onClick)="onSubmit()" label="Place Order" icon="pi pi-check"
+                                            iconPos="right" styleClass="p-button-lg p-button-success" />
+                                    </div>
+                                </ng-template>
+                            </p-step-panel>
+                        </p-step-panels>
+                    </p-stepper>
+                </div>
+            </div>
+
+            <!-- Order Summary Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow-md p-6 lg:sticky lg:top-8">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
+
+                    <div class="space-y-4 mb-6">
+                        <div class="flex justify-between text-gray-700">
+                            <span>Subtotal ({{ orderSummary.itemCount }} items)</span>
+                            <span class="font-semibold">NPR {{ orderSummary.subtotal }}.000</span>
+                        </div>
+                        <div class="flex justify-between text-gray-700">
+                            <span>Shipping Fee</span>
+                            <span class="font-semibold">Rs. {{ orderSummary.shippingFee }}</span>
+                        </div>
+                    </div>
+
+                    <div class="border-t pt-4 mb-6">
+                        <div class="flex justify-between items-center">
+                            <span class="text-lg font-bold text-gray-900">Total</span>
+                            <span class="text-2xl font-bold text-orange-500">NPR {{ orderSummary.total }}.000</span>
+                        </div>
+                    </div>
+
+
+
+                    <div class="space-y-3 text-sm text-gray-600">
+                        <div class="flex items-center">
+                            <i class="pi pi-shield text-blue-500 mr-2"></i>
+                            <span>Secure Checkout</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="pi pi-truck text-green-500 mr-2"></i>
+                            <span>Free shipping on orders over Rs. 2000</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="pi pi-replay text-purple-500 mr-2"></i>
+                            <span>Easy returns within 7 days</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

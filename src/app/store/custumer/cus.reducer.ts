@@ -5,6 +5,8 @@ import { getAllProductsAction } from "./cus.action";
 
 
 const productIntialState: loadProductInitalType = {
+    brand: [], 
+    category: [], 
     loading: false,
     error: null,
     success: false,
@@ -28,14 +30,29 @@ export const getProductReducer = createReducer(
 
 
 
-        on(getAllProductsAction.sucessLoading, (state, action) => ({
+        on(getAllProductsAction.sucessLoading, (state, action) => {
+            
+            const cate = action?.payload?.rows.map( (item) =>  item.category   );
+            const brand = action?.payload?.rows.map( (item) =>  item.brand   );
+            const data ={ 
             ...state,
             loading: false,
             error: null,
             success: true,
+            category: cate , 
+            brand: brand,
             totalRecords:action.payload?.count , 
             data: action.payload?.rows
-            })),
+            }
+
+            if( localStorage.getItem('category') == null ){
+
+                localStorage.setItem('category', JSON.stringify(cate) )
+            }
+
+            return data ;
+
+            }),
 
 
      on(getAllProductsAction.failedLoading,  (state, action) => ({

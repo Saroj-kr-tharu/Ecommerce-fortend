@@ -20,6 +20,21 @@
 
             <!-- Desktop Links -->
             <div class="hidden md:flex md:items-center md:space-x-2 lg:space-x-4">
+                @if (loginState().isLogin && !loginState().isAdmin) {
+                <a routerLink="/cart" routerLinkActive="text-white bg-[#481B74]"
+                    class="relative text-gray-700 hover:text-white hover:bg-[#481B74] px-3 lg:px-4 py-2 rounded-md text-sm font-medium">
+                    <i class="pi pi-shopping-cart  " style="font-size: 1.5rem;"></i>
+
+                    @if (cartState().orderItems.length > 0) {
+                    <span
+                        class="absolute hidden sm:flex -top-1 -right-1 bg-orange-500 text-white text-xs font-bold rounded-full h-5 w-5  items-center justify-center">
+                        {{cartState().orderItems.length}}
+                    </span>
+                    }
+                </a>
+                }
+
+
                 @for (link of getVisibleLinks(); track $index) {
                 @if(link.text === 'Logout'){
                 <a (click)="logoutFn()" routerLink={{link.to}} routerLinkActive="text-white bg-[#481B74]"
@@ -28,16 +43,19 @@
                 </a>
                 }
                 @else {
+                @if(link.text !='Cart'){
+
                 <a routerLink={{link.to}} routerLinkActive="text-white bg-[#481B74]"
                     class="text-gray-700 hover:text-white hover:bg-[#481B74] px-3 lg:px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap">
                     {{link.text}}
                 </a>
                 }
                 }
+                }
             </div>
 
             <!-- Mobile menu button with PrimeNG icons -->
-            <div class="md:hidden flex-shrink-0">
+            <div class="md:hidden shrink-0">
                 <button (click)="toggleMobileMenu()" class="text-gray-700 hover:text-[#481B74] focus:outline-none p-2">
                     @if (!isMobileMenuOpen()) {
                     <i class="pi pi-bars text-2xl"></i>
@@ -55,6 +73,9 @@
         <div #mobileMenu class="md:hidden border-t border-teal-600">
             <!-- Mobile Navigation Links -->
             <div class="px-2 py-3 space-y-1 bg-[#14b8a6]">
+
+
+
                 @for (link of getVisibleLinks(); track $index) {
                 @if(link.text === 'Logout'){
                 <a (click)="toggleMobileMenu(); logoutFn()" routerLink={{link.to}}

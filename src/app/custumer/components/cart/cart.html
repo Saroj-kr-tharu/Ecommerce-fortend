@@ -1,4 +1,4 @@
-<div class="min-h-[84vh] mt-14 bg-gray-100 py-6 px-4 sm:px-6 lg:px-8">
+<div class="min-h-[82vh] mt-14 bg-gray-100 py-6 px-4 sm:px-6 lg:px-8">
 
 
     <div class="grid max-w-7xl mx-auto grid-cols-1 lg:grid-cols-3 gap-6">
@@ -8,13 +8,14 @@
             <!-- Header with Select All and Delete -->
             <div class="bg-white rounded-lg shadow-sm p-4 flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <p-checkbox inputId="selectAll" />
+                    <p-checkbox inputId="selectAll" [ngModel]="selectAll" (onChange)="toggleSelectAll()"
+                        [binary]="true" />
                     <label for="selectAll" class="cursor-pointer font-medium text-gray-700">
                         SELECT ALL ({{ cartStates().orderItems.length }} ITEM(S))
                     </label>
                 </div>
 
-                <button
+                <button (click)="deleteSelected()" [disabled]="isDeleteDisabled()"
                     class="flex items-center gap-2 text-red-600 hover:text-red-700 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors">
                     <i class="pi pi-trash text-lg"></i>
                     <span class="font-medium">DELETE</span>
@@ -31,7 +32,8 @@
                     <div class="flex gap-4">
                         <!-- Checkbox -->
                         <div class="shrink-0 pt-1">
-                            <p-checkbox />
+                            <p-checkbox [binary]="true" [ngModel]="isItemSelected(item.id)"
+                                (onChange)="toggleItemSelection(item.id)" />
                         </div>
 
                         <!-- Product Image -->
@@ -64,15 +66,16 @@
 
                                     <!-- Quantity Controls -->
                                     <div class="flex items-center gap-2 border border-gray-300 rounded-lg">
-                                        <button
+                                        <button (click)="decrement(item.id)" [disabled]="item.quantity <= 1"
                                             class="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:text-gray-300 disabled:cursor-not-allowed transition-colors rounded-l-lg">
                                             <i class="pi pi-minus text-sm"></i>
                                         </button>
 
-                                        <input type="text" [value]="item.quantity" readonly
+                                        <input type="text" [value]="item.quantity" readonly type="text"
+                                            [value]="item.quantity" readonly
                                             class="w-12 h-8 text-center border-x border-gray-300 text-gray-800 font-medium bg-white" />
 
-                                        <button
+                                        <button (click)="increment(item.id)"
                                             class="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors rounded-r-lg">
                                             <i class="pi pi-plus text-sm"></i>
                                         </button>
@@ -80,12 +83,13 @@
 
                                     <!-- Action Buttons -->
                                     <div class="flex items-center gap-3">
-                                        <button class="text-gray-500 hover:text-red-500 transition-colors"
+                                        <button (click)="addToWishlist(item.id)"
+                                            class="text-gray-500 hover:text-red-500 transition-colors"
                                             title="Add to Wishlist">
                                             <i class="pi pi-heart text-lg"></i>
                                         </button>
-                                        <button class="text-gray-500 hover:text-red-500 transition-colors"
-                                            title="Remove">
+                                        <button (click)="removeItem(item.id)"
+                                            class="text-gray-500 hover:text-red-500 transition-colors" title="Remove">
                                             <i class="pi pi-trash text-lg"></i>
                                         </button>
                                     </div>
@@ -106,7 +110,7 @@
                 <i class="pi pi-shopping-cart text-6xl text-gray-300 mb-4"></i>
                 <h3 class="text-xl font-medium text-gray-800 mb-2">Your cart is empty</h3>
                 <p class="text-gray-600 mb-6">Add items to your cart to see them here</p>
-                <button
+                <button (click)="continueShopping()"
                     class="bg-orange-500 text-white px-6 py-3 rounded-lg hover:bg-orange-600 transition-colors font-medium">
                     Continue Shopping
                 </button>
@@ -116,14 +120,15 @@
 
         <!-- Order Summary Section (Right Side) -->
         <div class="lg:col-span-1">
-            <div class="bg-white rounded-lg shadow-sm p-6 sticky top-6">
+            <div class="bg-white rounded-lg shadow-sm p-6   sticky top-20">
                 <h2 class="text-xl font-bold text-gray-800 mb-6">Order Summary</h2>
 
                 <!-- Summary Details -->
                 <div class="space-y-4 mb-6">
                     <div class="flex justify-between items-center">
-                        <span class="text-gray-600">Subtotal ({{ cartStates().subtotal }} items)</span>
-                        <span class="font-semibold text-gray-800">Rs. {{ cartStates().subtotal }}</span>
+                        <span class="text-gray-600">Subtotal ({{ selectedItems().size }} items)</span>
+                        <span class="font-semibold text-gray-800"> {{ subtotal() | currency:'NPR ':'symbol':'1.3-3'
+                            }}</span>
                     </div>
 
                     <div class="flex justify-between items-center">
@@ -137,29 +142,31 @@
                 <!-- Total -->
                 <div class="flex justify-between items-center mt-6 mb-6">
                     <span class="text-lg font-bold text-gray-800">Total</span>
-                    <span class="text-2xl font-bold text-orange-500">Rs. {{ cartStates().total }}</span>
+                    <span class="text-2xl font-bold text-orange-500">{{ subtotal() | currency:'NPR ':'symbol':'1.3-3'
+                        }}</span>
                 </div>
 
                 <!-- Checkout Button -->
-                <button
-                    class="w-full bg-orange-500 text-white py-4 rounded-lg font-bold text-lg hover:bg-orange-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-lg hover:shadow-xl">
-                    PROCEED TO CHECKOUT
-                </button>
+                <div>
+                    <p-confirmdialog />
+                    <button (click)="proceedToCheckout()" [disabled]="isCheckoutDisabled()"
+                        class="w-full bg-orange-500 text-white py-4 rounded-lg font-bold text-lg hover:bg-orange-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-lg hover:shadow-xl">
+                        PROCEED TO CHECKOUT
+                    </button>
+                </div>
 
                 <!-- Additional Info -->
                 <div class="mt-6 space-y-3">
+
+                    @for (add of additionInfo; track $index) {
+
+
                     <div class="flex items-center gap-2 text-sm text-gray-600">
-                        <i class="pi pi-shield text-teal-500"></i>
-                        <span>Secure Checkout</span>
+                        <i class="pi {{add.logo}} text-teal-500"></i>
+                        <span>{{add.title}}</span>
                     </div>
-                    <div class="flex items-center gap-2 text-sm text-gray-600">
-                        <i class="pi pi-truck text-teal-500"></i>
-                        <span>Free shipping on orders over Rs. 2000</span>
-                    </div>
-                    <div class="flex items-center gap-2 text-sm text-gray-600">
-                        <i class="pi pi-replay text-teal-500"></i>
-                        <span>Easy returns within 7 days</span>
-                    </div>
+                    }
+
                 </div>
             </div>
         </div>

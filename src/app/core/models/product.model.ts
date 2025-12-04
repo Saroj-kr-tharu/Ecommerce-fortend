@@ -18,6 +18,7 @@ export interface ProductType {
 
 export interface loadProductType {
     limit?:number, 
+    title?:string | null, 
     page?:number, 
     category?:string, 
     minPrice?:number, 
@@ -27,6 +28,8 @@ export interface loadProductType {
 }
 
 export interface loadProductInitalType {
+    category: string[];
+    brand: string[];
     loading: boolean;
     error: string | null;
     totalRecords: number,

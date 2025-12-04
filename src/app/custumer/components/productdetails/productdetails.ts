@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, OnInit, Signal, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { MenuItem } from 'primeng/api';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { ClassNamesModule } from 'primeng/classnames';
 import { RatingModule } from 'primeng/rating';
 import { LoginState } from '../../../core/models/auth.model';
 import { CartState } from '../../../core/models/cart.model';
@@ -17,7 +18,7 @@ import { cartsAction } from '../../../store/custumer/cus.action';
 @Component({
   selector: 'app-productdetails',
   standalone: true,
-  imports: [CommonModule, FormsModule, BreadcrumbModule, RatingModule],
+  imports: [CommonModule, FormsModule, BreadcrumbModule, RatingModule, ClassNamesModule],
    templateUrl: './productdetails.html',
   styleUrl: './productdetails.css',
 })
@@ -35,8 +36,11 @@ export class Productdetails implements OnInit {
 
   // signal 
   loginState!: Signal<LoginState>;
-
   toast = inject(HotToastService);
+  route = inject(ActivatedRoute)
+  productService = inject(CusServices) ;
+  router = inject(Router)
+
   
   breadcrumbItems = computed<MenuItem[]>(() => {
     const prod = this.product();
@@ -50,8 +54,7 @@ export class Productdetails implements OnInit {
   });
 
   constructor(
-    private route: ActivatedRoute,
-    private productService: CusServices,
+ 
     private store: Store<{ LoginReducer: LoginState }> ,
     private cartStore: Store<{ CartReducer: CartState }>
   ) {
@@ -134,7 +137,10 @@ export class Productdetails implements OnInit {
         return;
       }
 
-      this.toast.success(' buying ');
+      this.addToCart()
+      this.router.navigateByUrl('/cart')
+      
+      // this.toast.success(' buying ');
       // Implement buy now logic
     }
   }

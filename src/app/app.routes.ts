@@ -19,6 +19,14 @@ export const routes: Routes = [
         }
     }, 
     {
+        
+        path: 'search',
+        pathMatch:'full',
+        loadComponent: () => {
+            return import('./custumer/components/search.component/search.component').then( (m) => m.SearchComponent )
+        }
+    }, 
+    {
         path:'login',
         loadComponent: () => {
             return import('./auth/components/login.component/login.component').then( (m) => 
