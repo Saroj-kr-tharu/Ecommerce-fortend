@@ -71,7 +71,7 @@ export class CusHome implements OnInit  {
     this.rows = event.rows ?? 10;
 
     const page = Math.floor(this.first / this.rows) + 1;
-
+ 
     const data = {
       limit: this.rows, 
       page: page,       

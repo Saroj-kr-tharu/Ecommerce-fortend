@@ -20,23 +20,7 @@ import { ProducetItem } from "../../../shared/components/producet-item/producet-
 import { getAllProductsAction } from '../../../store/custumer/cus.action';
 import { selectGetAllProduct } from '../../../store/custumer/cus.selectors';
 
-interface CategoryOption {
-  name: string;
-  value: string;
-}
-
-interface FilterOptions {
-  categories: CategoryOption[];
-  brands: string[];
-  minPrice: number;
-  maxPrice: number;
-  minRating: number;
-}
-
-interface SortOption {
-  label: string;
-  value: string;
-}
+import { CategoryOption, FilterOptions, SortOption } from '../../../core/models/search.model';
 
 @Component({
   selector: 'app-product-listing',
@@ -64,7 +48,7 @@ export class SearchComponent implements OnInit {
   home: MenuItem = { icon: 'pi pi-home', routerLink: '/' };
   
   searchQuery: any = signal('');
-  layout: 'grid' | 'list' = 'grid';
+  
   drawerVisible = false;
 
   router = inject(Router);
@@ -73,11 +57,10 @@ export class SearchComponent implements OnInit {
   productState!: Signal<ProductType[]>;
   allState!: Signal<loadProductInitalType>;
 
-  first: number = 0;
+    first: number = 0;
     rows: number = 10;
     totalRecords: number = 0;
-
-
+   
 
   
   sortOptions: SortOption[] = [
@@ -99,7 +82,7 @@ export class SearchComponent implements OnInit {
   selectedCategory: CategoryOption | null = null;
   selectedBrands: string[] = [];
   minPriceInput: number = 0;
-  maxPriceInput: number = 0;
+  maxPriceInput: number = 0; 
   selectedRating: number = 0;
   
   products: ProductType[] | undefined = [];
@@ -118,6 +101,7 @@ export class SearchComponent implements OnInit {
     effect(() => {
      
       this.products = this.allState().data;
+      this.totalRecords = this.allState().totalRecords || 0; 
 
       const categories = Array.from(
         new Set(
@@ -208,9 +192,8 @@ export class SearchComponent implements OnInit {
 
     console.log('Dispatching with payload:', payload);
     this.store.dispatch(getAllProductsAction.load({ payload }));
-    effect(() => {
-      this.products = this.allState().data;
-    });
+    
+    
     
     // Update URL with filter params
     this.updateQueryParams();
@@ -341,7 +324,7 @@ export class SearchComponent implements OnInit {
   }
 
 
-     onPageChange(event: PaginatorState) {
+  onPageChange(event: PaginatorState) {
     this.first = event.first ?? 0;
     this.rows = event.rows ?? 10;
 

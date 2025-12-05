@@ -39,3 +39,17 @@ export interface CartState {
   } | null;
  
 }
+
+
+export interface addItemToCart {
+  userId: number , 
+  productId: number , 
+  quantity: number , 
+  price: number 
+}
+
+export interface updateItemCart {
+  cartItemId: number , 
+  quantity?: number , 
+  selected?: number 
+}

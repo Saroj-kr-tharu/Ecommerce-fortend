@@ -10,6 +10,8 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { DividerModule } from 'primeng/divider';
 import { CartItem, CartState } from '../../../core/models/cart.model';
+import { orderSummary } from '../../../core/models/order.model';
+import { CusServices } from '../../../core/services/custumer/cus.services';
 import { cartsAction } from '../../../store/custumer/cus.action';
 import { selectCart } from '../../../store/custumer/cus.selectors';
 
@@ -28,6 +30,7 @@ export class Cart implements OnInit {
   selectedItems = signal<Set<number>>(new Set());
   toast = inject(HotToastService)
   router = inject(Router)
+  cusService = inject(CusServices)
 
 
 subtotal = computed(() => {
@@ -199,19 +202,42 @@ toggleSelectAll(): void {
 
 
   // Navigate to checkout
+
+   getSelectedCartItems(): CartItem[] {
+      const selectedIds = this.selectedItems();
+      return this.cartItems().filter(item => selectedIds.has(item.id));
+    }
+
   proceedToCheckout(): void {
     if (this.cartItems().length === 0) return;
     
-    // Implement checkout navigation
-    // console.log('Proceed to checkout');
     // this.router.navigate(['/checkout']);
+    // console.log('hhhh => ', this.getSelectedCartItems())
+  
+   
+    let orderSummary:orderSummary = {
+      seletectItem: this.getSelectedCartItems(),
+      subtotal: this.subtotal(),
+      total: this.subtotal(),
+      itemCount: this.selectedItems().size,
+      shippingFee: 0,
+    
+    }
+    
+    localStorage.removeItem('OrderSummary')
+    localStorage.setItem('OrderSummary', JSON.stringify(orderSummary));
+
+    this.cusService.setOrderSummary(orderSummary)
+
+   
+      this.router.navigate(['/checkout']);
+
   }
 
 
 
-  // Continue shopping (go back to products)
-  continueShopping(): void {
-    
+
+  continueShopping(): void {    
     this.router.navigate(['/']);
   }
 

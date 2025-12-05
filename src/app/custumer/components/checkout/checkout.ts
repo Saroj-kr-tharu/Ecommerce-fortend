@@ -1,13 +1,17 @@
 
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { CommonModule, CurrencyPipe } from '@angular/common';
+import { AfterViewInit, Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { HotToastService } from '@ngxpert/hot-toast';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { StepperModule } from 'primeng/stepper';
 import { FormSignin, ValidationConfig } from '../../../core/models/auth.model';
+import { orderSummary } from '../../../core/models/order.model';
+import { CusServices } from '../../../core/services/custumer/cus.services';
 
 @Component({
   selector: 'app-checkout',
@@ -21,6 +25,7 @@ import { FormSignin, ValidationConfig } from '../../../core/models/auth.model';
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
+    CurrencyPipe
     
   ],
  templateUrl: './checkout.html',
@@ -29,8 +34,13 @@ import { FormSignin, ValidationConfig } from '../../../core/models/auth.model';
 
 
 
-export class Checkout {
+export class Checkout implements OnInit, AfterViewInit {
   activeStep: number = 1;
+  OrderSummaryData: any; 
+  router = inject(Router);
+  cusService = inject(CusServices);
+  toast = inject(HotToastService);
+
 
   // Billing Address Form
   billingForm: FormGroup = new FormGroup({
@@ -49,7 +59,6 @@ export class Checkout {
     lastName: new FormControl('', [Validators.required]),
     phone: new FormControl('', [Validators.required]),
     address: new FormControl('', [Validators.required]),
-     email: new FormControl('', [Validators.required, Validators.email]),
     city: new FormControl('', [Validators.required]),
     zip: new FormControl('', [Validators.required])
   });
@@ -76,7 +85,8 @@ export class Checkout {
     
   ];
 
-  orderSummary = {
+  orderSummary:orderSummary = {
+    seletectItem: [],
     subtotal: 0,
     itemCount: 0,
     shippingFee: 0,
@@ -143,6 +153,16 @@ export class Checkout {
       }
     ];
 
+    constructor(){
+      
+    }
+
+    ngOnInit(): void {
+      this.orderSummary =  this.cusService.getOrderSummary();
+   
+    //  console.log('data ', this.orderSummary)
+     
+    }
 
 
    
@@ -153,7 +173,11 @@ export class Checkout {
 
 
 
+      ngAfterViewInit() {
+        const nav = this.router.getCurrentNavigation()
 
+        console.log( 'history => ', nav?.extras.state)
+      }
 
 
   onSameAsBillingChange(): void {
@@ -202,7 +226,66 @@ export class Checkout {
     console.log('Billing:', this.billingForm.value);
     console.log('Shipping:', this.sameAsBilling ? 'Same as billing' : this.shippingForm.value);
     console.log('Payment:', this.paymentForm.value);
-    alert('Order placed successfully!');
+
+    if(this.paymentForm.value?.paymentMethod.toLowerCase() ==='cod' ){
+      let local = localStorage.getItem('marketManduAuth');
+      let localDa = JSON.parse(local || 'null');
+      if(localDa == null ){
+        return ;
+      }
+
+    let orderItems: { productId: number; quantity: number }[] = [];
+    this.orderSummary.seletectItem.map((item: any) => {
+      orderItems.push({
+        productId: item.id,
+        quantity: item.quantity
+      });
+    });
+
+      let data = {
+        userId: localDa.id, 
+        shippingAddress: {
+          street: this.shippingForm.value.address,
+          city: this.shippingForm.value.city,
+          zip: this.shippingForm.value.zip,
+          country: 'Nepal' 
+        },
+        billingAddress: {
+          street: this.billingForm.value.address,
+          city: this.billingForm.value.city,
+          zip: this.billingForm.value.zip,
+          country: 'Nepal' 
+        },
+        paymentMethod: this.paymentForm.value.paymentMethod,
+        orderItems: orderItems
+      };
+
+      console.log('data => ', data )
+
+      this.cusService.placeOrder(data).subscribe({
+        next: (res:any) => {
+          console.log('response => ', res)
+          this.toast.loading(' Placcing Order ..  ')
+
+          this.router.navigate(['/ordersuccess'], {
+              queryParams: {
+                orderNumber: res.data.orderNumber,
+                amount: res.data.totalAmount
+              }
+            });
+          
+        },
+        complete: () => {
+          this.toast.success('Sucess fully Place order ')
+        },
+        error: (err) => {
+          console.log('err => ', err)
+          this.toast.error('Failed to Place Orders ')
+        }
+      })
+
+    }
+
   }
 
   getErrorMessage(form: FormGroup, field: string): string {

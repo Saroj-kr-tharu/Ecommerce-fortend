@@ -1,0 +1,60 @@
+<div class="min-h-screen mt-10 bg-gray-50 flex items-center justify-center px-4 py-12">
+    <div class="max-w-md w-full">
+        <!-- Success Card -->
+        <div class="bg-white rounded-lg shadow-lg p-8 text-center">
+            <!-- Success Icon -->
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
+                <svg class="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+
+            <!-- Success Message -->
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">Order Placed Successfully!</h1>
+            <p class="text-gray-600 mb-8">Thank you for your purchase. Your order has been confirmed.</p>
+
+            <!-- Order Details -->
+            <div class="bg-gray-50 rounded-lg p-6 mb-6 space-y-4">
+                <div class="flex justify-between items-center pb-4 border-b border-gray-200">
+                    <span class="text-sm font-medium text-gray-600">Order Number</span>
+                    <span class="text-sm font-semibold text-gray-900">{{ orderNumber }}</span>
+                </div>
+
+                <div class="flex justify-between items-center">
+                    <span class="text-sm font-medium text-gray-600">Total Amount</span>
+                    <span class="text-lg font-bold text-green-600">
+                        ${{ amount }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Confirmation Message -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <p class="text-sm text-blue-800">
+                    <span class="font-medium">📧 Confirmation email sent!</span><br>
+                    <span class="text-xs">Check your inbox for order details and tracking information.</span>
+                </p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="space-y-3">
+                <button (click)="goToOrders()"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200">
+                    View My Orders
+                </button>
+
+                <button (click)="continueShopping()"
+                    class="w-full bg-white hover:bg-gray-50 text-gray-700 font-medium py-3 px-4 rounded-lg border border-gray-300 transition duration-200">
+                    Continue Shopping
+                </button>
+            </div>
+        </div>
+
+        <!-- Additional Info -->
+        <div class="mt-6 text-center">
+            <p class="text-sm text-gray-600">
+                Need help? <a href="/contact" class="text-blue-600 hover:text-blue-700 font-medium">Contact Support</a>
+            </p>
+        </div>
+    </div>
+</div>

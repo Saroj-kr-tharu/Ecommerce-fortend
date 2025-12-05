@@ -40,6 +40,7 @@ export class Productdetails implements OnInit {
   route = inject(ActivatedRoute)
   productService = inject(CusServices) ;
   router = inject(Router)
+  cusService = inject(CusServices)
 
   
   breadcrumbItems = computed<MenuItem[]>(() => {

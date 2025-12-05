@@ -61,17 +61,15 @@ export class Header implements OnInit {
      }
 
       
-     
-
     }
    
 getVisibleLinks() {
   if (this.loginState().isAdmin) {
     return [
-      {text: 'Admin Dashboard', to: '/admin/dashboard', icon:null,},
-      {text: 'Products', to: '/admin/products', icon:null, },
-      {text: 'Orders', to: '/admin/orders', icon:null, },
-      {text: 'Logout', to: '/logout', icon:null} 
+      {text: 'Admin Dashboard', to: '/admin/dashboard', },
+      {text: 'Products', to: '/admin/products',  },
+      {text: 'Orders', to: '/admin/orders',  },
+      {text: 'Logout', to: '/logout', } 
     ];
   } else if (this.loginState().isLogin) {
     return [

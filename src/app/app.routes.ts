@@ -48,6 +48,15 @@ export const routes: Routes = [
                 m.Checkout  )
         }
     },
+   
+    {
+        path:'ordersuccess',
+        canActivate:[authGuard,],
+        loadComponent: () => {
+            return import('./custumer/components/order-success/order-success').then( (m) => 
+                m.OrderSuccess  )
+        }
+    },
     {
         path:'cart',
         canActivate:[authGuard],
