@@ -10,6 +10,7 @@ import { ClassNamesModule } from 'primeng/classnames';
 import { RatingModule } from 'primeng/rating';
 import { LoginState } from '../../../core/models/auth.model';
 import { CartState } from '../../../core/models/cart.model';
+import { orderSummary } from '../../../core/models/order.model';
 import { ProductType } from '../../../core/models/product.model';
 import { CusServices } from '../../../core/services/custumer/cus.services';
 import { selectLogin } from '../../../store/auth/auth.selectors';
@@ -138,11 +139,22 @@ export class Productdetails implements OnInit {
         return;
       }
 
-      this.addToCart()
-      this.router.navigateByUrl('/cart')
       
-      // this.toast.success(' buying ');
-      // Implement buy now logic
+      let orderSummary:orderSummary = {
+      seletectItem: prod,
+      subtotal: prod.price * this.quantity(),
+      total: prod.price * this.quantity(),
+      itemCount: this.quantity(),
+      shippingFee: 0,
+    
+    }
+
+      this.cusService.setOrderSummary(orderSummary)
+      this.toast.success('Processing To Checkout')
+      // this.addToCart()
+      this.router.navigateByUrl('/checkout')
+      
+     
     }
   }
 
@@ -169,14 +181,14 @@ export class Productdetails implements OnInit {
 
       this.cartStore.dispatch(addItemcartsAction.addItem({payload: data}))
       // this.cartStore.dispatch(getcartsAction.getCart({payload: {userId: 1} }))
-      let userid = 1
-      let cartItemId = 8
+      // let userid = 1
+      // let cartItemId = 8
       // this.cartStore.dispatch(clearCartAction.clearCart({payload: userid }))
       // this.cartStore.dispatch(removeItemAction.removeItem({payload: cartItemId }))
       
 
 
-      // this.toast.success(' sucessfully added to Cart ');
+      
       
     }
   }

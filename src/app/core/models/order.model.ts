@@ -1,8 +1,7 @@
-import { CartItem } from "./cart.model";
 
 
  export interface  orderSummary  {
-      seletectItem: CartItem[]
+      seletectItem: any,
       subtotal: number | null ,
       total: number | null ,
       itemCount: number | null ,

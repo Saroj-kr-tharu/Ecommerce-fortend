@@ -41,6 +41,7 @@ export class Checkout implements OnInit {
   cusService = inject(CusServices);
   toast = inject(HotToastService);
 
+  
 
   // Billing Address Form
   billingForm: FormGroup = new FormGroup({
@@ -157,34 +158,40 @@ export class Checkout implements OnInit {
     ];
 
     constructor(){
-      
+      this.orderSummary.set(this.cusService.getOrderSummary() ) ;
+      console.log(this.orderSummary())
     }
 
     ngOnInit(): void {
-      let localStr = localStorage.getItem('marketManduAuth');
-      let local = localStr ? JSON.parse(localStr) : null;
+
+      this.orderSummary.set(this.cusService.getOrderSummary() ) ;
+
+      console.log(this.orderSummary())
+
+      // let localStr = localStorage.getItem('marketManduAuth');
+      // let local = localStr ? JSON.parse(localStr) : null;
       
-      if (local && local.id) {
-         this.cusService.CheckoutCart(local.id).subscribe({
-          next: (res:any) => {
-            this.toast.success('Geting Cart Data')
-            console.log(res?.data)
+      // if (local && local.id) {
+      //    this.cusService.CheckoutCart(local.id).subscribe({
+      //     next: (res:any) => {
+      //       this.toast.success('Geting Cart Data')
+      //       console.log(res?.data)
 
-            this.orderSummary.set({
-  seletectItem: res?.data?.items,
-  subtotal: res?.data?.totalPrice,
-  itemCount: res?.data?.items.length,
-  shippingFee: res?.data?.shippingFee,
-  total: res?.data?.grandTotal
-});
+      //     this.orderSummary.set({
+      //     seletectItem: res?.data?.items,
+      //     subtotal: res?.data?.totalPrice,
+      //     itemCount: res?.data?.items.length,
+      //     shippingFee: res?.data?.shippingFee,
+      //     total: res?.data?.grandTotal
+      //   });
 
 
-          },
-          error: (err) => {
-            this.toast.error('Unable to Get Data ')
-          },
-        })
-      }
+      //     },
+      //     error: (err) => {
+      //       this.toast.error('Unable to Get Data ')
+      //     },
+      //   })
+      // }
    
     //  console.log('data ', this.orderSummary)
      
@@ -244,10 +251,39 @@ export class Checkout implements OnInit {
   }
 
   onSubmit(): void {
-    console.log('Order submitted!');
-    console.log('Billing:', this.billingForm.value);
-    console.log('Shipping:', this.sameAsBilling ? 'Same as billing' : this.shippingForm.value);
-    console.log('Payment:', this.paymentForm.value);
+    // console.log('Order submitted!');
+    // console.log('Billing:', this.billingForm.value);
+    // console.log('Shipping:', this.sameAsBilling ? 'Same as billing' : this.shippingForm.value);
+    // console.log('Payment:', this.paymentForm.value);
+
+    if (
+      !this.billingForm.value.firstName &&
+      !this.billingForm.value.lastName &&
+      !this.billingForm.value.email &&
+      !this.billingForm.value.phone &&
+      !this.billingForm.value.address &&
+      !this.billingForm.value.city &&
+      !this.billingForm.value.zip
+    ) {
+      this.toast.error('Billing form is empty');
+      return;
+    }
+    if (
+      !this.sameAsBilling &&
+      !this.shippingForm.value.firstName &&
+      !this.shippingForm.value.lastName &&
+      !this.shippingForm.value.phone &&
+      !this.shippingForm.value.address &&
+      !this.shippingForm.value.city &&
+      !this.shippingForm.value.zip
+    ) {
+      this.toast.error('Shipping form is empty');
+      return;
+    }
+    if (!this.paymentForm.value.paymentMethod) {
+      this.toast.error('Payment method is not selected');
+      return;
+    }
 
     if(this.paymentForm.value?.paymentMethod.toLowerCase() ==='cod' ){
       let local = localStorage.getItem('marketManduAuth');

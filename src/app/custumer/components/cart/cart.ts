@@ -11,7 +11,7 @@ import { ConfirmDialog } from 'primeng/confirmdialog';
 import { DividerModule } from 'primeng/divider';
 import { CartItem, CartState } from '../../../core/models/cart.model';
 import { CusServices } from '../../../core/services/custumer/cus.services';
-import { bulkUpdateItemAction, deleteBulkItemAction, getcartsAction, removeItemAction, updateItemAction } from '../../../store/custumer/cus.action';
+import { deleteBulkItemAction, getcartsAction, removeItemAction, updateItemAction } from '../../../store/custumer/cus.action';
 import { selectCart } from '../../../store/custumer/cus.selectors';
 
 @Component({
@@ -119,12 +119,12 @@ export class Cart  {
   }
 
 
-  removeItem(itemId: number): void {
+removeItem(itemId: number): void {
   this.store.dispatch(removeItemAction.removeItem({ payload: itemId }));
 
 }
 
-
+// 
 deleteSelected(): void {
   const selected = this.selectedItems();
   if (selected.size === 0) return;
@@ -185,17 +185,31 @@ deleteSelected(): void {
       return;
     }
 
-  const selected = this.selectedItems();
-  const selectedCartItems = this.cartItems()
-    .filter(item => selected.has(item.id))
-    .map(item => ({
-      cartItemId: item.id,
-      quantity: item.quantity,
-      selected: true
-    }));
-  console.log('Selected cart items:', selectedCartItems);
 
-  this.store.dispatch(bulkUpdateItemAction.bulkUpdateItem({payload:selectedCartItems }))
+
+  const selectedCartItems = this.cartItems()
+    .filter(item => this.selectedItems().has(item.id))
+    .map(item => ({
+      ...item
+    }));
+
+    const orderSummary = {
+      seletectItem: selectedCartItems,
+      subtotal: this.subtotal()  ,
+      total:    this.subtotal()  ,
+      itemCount: this.selectedItems().size ,
+      shippingFee: 0,
+    }
+
+
+    this.cusService.setOrderSummary(orderSummary)
+
+    this.toast.success(' Processing To Checkout ');
+
+    this.router.navigate(['/checkout'])
+  
+
+  // this.store.dispatch(bulkUpdateItemAction.bulkUpdateItem({payload:selectedCartItems }))
     
 
     

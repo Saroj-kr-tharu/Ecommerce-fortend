@@ -13,6 +13,7 @@ export class cartAddItemsEffect {
   private actions$ = inject(Actions);
   private cusServices = inject(CusServices);
   private toast = inject(HotToastService);
+  private router = inject(Router)
 
    login$ = createEffect(() =>
      this.actions$.pipe(
@@ -29,8 +30,10 @@ export class cartAddItemsEffect {
              error: 'Adding failed!',
            }),
  
-           map((res: any) =>
-             addItemcartsAction.sucessAdded({payload: res})
+           map((res: any) =>{
+            this.router.navigate(['/cart'])
+             return addItemcartsAction.sucessAdded({payload: res})
+            }
            ),
  
            

@@ -14,6 +14,21 @@ export class CusServices {
   BaseUrl = `${environment.apiURL}`;
 
   private orderSummary: any;
+ 
+
+  setOrderSummary(data: any) {
+    localStorage.setItem('orderSummary', JSON.stringify(data))
+    this.orderSummary = data;
+  }
+
+  getOrderSummary() {
+      const savedSummary = localStorage.getItem('orderSummary');
+      if (savedSummary) {
+        this.orderSummary = (JSON.parse(savedSummary));
+
+      } 
+    return this.orderSummary;
+  }
 
 
   

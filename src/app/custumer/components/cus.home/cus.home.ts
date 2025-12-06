@@ -8,7 +8,7 @@ import { loadProductInitalType, ProductType } from '../../../core/models/product
 import { Carousel } from "../../../shared/components/carousel/carousel";
 import { ProducetItem } from "../../../shared/components/producet-item/producet-item";
 import { Typecarousel } from "../../../shared/components/typecarousel/typecarousel";
-import { getAllProductsAction } from '../../../store/custumer/cus.action';
+import { getAllProductsAction, getcartsAction } from '../../../store/custumer/cus.action';
 import { selectGetAllProduct } from '../../../store/custumer/cus.selectors';
 
 
@@ -61,6 +61,15 @@ export class CusHome implements OnInit  {
               page: 1, 
             }
             this.store.dispatch( getAllProductsAction.load({payload : data}))
+            const localStr = localStorage.getItem('marketManduAuth');
+            let local: { id?: number } | null = null;
+
+            local = localStr ? JSON.parse(localStr) : null;
+
+            if (local && local.id) {
+              let user = { userId: local.id };
+              this.store.dispatch(getcartsAction.getCart({ payload: user }));
+            }
 
            
 
