@@ -281,20 +281,20 @@
 
                     <div class="space-y-4 mb-6">
                         <div class="flex justify-between text-gray-700">
-                            <span>Subtotal ({{ orderSummary.itemCount }} items)</span>
-                            <span class="font-semibold"> {{ orderSummary.subtotal | currency:'NPR
+                            <span>Subtotal ({{ orderSummary().itemCount }} items)</span>
+                            <span class="font-semibold"> {{ orderSummary().subtotal | currency:'NPR
                                 ':'symbol':'1.2-2' }} </span>
                         </div>
                         <div class="flex justify-between text-gray-700">
                             <span>Shipping Fee</span>
-                            <span class="font-semibold">Rs. {{ orderSummary.shippingFee }}</span>
+                            <span class="font-semibold">Rs. {{orderSummary().shippingFee}}</span>
                         </div>
                     </div>
 
                     <div class="border-t pt-4 mb-6">
                         <div class="flex justify-between items-center">
                             <span class="text-lg font-bold text-gray-900">Total</span>
-                            <span class="text-2xl font-bold text-[#14b8a6]">{{ orderSummary.subtotal | currency:'NPR
+                            <span class="text-2xl font-bold text-[#14b8a6]">{{ orderSummary().total| currency:'NPR
                                 ':'symbol':'1.2-2' }}</span>
                         </div>
                     </div>

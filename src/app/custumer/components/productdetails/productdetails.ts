@@ -13,7 +13,7 @@ import { CartState } from '../../../core/models/cart.model';
 import { ProductType } from '../../../core/models/product.model';
 import { CusServices } from '../../../core/services/custumer/cus.services';
 import { selectLogin } from '../../../store/auth/auth.selectors';
-import { cartsAction } from '../../../store/custumer/cus.action';
+import { addItemcartsAction } from '../../../store/custumer/cus.action';
 
 @Component({
   selector: 'app-productdetails',
@@ -150,28 +150,33 @@ export class Productdetails implements OnInit {
     const prod = this.product();
     if (prod && prod.stock && prod.stock > 0) {
 
-      console.log('Add to cart:', prod, 'Quantity:', this.quantity());
+      // console.log('Add to cart:', prod, 'Quantity:', this.quantity());
       if(!this.loginState().isLogin){
         this.toast.warning(' Please Login to add in  cart ');
         return;
       }
 
+      const local = localStorage.getItem('marketManduAuth');
+      let da = JSON.parse(local || 'null')
+
       const data = {
-          id: prod.id,
-          name: prod.name,
-          price: prod.price,
-          quantity: this.quantity(),
-          brand:prod.brand,
-          category:prod.category,
-          selected:false,
-          image:prod.images[0]
+          userId: da.id , 
+          productId: prod.id,  
+          quantity: this.quantity() , 
+          price:  prod.price 
         }
 
 
-      this.cartStore.dispatch(cartsAction.addItem({payload: data}))
+      this.cartStore.dispatch(addItemcartsAction.addItem({payload: data}))
+      // this.cartStore.dispatch(getcartsAction.getCart({payload: {userId: 1} }))
+      let userid = 1
+      let cartItemId = 8
+      // this.cartStore.dispatch(clearCartAction.clearCart({payload: userid }))
+      // this.cartStore.dispatch(removeItemAction.removeItem({payload: cartItemId }))
+      
 
 
-      this.toast.success(' sucessfully added to Cart ');
+      // this.toast.success(' sucessfully added to Cart ');
       
     }
   }

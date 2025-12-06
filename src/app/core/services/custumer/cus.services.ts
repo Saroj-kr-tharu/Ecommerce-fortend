@@ -15,13 +15,6 @@ export class CusServices {
 
   private orderSummary: any;
 
-  setOrderSummary(data: any) {
-    this.orderSummary = data;
-  }
-
-  getOrderSummary() {
-    return this.orderSummary;
-  }
 
   
     getAllProductsService(data: loadProductType) {
@@ -65,8 +58,9 @@ export class CusServices {
 
     deleteCart(userId:number ) {
       const url = `${this.BaseUrl}/cart/delete`
+      console.log('servie => ', userId)
       
-      return this.httpClient.delete(url, { params: { userId: userId } });
+      return this.httpClient.delete(url, { params: { userId } });
       
     }
 
@@ -77,6 +71,19 @@ export class CusServices {
       
     }
 
+  BulkremoveItemToCart(cartItemIds: number[] ) {
+      const url = `${this.BaseUrl}/cart/bulkdelete`
+      
+      return this.httpClient.post(url, cartItemIds);
+  }
+
+  BulkupdateItemToCart(cartItemIds: any ) {
+      const url = `${this.BaseUrl}/cart/bulkupdate`
+        
+    
+      return this.httpClient.patch(url, cartItemIds);
+  }
+
     updateItemToCart(data: updateItemCart ) {
       const url = `${this.BaseUrl}/cart/updateItem`
       
@@ -85,7 +92,7 @@ export class CusServices {
     }
 
     CheckoutCart(userId: number ) {
-      const url = `${this.BaseUrl}/cart/updateItem`
+      const url = `${this.BaseUrl}/cart/checkout`
       
       return this.httpClient.get(url, { params: { userId: userId } });
       

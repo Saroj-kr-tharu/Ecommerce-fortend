@@ -1,5 +1,5 @@
 import { CurrencyPipe } from '@angular/common';
-import { Component, computed, effect, inject, OnInit, Signal, signal } from '@angular/core';
+import { Component, computed, effect, inject, Signal, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -10,35 +10,32 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { DividerModule } from 'primeng/divider';
 import { CartItem, CartState } from '../../../core/models/cart.model';
-import { orderSummary } from '../../../core/models/order.model';
 import { CusServices } from '../../../core/services/custumer/cus.services';
-import { cartsAction } from '../../../store/custumer/cus.action';
+import { bulkUpdateItemAction, deleteBulkItemAction, getcartsAction, removeItemAction, updateItemAction } from '../../../store/custumer/cus.action';
 import { selectCart } from '../../../store/custumer/cus.selectors';
-
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CheckboxModule, FormsModule, ButtonModule, DividerModule, CurrencyPipe,ConfirmDialog],
+  imports: [CheckboxModule, FormsModule, ButtonModule, DividerModule, CurrencyPipe, ConfirmDialog],
   providers: [ConfirmationService, MessageService],
   templateUrl: './cart.html',
   styleUrl: './cart.css',
 })
-export class Cart implements OnInit {
-  cartItems = signal<CartItem[]>([]);
+export class Cart  {
+  cartItems = signal<any[]>([]);
   cartStates: Signal<CartState>;
   selectedItems = signal<Set<number>>(new Set());
-  toast = inject(HotToastService)
-  router = inject(Router)
-  cusService = inject(CusServices)
+  toast = inject(HotToastService);
+  router = inject(Router);
+  cusService = inject(CusServices);
 
-
-subtotal = computed(() => {
+  subtotal = computed(() => {
     const selected = this.selectedItems();
     if (selected.size === 0) {
-      return 0 
+      return 0;
     }
-   
+
     return this.cartItems()
       .filter(item => selected.has(item.id))
       .reduce((sum, item) => {
@@ -46,11 +43,9 @@ subtotal = computed(() => {
       }, 0);
   });
 
-
-   totalItems = computed(() => {
+  totalItems = computed(() => {
     const selected = this.selectedItems();
     if (selected.size === 0) {
-     
       return this.cartItems().reduce((sum, item) => {
         return sum + item.quantity;
       }, 0);
@@ -63,199 +58,166 @@ subtotal = computed(() => {
       }, 0);
   });
 
-  
   selectAll = computed(() => {
     const items = this.cartItems();
     const selected = this.selectedItems();
     return items.length > 0 && selected.size === items.length;
   });
 
-
   additionInfo = [
-    {title:'Secure Checkout', logo: 'pi-shield'},
-    {title:'Free shipping on orders over Rs. 2000', logo: 'pi-truck'},
-    {title:'Easy returns within 7 days', logo: 'pi-replay'},
-  ]
+    { title: 'Secure Checkout', logo: 'pi-shield' },
+    { title: 'Free shipping on orders over Rs. 2000', logo: 'pi-truck' },
+    { title: 'Easy returns within 7 days', logo: 'pi-replay' },
+  ];
 
-  constructor(private store: Store<{ CartReducer: CartState }>) {
+  constructor(private store: Store<{ cartReducer: CartState }>) {
     this.cartStates = this.store.selectSignal(selectCart);
+
+    const localStr = localStorage.getItem('marketManduAuth');
+    let local: { id?: number } | null = null;
+
+    local = localStr ? JSON.parse(localStr) : null;
+
+    if (local && local.id) {
+      let user = { userId: local.id };
+      this.store.dispatch(getcartsAction.getCart({ payload: user }));
+    }
 
     effect(() => {
       const stateItems = this.cartStates().orderItems;
-
+      console.log('Cart items updated => ', stateItems);
       this.cartItems.set(stateItems);
     });
-  }
-
-  ngOnInit(): void {
-    const stateItems = this.cartStates().orderItems;
-
-    if (stateItems.length == 0) {
-      const localdata = localStorage.getItem('Cart');
-
-      const data = JSON.parse(localdata || 'null');
-      // console.log('data => ', data)
-      this.store.dispatch(cartsAction.setCart({ payload: data }));
-    }
   }
 
 
 
   increment(itemId: number): void {
-    const items = this.cartItems();
-    const updatedItems = items.map(item => 
-      item.id === itemId 
-        ? { ...item, quantity: item.quantity + 1 }
-        : item
-    );
-    // console.log('updated items => ', updatedItems)
-    this.store.dispatch(cartsAction.updateQuantity({ payload: updatedItems }));
-
-    this.toast.success('Quantity increase ');
+     const item = this.cartItems().find(item => item.id === itemId);
+    let quan = item ? item.quantity : 0;
+    let daa = {
+        cartItemId: itemId , 
+        quantity: quan + 1  , 
+      }
+   
+    this.store.dispatch(updateItemAction.updateItem({ payload: daa }));
+    
   }
 
- 
   decrement(itemId: number): void {
-    const items = this.cartItems();
-    const updatedItems = items.map(item => {
-      if (item.id === itemId && item.quantity > 1) {
-        return { ...item, quantity: item.quantity - 1 };
+
+    const item = this.cartItems().find(item => item.id === itemId);
+    let quan = item ? item.quantity : 0;
+
+      // console.log('itemid => decrement ' ,itemId)
+      let daa = {
+        cartItemId: itemId , 
+        quantity: quan - 1  , 
       }
-      return item;
-    });
-    // console.log('udpate item => ', updatedItems)
-    this.store.dispatch(cartsAction.updateQuantity({ payload: updatedItems }));
-    this.toast.success('Quantity decrease ');
+
+      this.store.dispatch(updateItemAction.updateItem({payload: daa }))
   }
 
 
   removeItem(itemId: number): void {
-    const items = this.cartItems();
-    const updatedItems = items.filter(item => item.id !== itemId);
-    
-    this.store.dispatch(cartsAction.updateQuantity({ payload: updatedItems }));
-    this.toast.success('Delete Items ');
-    
+  this.store.dispatch(removeItemAction.removeItem({ payload: itemId }));
 
-    const selected = this.selectedItems();
-    if (selected.has(itemId)) {
-      selected.delete(itemId);
-      this.selectedItems.set(new Set(selected));
-    }
-  }
+}
 
-  // Add item to wishlist
+
+deleteSelected(): void {
+  const selected = this.selectedItems();
+  if (selected.size === 0) return;
+
+  console.log('selected =? ', selected)
+
+  // Store all selected item IDs in an array
+  const selectedItemIds = Array.from(selected);
+  console.log('Selected item IDs:', selectedItemIds);
+
+  this.store.dispatch(deleteBulkItemAction.deleteBulkItem({payload:selectedItemIds }))
+
+
+}
+
   addToWishlist(itemId: number): void {
-    
-    // console.log('Add to wishlist:', itemId);
-    
+    console.log('Add to wishlist:', itemId);
+    // Implement wishlist functionality
   }
 
-
-  // Toggle item selection
- toggleItemSelection(itemId: number): void {
+  toggleItemSelection(itemId: number): void {
     const selected = new Set(this.selectedItems());
-    
+
     if (selected.has(itemId)) {
       selected.delete(itemId);
     } else {
       selected.add(itemId);
     }
-    
+
     this.selectedItems.set(selected);
   }
 
-  // Toggle select all
-toggleSelectAll(): void {
+  toggleSelectAll(): void {
     const items = this.cartItems();
-    
+
     if (this.selectAll()) {
-      // Deselect all
       this.selectedItems.set(new Set());
     } else {
-      // Select all
       const allIds = items.map(item => item.id);
       this.selectedItems.set(new Set(allIds));
     }
   }
 
-  // Check if item is selected
   isItemSelected(itemId: number): boolean {
     return this.selectedItems().has(itemId);
   }
 
 
 
-  // Delete selected items
-  deleteSelected(): void {
-    if (this.selectedItems().size === 0) return;
-    
-    const items = this.cartItems();
-    const selected = this.selectedItems();
-    const updatedItems = items.filter(item => !selected.has(item.id));
-    
-    this.store.dispatch(cartsAction.updateQuantity({ payload: updatedItems }));
-    this.selectedItems.set(new Set());
+  getSelectedCartItems(): CartItem[] {
+    const selectedIds = this.selectedItems();
+    return this.cartItems().filter(item => selectedIds.has(item.id));
   }
-
-  
-
-
-  // Navigate to checkout
-
-   getSelectedCartItems(): CartItem[] {
-      const selectedIds = this.selectedItems();
-      return this.cartItems().filter(item => selectedIds.has(item.id));
-    }
 
   proceedToCheckout(): void {
-    if (this.cartItems().length === 0) return;
-    
-    // this.router.navigate(['/checkout']);
-    // console.log('hhhh => ', this.getSelectedCartItems())
-  
-   
-    let orderSummary:orderSummary = {
-      seletectItem: this.getSelectedCartItems(),
-      subtotal: this.subtotal(),
-      total: this.subtotal(),
-      itemCount: this.selectedItems().size,
-      shippingFee: 0,
-    
+    if (this.selectedItems().size === 0) {
+      this.toast.error('Please select items to checkout');
+      return;
     }
-    
-    localStorage.removeItem('OrderSummary')
-    localStorage.setItem('OrderSummary', JSON.stringify(orderSummary));
 
-    this.cusService.setOrderSummary(orderSummary)
+  const selected = this.selectedItems();
+  const selectedCartItems = this.cartItems()
+    .filter(item => selected.has(item.id))
+    .map(item => ({
+      cartItemId: item.id,
+      quantity: item.quantity,
+      selected: true
+    }));
+  console.log('Selected cart items:', selectedCartItems);
+
+  this.store.dispatch(bulkUpdateItemAction.bulkUpdateItem({payload:selectedCartItems }))
+    
+
+    
 
    
-      this.router.navigate(['/checkout']);
 
+    
   }
 
-
-
-
-  continueShopping(): void {    
+  continueShopping(): void {
     this.router.navigate(['/']);
   }
 
-  // Get selected items count
   getSelectedCount(): number {
     return this.selectedItems().size;
   }
 
-  // Check if delete button should be disabled
   isDeleteDisabled(): boolean {
     return this.selectedItems().size === 0;
   }
 
-  // Check if checkout button should be disabled
   isCheckoutDisabled(): boolean {
-    return this.cartItems().length === 0;
+    return this.selectedItems().size === 0;
   }
-
-
-
 }

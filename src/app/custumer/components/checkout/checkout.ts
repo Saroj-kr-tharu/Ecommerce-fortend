@@ -1,6 +1,6 @@
 
 import { CommonModule, CurrencyPipe } from '@angular/common';
-import { AfterViewInit, Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HotToastService } from '@ngxpert/hot-toast';
@@ -34,7 +34,7 @@ import { CusServices } from '../../../core/services/custumer/cus.services';
 
 
 
-export class Checkout implements OnInit, AfterViewInit {
+export class Checkout implements OnInit {
   activeStep: number = 1;
   OrderSummaryData: any; 
   router = inject(Router);
@@ -85,13 +85,16 @@ export class Checkout implements OnInit, AfterViewInit {
     
   ];
 
-  orderSummary:orderSummary = {
+  // signal 
+  
+
+  orderSummary = signal<orderSummary>({
     seletectItem: [],
     subtotal: 0,
     itemCount: 0,
     shippingFee: 0,
     total: 0
-  };
+  });
 
 
     billingFormConfig: FormSignin[] = [
@@ -158,7 +161,30 @@ export class Checkout implements OnInit, AfterViewInit {
     }
 
     ngOnInit(): void {
-      this.orderSummary =  this.cusService.getOrderSummary();
+      let localStr = localStorage.getItem('marketManduAuth');
+      let local = localStr ? JSON.parse(localStr) : null;
+      
+      if (local && local.id) {
+         this.cusService.CheckoutCart(local.id).subscribe({
+          next: (res:any) => {
+            this.toast.success('Geting Cart Data')
+            console.log(res?.data)
+
+            this.orderSummary.set({
+  seletectItem: res?.data?.items,
+  subtotal: res?.data?.totalPrice,
+  itemCount: res?.data?.items.length,
+  shippingFee: res?.data?.shippingFee,
+  total: res?.data?.grandTotal
+});
+
+
+          },
+          error: (err) => {
+            this.toast.error('Unable to Get Data ')
+          },
+        })
+      }
    
     //  console.log('data ', this.orderSummary)
      
@@ -173,11 +199,7 @@ export class Checkout implements OnInit, AfterViewInit {
 
 
 
-      ngAfterViewInit() {
-        const nav = this.router.getCurrentNavigation()
-
-        console.log( 'history => ', nav?.extras.state)
-      }
+     
 
 
   onSameAsBillingChange(): void {
@@ -235,7 +257,7 @@ export class Checkout implements OnInit, AfterViewInit {
       }
 
     let orderItems: { productId: number; quantity: number }[] = [];
-    this.orderSummary.seletectItem.map((item: any) => {
+    this.orderSummary().seletectItem.map((item: any) => {
       orderItems.push({
         productId: item.id,
         quantity: item.quantity

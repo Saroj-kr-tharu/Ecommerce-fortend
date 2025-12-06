@@ -3,10 +3,11 @@ export interface CartItem {
   name: string;
   price: number;
   quantity: number;
-  image?: string;
+  images?: string[];
   selected:boolean;
   brand:string;
   category:string;
+
 }
 
 
@@ -15,28 +16,12 @@ export type paymentType  = 'ESEWA' | 'KHALTI' | 'STRIPE' | 'CARD'
 
 
 export interface CartState {
-  userId: number | null ;
-  orderItems: CartItem[];
-  subtotal: number;
-  total: number;
-  itemCount: number;
-  paymentMethod?: paymentType | null ; 
+
   loading: boolean;
- 
-
-  shippingAddress?: {
-    street: string;
-    city: string;
-    zip: string;
-    country: string;
-  } | null;
-
-  billingAddress?: {
-    street: string;
-    city: string;
-    zip: string;
-    country: string;
-  } | null;
+  success: boolean; 
+  error: string | null ; 
+  orderItems: CartItem[];
+  itemCount: number;
  
 }
 
@@ -52,4 +37,11 @@ export interface updateItemCart {
   cartItemId: number , 
   quantity?: number , 
   selected?: number 
+}
+
+export interface sucessType{
+    message?: string,
+    success?: boolean,
+    data?: any
+    err?: any
 }

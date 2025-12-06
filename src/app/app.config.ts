@@ -17,6 +17,7 @@ import { AuthLoginEffect } from './store/auth/auth.login.effect';
 import { loginReducer, registerReducer } from './store/auth/auth.reducer';
 import { AuthRegisterEffect } from './store/auth/auth.register.effect';
 import { cartReducer } from './store/custumer/cart.reducers';
+import { BulkDelItemEffect, bulkUpdateItemEffect, cartAddItemsEffect, clearCartEffect, getItemsCartEffect, removeItemEffect, updateItemEffect } from './store/custumer/cus.cart.effect';
 import { getProductsEffect } from './store/custumer/cus.getProducts.effect';
 import { getProductReducer } from './store/custumer/cus.reducer';
 
@@ -38,7 +39,7 @@ export const appConfig: ApplicationConfig = {
       autoClose: true,
       position: 'bottom-center',
     }),
-    provideEffects(AuthRegisterEffect, AuthLoginEffect, getProductsEffect),
+    provideEffects(AuthRegisterEffect,BulkDelItemEffect,bulkUpdateItemEffect, updateItemEffect,AuthLoginEffect, getProductsEffect,clearCartEffect, cartAddItemsEffect, getItemsCartEffect, removeItemEffect),
     provideStore({
       RegisterReducer :registerReducer,
       LoginReducer :loginReducer,

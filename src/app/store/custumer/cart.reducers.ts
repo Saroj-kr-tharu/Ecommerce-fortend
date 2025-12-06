@@ -1,69 +1,117 @@
 import { createReducer, on } from '@ngrx/store';
 import { CartState } from '../../core/models/cart.model';
-import { cartsAction } from './cus.action';
+import { addItemcartsAction, bulkUpdateItemAction, clearCartAction, deleteBulkItemAction, getcartsAction, removeItemAction, updateItemAction } from './cus.action';
 
 // cart Reducer here
 const intalCartState: CartState = {
   itemCount: 0,
+  
   loading: false,
-  orderItems: [],
-  subtotal: 0,
-  total: 0,
-  userId: null,
-  billingAddress: null,
-  paymentMethod: null,
-  shippingAddress: null,
+  success: false,
+  error: null ,
+  orderItems: []
 };
 
-function calculateTotals(state: CartState): CartState {
-  const subtotal = state.orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  const itemCount = state.orderItems.reduce((sum, item) => sum + item.quantity, 0);
-
-  const total = Number(subtotal.toFixed(3));
-
-  localStorage.setItem('Cart', JSON.stringify({ ...state, subtotal, itemCount, total }));
-
-  return {
-    ...state,
-    subtotal,
-    itemCount,
-    total,
-  };
-}
 
 export const cartReducer = createReducer(
   intalCartState,
-  on(cartsAction.addItem, (state, { payload: item }) => {
-    const quantityToAdd =
-      item && typeof item.quantity === 'number' && item.quantity > 0 ? item.quantity : 1;
 
-    const existingItem = state.orderItems.find((it) => it.id === item.id);
+  
+on(addItemcartsAction.sucessAdded, (state, action) => {
+  const data = action?.payload?.data;
 
-    const updatedItems = existingItem
-      ? state.orderItems.map((it) =>
-          it.id === item.id ? { ...it, quantity: it.quantity + quantityToAdd } : it
-        )
-      : [...state.orderItems, { ...item, quantity: quantityToAdd }];
-
-    return calculateTotals({
-      ...state,
-      orderItems: updatedItems,
-    });
-  }),
-
-  on(cartsAction.updateQuantity, (state, action) => {
-    const data = {
-      ...state,
-      orderItems: action.payload,
-    };
-    localStorage.removeItem('Cart')
-    localStorage.setItem('Cart', JSON.stringify(data))
-    return data;
-  }),
-
-  on(cartsAction.setCart, (state, { payload: item }) => ({
+  return {
     ...state,
-    orderItems: item.orderItems,
-  }))
+    loading: false,
+    success: true, 
+    itemCount: state.itemCount + 1,
+    orderItems: [
+      ...(state.orderItems || []),
+      data
+    ]
+  };
+}),
+
+on(getcartsAction.sucessGetCart, (state, action) => {
+
+  const data = action?.payload?.data;
+  return {
+    ...state,
+    loading: false,
+    success: true, 
+    itemCount: data.items.length,
+    orderItems: data.items
+  };
+}),
+
+
+  on(clearCartAction.sucessClearCart, (state, action) => {
+ 
+  return {
+     error: null ,
+    loading: false,
+    success: true, 
+    itemCount: 0,
+    orderItems: []
+  };
+  }),
+
+
+
+
+  on(removeItemAction.sucessRemoveItem, (state, action) => {
+    
+  console.log('action => ', action.payload)
+  const data = action?.payload?.data?.dataValues; 
+  const Items = state.orderItems.filter(item => item.id !== data.id);
+  return {
+    ...state,
+    orderItems: Items
+  };
+  }),
+
+
+  on( updateItemAction.sucessUpdateItem, (state, action) => {
+    const data = action?.payload?.data; 
+    const Items = state.orderItems.map(item => 
+      item.id === data.id ? { ...item, ...data } : item
+    );
+
+    return {
+    ...state,
+    orderItems: Items
+  };
+  }),
+
+
+
+    on( deleteBulkItemAction.sucessBulkDelItem, (state, action) => {
+
+      console.log(action?.payload?.data)
+    const data = action?.payload?.data?.cartItemIds; 
+    const Items = state.orderItems.filter(item => !data.includes(item.id));
+
+    return {
+    ...state,
+    orderItems: Items
+  };
+  }),
+
+
+
+  on( bulkUpdateItemAction.bulkUpdateItem, (state, action) => {
+
+      
+
+    return {
+    ...state,
+    
+  };
+  }),
+
+
+
+
+
 );
