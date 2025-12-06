@@ -31,7 +31,7 @@ export class cartAddItemsEffect {
            }),
  
            map((res: any) =>{
-            this.router.navigate(['/cart'])
+            // this.router.navigate(['/cart'])
              return addItemcartsAction.sucessAdded({payload: res})
             }
            ),

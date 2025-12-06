@@ -47,13 +47,13 @@ export class Header implements OnInit {
           
           effect( ()=> {
             this.cartState = this.store.selectSignal(selectCart);
+             this.loginState = this.store.selectSignal(selectLogin);
           } );
 
     }
 
     ngOnInit(): void {
       const session = localStorage.getItem('marketManduAuth');
-        // console.log('session => ', session)
 
     if (session) {
         this.store.dispatch(restoreSessionAction.restoreSession({ payload:  JSON.parse(session)}));
@@ -69,11 +69,11 @@ getVisibleLinks() {
       {text: 'Admin Dashboard', to: '/admin/dashboard', },
       {text: 'Products', to: '/admin/products',  },
       {text: 'Orders', to: '/admin/orders',  },
-      {text: 'Logout', to: '/logout', } 
+      {text: 'Logout', to: '/', } 
     ];
   } else if (this.loginState().isLogin) {
     return [
-      {text: 'Logout', to: '/logout,'},  
+      {text: 'Logout', to: '/'},  
       {text: 'Cart', to: '/cart',} , 
       {text: 'Checkout', to: '/checkout'}  
     ];
@@ -91,12 +91,10 @@ toggleMobileMenu() {
 }
 
 logoutFn() {
+
+  // console.log('click btn ')
         this.store.dispatch(  logoutAction.logout() );
   
-          if(!this.loginState().isLogin ){
-            this.router.navigateByUrl('\login')
-            this.toast.success('logout Sucessfully')
-          }
 }
 
 }

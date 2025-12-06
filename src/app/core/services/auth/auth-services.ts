@@ -22,6 +22,10 @@ export class AuthServices {
     const url = `${this.BaseUrl}/login`
     return  this.httpClient.post(url, data) ; 
   }
+    logoutService() {
+      const url = `${this.BaseUrl}/logout`
+    return  this.httpClient.post(url, {}) ; 
+  }
 
   verifyService() {
     const url = `${this.BaseUrl}/veriyToken`

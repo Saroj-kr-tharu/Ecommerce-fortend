@@ -8,11 +8,7 @@ const registerIntialState: RegisterState = {
   error: null,
 };
 
-const logoutIntialState: RegisterState = {
-  loading: false,
-  success: false,
-  error: null,
-};
+
 
 const loginIntialState: LoginState = {
   loading: false,
@@ -89,7 +85,9 @@ export const loginReducer = createReducer(
     users: null,
   })),
 
-  on(logoutAction.logout, (state) => {
+  on(logoutAction.sucessfullyLogout, (state) => {
+    console.log('hhelo => ', )
+    localStorage.removeItem('marketManduAuth');
     const data = {
       loading: false,
       error: null,
@@ -98,7 +96,6 @@ export const loginReducer = createReducer(
       isLogin: false,
       users: null,
     };
-    localStorage.removeItem('marketManduAuth');
 
     return data;
   }),
@@ -118,4 +115,6 @@ export const loginReducer = createReducer(
 
     return data;
   })
+
+
 );
