@@ -2,6 +2,13 @@ export  interface ValidationConfig {
   [key: string]: string;
 }
 
+// export type ValidationConfig = {
+//   [key: string]: string | undefined;
+// };
+
+
+// export type ValidationConfig = Record<string, string | undefined>;
+
 
 export interface FormSignin {
       type: string;
@@ -9,7 +16,10 @@ export interface FormSignin {
   label: string;
   autocomplete: string;
   placeholder?: string;
+  disabled?:boolean;
+  options?:any;
   validation?: ValidationConfig;
+   transform?: (value: string) => any;
 }
 
 

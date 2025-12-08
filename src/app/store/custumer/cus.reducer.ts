@@ -28,12 +28,16 @@ export const getProductReducer = createReducer(
              data: []
     })),
 
+    on(getAllProductsAction.sucessLoading, (state, action) => {
 
+           
 
-        on(getAllProductsAction.sucessLoading, (state, action) => {
+          const DisplayData = action?.payload?.rows.filter((item) => item.isActive === true)
             
-            const cate = action?.payload?.rows.map( (item) =>  item.category   );
-            const brand = action?.payload?.rows.map( (item) =>  item.brand   );
+            const cate = DisplayData.map( (item) =>  item.category   );
+            const brand = DisplayData.map( (item) =>  item.brand   );
+
+            console.log('sucess loading => ', DisplayData)
             const data ={ 
             ...state,
             loading: false,
@@ -41,8 +45,8 @@ export const getProductReducer = createReducer(
             success: true,
             category: cate , 
             brand: brand,
-            totalRecords:action.payload?.count , 
-            data: action.payload?.rows
+            totalRecords:action?.payload?.count , 
+            data: DisplayData
             }
 
             if( localStorage.getItem('category') == null ){
@@ -55,6 +59,7 @@ export const getProductReducer = createReducer(
             }),
 
 
+   
      on(getAllProductsAction.failedLoading,  (state, action) => ({
             ...state,
             loading: false,

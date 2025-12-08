@@ -6,7 +6,7 @@ import { environment } from '../../../environments/environment.development';
   providedIn: 'root',
 })
 export class AdminService {
-    httpClient = inject(HttpClient)
+  httpClient = inject(HttpClient)
 
   BaseUrl = `${environment.apiURL}`;
 
@@ -15,6 +15,36 @@ export class AdminService {
     const url = `${this.BaseUrl}/products/delete?id=${id}`
     return  this.httpClient.delete(url) ; 
   }
+  
+  updateProductService(id:number, data: any ) {
+    console.log('id => ', id, ' data => ', data)
+    const url = `${this.BaseUrl}/products/update?id=${id}`
+    return  this.httpClient.patch(url, data) ; 
+  }
+  
+  addProductService( data: any ) {
+    const url = `${this.BaseUrl}/products/add`
+    return  this.httpClient.post(url, data) ; 
+  }
 
- 
+  bulkDeleteProductService( data: any ) {
+    console.log('data => ', data)
+    const url = `${this.BaseUrl}/products/bulkdelete`
+    return this.httpClient.delete(url,  {body: {'data': data}} );
+  }
+
+  getAllProductService(  ) {
+  
+    const url = `${this.BaseUrl}/products/getall`
+    return this.httpClient.get(url );
+  }
+
+
+  getAllOrdersService(  ) {
+  
+    const url = `${this.BaseUrl}/orders`
+    return this.httpClient.get(url );
+  }
+
+
 }

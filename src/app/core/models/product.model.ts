@@ -1,6 +1,12 @@
+
+export interface SelectOption {
+  label: string;
+  value: string;
+}
+
 export interface ProductType {
     count?:number,
-    id: number;
+    id: number ;
     name: string;
     description: string;
     category: string;
@@ -38,7 +44,7 @@ export interface loadProductInitalType {
 }
 
 export interface sucessProductLoadType {
-     count: number,
+    count: number,
     rows: ProductType[]
 }
 

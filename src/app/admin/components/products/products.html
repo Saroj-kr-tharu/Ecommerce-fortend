@@ -1,6 +1,6 @@
-<div class="w-full min-h-[80vh] justify-center flex mt-20 ">
-    <div class="w-full md:w-4/5">
-        <div class="w-full max-w-[95vw]">
+<div class="w-full min-h-[80vh] sm:justify-center items-center sm:flex flex-col mt-20 ">
+    <div class="w-full md:w-4/5 ">
+        <div class="w-full md:max-w-[95vw]">
 
             <!-- Header Section -->
             <div class="bg-slate-50/50  rounded-xl shadow-lg p-6 mb-4 border border-slate-200">
@@ -46,12 +46,13 @@
             <!-- Table Section -->
             <div class=" rounded-xl shadow-xl border border-slate-200 overflow-hidden">
 
-                <p-table class="modern-table" #dt [value]="mutableProducts" [rows]="10" [paginator]="true"
+                <p-table class="modern-table" #dt [value]="products()" [rows]="5" [paginator]="true"
                     [rowsPerPageOptions]="[5, 10, 20, 30]" [showCurrentPageReport]="true"
                     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
                     [(selection)]="selectedProducts" [rowHover]="true" dataKey="id"
                     [globalFilterFields]="['id', 'name', 'price', 'category', 'brand', 'ratings', 'stock' ]"
-                    styleClass="p-datatable-sm " [tableStyle]="{'min-width': '72rem'}" [scrollable]="true">
+                    styleClass="p-datatable-sm " [tableStyle]="{'min-width': '72rem'}" [scrollable]="true"
+                    lazyLoadOnInit="true">
 
 
                     <!-- Header -->
@@ -142,7 +143,7 @@
                     <!-- Empty Message -->
                     <ng-template pTemplate="emptymessage">
                         <tr>
-                            <td colspan="9" class="text-center! py-16! text-gray-400!">
+                            <td colspan="11" class="text-center! py-16! text-gray-400!">
                                 <div class="flex flex-col items-center justify-center">
                                     <i class="pi pi-inbox text-6xl mb-4 text-gray-300"></i>
                                     <p class="text-xl font-medium text-gray-500">No products found</p>
@@ -157,7 +158,56 @@
             </div>
         </div>
 
+
         <!-- Create/Edit Product Dialog -->
+        <p-dialog [(visible)]="productDialog" maskStyleClass="backdrop-blur-sm"
+            [header]="isEditOpen() ? 'Edit Product' : 'New Product'" [modal]="true"
+            [style]="{width: '550px', backgroundColor: 'white', color: 'black'}" [draggable]="false" [resizable]="false"
+            styleClass=" modern-dialog">
+
+            <ng-template pTemplate="content">
+
+                <div [formGroup]="productForm" (ngSubmit)="saveProduct()">
+
+
+                    @for (item of addProductFormConfig; track $index) {
+
+                    <div id="{{ item.label }}">
+                        <label for="{{ item.label }}" class="block capitalize text-sm font-medium text-gray-700 mb-1">
+                            {{ item.label }}
+                        </label>
+
+                        <input type="{{ item.type }}" id="{{ item.id }}" name="{{ item.id }}"
+                            formControlName="{{ item.id }}" autocomplete="{{ item.type }}"
+                            class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500
+                         text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="{{ item.placeholder }}" />
+
+                        @if(item.validation){ @if(productForm.controls[item.id].touched){ @for (validationKey of
+                        getValidationKeys(item.validation); track validationKey) {
+                        @if(productForm.controls[item.id].errors?.[validationKey]){
+                        <p class="mt-1 text-sm text-red-600">{{ item.validation[validationKey] }}</p>
+                        } } } }
+                    </div>
+
+                    }
+
+                </div>
+
+            </ng-template>
+
+            <ng-template pTemplate="footer">
+                <div class="flex gap-3 justify-end p-2">
+                    <button pButton type="button" label="Cancel" icon="pi pi-times"
+                        class="bg-white! text-gray-700! border-2! border-gray-200! hover:bg-gray-50! rounded-lg! px-6!"
+                        (click)="hideDialog()">
+                    </button>
+                    <button pButton type="button" label="Save" icon="pi pi-check" [disabled]="productForm.invalid "
+                        class="bg-linear-to-r! from-slate-800! to-slate-700! text-white! border-0! rounded-lg! px-6! shadow-lg! hover:shadow-xl!"
+                        (click)="saveProduct()">
+                    </button>
+                </div>
+            </ng-template>
+        </p-dialog>
 
         <!-- Confirmation Dialog -->
         <p-confirmDialog></p-confirmDialog>

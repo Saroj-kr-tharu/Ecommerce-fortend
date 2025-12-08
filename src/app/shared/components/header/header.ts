@@ -64,8 +64,9 @@ export class Header implements OnInit {
 getVisibleLinks() {
   if (this.loginState().isAdmin) {
     return [
-      {text: 'Admin Dashboard', to: '/admin/dashboard', },
+      {text: 'Dashboard', to: '/admin/dashboard', },
       {text: 'Products', to: '/admin/products',  },
+      {text: 'Users', to: '/admin/users',  },
       {text: 'Orders', to: '/admin/orders',  },
       {text: 'Logout', to: null, } 
     ];

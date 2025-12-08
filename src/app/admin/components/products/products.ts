@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, effect, inject, OnInit, Signal, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit, signal, Signal, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { HotToastService } from '@ngxpert/hot-toast';
@@ -17,27 +17,13 @@ import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
-import { loadProductInitalType, ProductType } from '../../../core/models/product.model';
+import { FormSignin, ValidationConfig } from '../../../core/models/auth.model';
+import { loadProductInitalType, ProductType, SelectOption } from '../../../core/models/product.model';
 import { AdminService } from '../../../core/services/admin/admin-service';
-import { getAllProductsAction } from '../../../store/custumer/cus.action';
 import { selectGetAllProduct } from '../../../store/custumer/cus.selectors';
 
-interface Product {
-  id?: string;
-  code?: string;
-  name?: string;
-  image?: string;
-  price?: number;
-  category?: string;
-  description?: string;
-  rating?: number;
-  status?: string;
-}
 
-interface SelectOption {
-  label: string;
-  value: string;
-}
+
 
 @Component({
   selector: 'app-products',
@@ -70,18 +56,23 @@ export class Products implements OnInit {
   adminService = inject(AdminService)
   toast = inject(HotToastService)
 
-  products : ProductType[] | undefined = []
+  //  products = computed(() => this.allState().data ??  []);
+  products = signal<ProductType[]>([]);
+
+  product! : ProductType;
+  originalValue ! : ProductType
+  
   allState !: Signal<loadProductInitalType> ;
   productDialog: boolean = false;
+  isEditOpen = signal(false)
+  isAddOpen = signal(false)
 
-  selectedProducts: Product[] = [];
+  selectedProducts: ProductType[] = [];
   submitted: boolean = false;
   globalFilterValue: string = '';
   
 
-   first: number = 0;
-    rows: number = 10;
-    totalRecords: number = 0;
+
 
 
     // table header 
@@ -95,6 +86,7 @@ export class Products implements OnInit {
 { title: "brand", width: "8rem", icon: null, }, 
 { title: "rating", width: "8rem", icon: "sortIcon", }, 
 { title: "stock", width: "8rem", icon: "sortIcon", }, 
+{ title: "isActive", width: "5rem", icon: "sortIcon", }, 
 { title: "Actions", width: "10rem", icon: null, }, 
 ]
 
@@ -109,17 +101,11 @@ export class Products implements OnInit {
     { element: 'span', class: 'text-sm text-gray-600', field: 'brand' },
     { element: 'p-rating', class: 'text-yellow-500', field: 'ratings', readonly: true },
     { element: 'span', class: 'text-sm text-gray-600', field: 'stock' },
+    { element: 'span', class: 'text-sm text-gray-600', field: 'isActive' },
   ];
-
-
 
   // Category options
-  categories: SelectOption[] = [
-    { label: 'Accessories', value: 'Accessories' },
-    { label: 'Fitness', value: 'Fitness' },
-    { label: 'Clothing', value: 'Clothing' },
-    { label: 'Electronics', value: 'Electronics' }
-  ];
+  categories: SelectOption[] = [];
 
   // For autocomplete filtering
   filteredCategories: SelectOption[] = [];
@@ -130,35 +116,27 @@ export class Products implements OnInit {
     private cd: ChangeDetectorRef,
     private store: Store<{GetAllProductsReducer : loadProductInitalType }>
   ) {
-
       this.allState = this.store.selectSignal(selectGetAllProduct)
-
-             effect(() => {
-               
-                this.products = this.allState().data
-
-                console.log(this.products)
-                
-                
-            });
-
   }
 
+  get mutableProducts() {
+  return [...this.products()];   
+}
 
   ngOnInit(): void {
     this.loadInitialData();
   }
 
   loadInitialData() {
-   
-    
 
-     const  data = {
-              page: 1, 
-              limit: 100000, 
-            }
 
-    this.store.dispatch(getAllProductsAction.load({payload: data }))
+    this.adminService.getAllProductService().subscribe({
+      next: (res:any) => {
+            this.products.set(res.data)
+      },
+      complete: ()=> {this.toast.success('Sucessfully Loading Data') },
+      error: () => {this.toast.error('Fail To Load All Data')}
+    })
 
     this.cd.markForCheck();
   }
@@ -166,24 +144,26 @@ export class Products implements OnInit {
   
 
       
-  productForm = new FormGroup({
+  productForm : FormGroup = new FormGroup({
         name: new FormControl('', [Validators.required, Validators.minLength(3)]),
         description: new FormControl('', [Validators.required, Validators.minLength(5)]), 
         category: new FormControl('', [Validators.required]),
-        price: new FormControl('', [Validators.required,]),
+        price: new FormControl('', [Validators.required,  Validators.min(0)],),
         brand: new FormControl('', [Validators.required,]),
-        stock: new FormControl('', [Validators.required,]),
-        ratings: new FormControl('', [Validators.required,]),
-        totalRatings: new FormControl('', [Validators.required,]),
+        stock: new FormControl('', [Validators.required, Validators.min(0)]),
+        ratings: new FormControl('', [Validators.required,  Validators.min(0), Validators.max(5)],),
+        totalRatings: new FormControl('', [Validators.required,Validators.min(0)], ),
+        images: new FormControl('', [Validators.required], ),
       });
 
         
- addProductFormConfig = [
-  {
+ addProductFormConfig:FormSignin[] = [
+   {
     type: 'text',
     id: 'name',
     label: 'Product Name',
     placeholder: 'Enter product name...',
+    autocomplete: '',
     validation: {
       required: 'Product name is required',
       minlength: 'Product name must be at least 3 characters'
@@ -194,25 +174,19 @@ export class Products implements OnInit {
     id: 'description',
     label: 'Description',
     placeholder: 'Enter product description...',
-    rows: 4,
+    autocomplete: '',
     validation: {
       required: 'Description is required',
       minlength: 'Description is required'
     },
   },
   {
-    type: 'select',
+    type: 'text',
     id: 'category',
     label: 'Category',
-    placeholder: 'Select category...',
-    options: [
-      { value: '', label: 'Select category...' },
-      { value: 'Computer Accessories', label: 'Computer Accessories' },
-      { value: 'Electronics', label: 'Electronics' },
-      { value: 'Office Supplies', label: 'Office Supplies' },
-      { value: 'Audio', label: 'Audio' },
-      { value: 'Gaming', label: 'Gaming' }
-    ],
+    placeholder: 'Select or enter category...',
+    autocomplete: '',
+
     validation: {
       required: 'Category is required'
     },
@@ -222,10 +196,10 @@ export class Products implements OnInit {
     id: 'price',
     label: 'Price (npr)',
     placeholder: '0.00',
-    step: 0.01,
-    min: 0,
+    autocomplete: '',
     validation: {
-      required: 'Price is required'
+      required: 'Price is required',
+       min: 'min value is 0'
     },
   },
   {
@@ -233,8 +207,10 @@ export class Products implements OnInit {
     id: 'brand',
     label: 'Brand',
     placeholder: 'Enter brand name...',
+    autocomplete: '',
     validation: {
-      required: 'Brand is required'
+      required: 'Brand is required',
+       min: 'min value is 0'
     },
   },
   {
@@ -242,39 +218,50 @@ export class Products implements OnInit {
     id: 'stock',
     label: 'Stock Quantity',
     placeholder: '0',
-    min: 0,
+    autocomplete: '',
     validation: {
-      required: 'Stock quantity is required'
+      required: 'Stock quantity is required',
+       min: 'min value is 0'
     },
   },
   {
     type: 'number',
     id: 'ratings',
-    label: 'Initial Rating',
+    label: 'Rating',
     placeholder: '0.0',
-    step: 0.1,
-    min: 0,
-    max: 5,
+    autocomplete: '',
     validation: {
-      required: 'Rating is required'
+      required: 'Rating is required',
+       min: 'min value is 0'
     },
   },
   {
     type: 'number',
     id: 'totalRatings',
-    label: 'Total Ratings Count',
+    label: 'Total Count',
     placeholder: '0',
-    min: 0,
+    autocomplete: '',
     validation: {
-      required: 'Total ratings is required'
+      required: 'Total ratings is required',
+       min: 'min value is 0'
     },
-  }
+  },
+
+  {
+  type: 'text',
+  id: 'images',
+  label: 'Images',
+  placeholder: "Enter image URLs separated by commas...",
+  autocomplete: '',
+  validation: {
+    required: 'At least one image URL is required'
+  },
+  transform: (value: string) => value.split(',').map(url => url.trim()).filter(url => url)
+},
 ];
 
 
-  get mutableProducts() {
-  return this.products ? [...this.products] : [];
-}
+
 
 
   // Autocomplete filter for Category
@@ -299,40 +286,120 @@ export class Products implements OnInit {
 
   // Open dialog to create new product
   openNew() {
+         this.isAddOpen.set(true)
+        this.submitted = false;
+        this.productDialog = true;
 
-    // this.product
-    // this.product = {
-    //   status: 'INSTOCK',
-    //   rating: 0,
-    //   price: 0
-    // };
-    this.submitted = false;
-    this.productDialog = true;
+        this.productForm.reset()
   }
 
   // Hide the product dialog
   hideDialog() {
     this.productDialog = false;
     this.submitted = false;
-    // this.product = {};
+    this.isEditOpen.set(false)
+    this.isAddOpen.set(false)
   }
 
-  // Save product (create or update)
-  saveProduct() {
-    this.submitted = true;
 
-    
-  }
+  areProductFieldsEqual(a: any, b: any): boolean {
+  return (
+    a.name === b.name &&
+    a.description === b.description &&
+    a.category === b.category &&
+    a.price === b.price &&
+    a.brand === b.brand &&
+    a.stock === b.stock &&
+    a.ratings === b.ratings &&
+    (a.totalRatings ?? 0) === (b.totalRatings ?? 0) &&
+    JSON.stringify(a.images) === JSON.stringify(b.images)
+  );
+}
 
   // Edit an existing product
-  editProduct(product: Product) {
-    console.log('edit click ', product)
+  editProduct(product: ProductType) {
+        this.isEditOpen.set(true)
+        this.originalValue = product;
+
+    console.log('edit click ', this.originalValue)
+      this.product = {
+        isActive: product.isActive, 
+        brand: product.brand,
+        category: product?.category, 
+        description: product.description, 
+        id: product.id , 
+        images: product.images, 
+        name: product.name, 
+        price: product.price, 
+        stock: product.stock, 
+        ratings: product.ratings,
+      }
+
+        this.productForm.setValue({
+          name: product.name,
+          description: product.description,
+          category: product.category,
+          price: product.price,
+          brand: product.brand,
+          stock: product.stock,
+          ratings: product.ratings,
+          totalRatings: product.totalRatings ?? 0 ,
+          images: product.images
+        });
+
+      // this.product = {...product, id: product.id};
+      
     this.submitted = false;
     this.productDialog = true;
   }
 
+
+    // Save product (create or update)
+  saveProduct() {
+     const formValue = this.productForm.value ; 
+      const { id, images, ...payload } = formValue;
+
+
+    if(this.isAddOpen()){
+      // console.log('product add btn is click')
+      
+      this.adminService.addProductService({...payload, images: [images]}).subscribe({
+      next: (res)=>  {this.toast.success('Adding Product'); 
+        // console.log('res => ', res)
+      }, 
+      complete: () => {this.toast.success('Sucessfully Added product')},
+      error: () => {this.toast.error('Faile to Add Product')}
+    });
+    }
+
+    if(this.isEditOpen()){
+     
+    const isUpdated = !this.areProductFieldsEqual(this.originalValue, formValue);
+    
+    // console.log('Is value updated?', isUpdated);
+
+    if(!isUpdated) return ;
+
+    this.adminService.updateProductService(this.originalValue.id , {...formValue, images: [images]}).subscribe({
+      next: (res)=>  {this.toast.success('Editting'); 
+        console.log('res => ', res)
+      }, 
+      complete: () => {this.toast.success('Sucessfully edited product')},
+      error: () => {this.toast.error('Faile to Edit Product')}
+    });
+ 
+    }
+
+
+    this.submitted = true;
+    console.log(this.productForm.value)
+    this.hideDialog();
+
+    
+  }
+
   // Delete a single product
-  deleteProduct(product: Product) {
+  deleteProduct(product: ProductType) {
     this.confirmationService.confirm({
       message: `Are you sure you want to delete "${product.name}"?`,
       header: 'Delete Confirmation',
@@ -344,7 +411,7 @@ export class Products implements OnInit {
 
         if (product.id !== undefined) {
           this.adminService.deleteProductService(
-            parseInt(product.id)
+            product.id
           ).subscribe({
             next: (res:any) => { console.log(res.data) },
             complete: ()=> { this.toast.success(`Sucessfully Delete Product id : ${product.id}`) },
@@ -363,6 +430,11 @@ export class Products implements OnInit {
       }
     });
   }
+
+
+   getValidationKeys(validation: ValidationConfig): string[] {
+      return Object.keys(validation);
+    }
 
   // Delete multiple selected products
   deleteSelectedProducts() {
@@ -383,13 +455,24 @@ export class Products implements OnInit {
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
         // this.products = this.products.filter(p => !this.selectedProducts.includes(p));
+        
+        // console.log('selected products => ', this.selectedProducts)
+        let data = [];
+        data = this.selectedProducts.map( (item) =>  item.id )
+        // console.log('data => ',data)
+        this.adminService.bulkDeleteProductService(data).subscribe({
+          next: (res) => {
+            console.log('res => ', res)
+            this.toast.success('Bulk deleteing')
+          },
+          complete: () => {
+            this.toast.success('Sucessfull Bulk Delete ')
+          },
+          error: () => { this.toast.error('Failed To Bulk Delete') }
+        })
         this.selectedProducts = [];
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Products Deleted Successfully',
-          life: 3000
-        });
+
+        
       }
     });
   }
@@ -405,6 +488,15 @@ export class Products implements OnInit {
   }
 
 
+
+loadProducts(event: any) {
+  const page = event.first / event.rows + 1;
+  const limit = event.rows;
+
+  console.log('Lazy load triggered: ', event);
+  console.log('Page: ', page);
+  console.log('Limit: ', limit);
+}
 
 
 

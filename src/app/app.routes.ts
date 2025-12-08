@@ -89,6 +89,12 @@ export const routes: Routes = [
                     m.Orders  )
                 }
             },
+            {path: 'users', 
+                loadComponent: () => {
+                    return import('./admin/components/users/users').then( (m) => 
+                    m.Users  )
+                }
+            },
 
         ]
     },
