@@ -1,140 +1,165 @@
-<!-- PrimeNG Table-based admin products page (in-memory)
-     Replaced PrimeNG p-dropdown with native <select> using FormsModule/ngModel -->
+<div class="w-full min-h-[80vh] justify-center flex mt-20 ">
+    <div class="w-full md:w-4/5">
+        <div class="w-full max-w-[95vw]">
 
-<div class="card mt-40">
-    <p-toolbar styleClass="mb-4">
-        <div class="p-toolbar-group-left">
-            <button pButton type="button" label="New" icon="pi pi-plus" class="p-button-success p-mr-2"
-                (click)="openNew()"></button>
-            <button pButton type="button" label="Delete" icon="pi pi-trash" class="p-button-danger"
-                (click)="deleteSelectedProducts()" [disabled]="!selectedProducts || !selectedProducts.length"></button>
-        </div>
-        <div class="p-toolbar-group-right">
-            <button pButton type="button" icon="pi pi-file" label="Export" class="p-button-outlined"
-                (click)="exportCSV()"></button>
-        </div>
-    </p-toolbar>
+            <!-- Header Section -->
+            <div class="bg-slate-50/50  rounded-xl shadow-lg p-6 mb-4 border border-slate-200">
 
-    <p-table #dt [value]="products" selectionMode="multiple" [(selection)]="selectedProducts" dataKey="id"
-        [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5,10,20]" [responsiveLayout]="'scroll'">
-        <ng-template pTemplate="header">
-            <tr>
-                <th style="width: 3rem">
-                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-                </th>
-                <th *ngFor="let col of cols" [pSortableColumn]="col.field">
-                    {{ col.header }}
-                    <p-sortIcon [field]="col.field"></p-sortIcon>
-                </th>
-                <th>Status</th>
-                <th style="width: 12rem">Actions</th>
-            </tr>
-            <tr>
-                <th></th>
-                <th *ngFor="let col of cols">
-                    <input pInputText type="text" (input)="dt.filter($event.target.value, col.field, 'contains')"
-                        placeholder="Search {{col.header}}" style="width:100%" />
-                </th>
-                <th>
-                    <!-- Native select used for filtering status -->
-                    <select class="p-inputtext" (change)="dt.filter($event.target, 'status', 'equals')">
-                        <option value="">All</option>
-                        <option *ngFor="let s of statuses" [value]="s.value">{{ s.label }}</option>
-                    </select>
-                </th>
-                <th></th>
-            </tr>
-        </ng-template>
+                <!-- Action Buttons Row -->
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
 
-        <ng-template pTemplate="body" let-rowData>
-            <tr>
-                <td>
-                    <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
-                </td>
-
-                <td>{{ rowData.code }}</td>
-                <td>
-                    <div class="product-name">
-                        <img *ngIf="rowData.image" [src]="rowData.image" alt="thumb" class="thumb" />
-                        <div class="p-ml-2">{{ rowData.name }}</div>
+                    <div>
+                        <h2 class="text-2xl font-bold  text-gray-800  bg-clip-text ">
+                            Manage Products
+                        </h2>
+                        <p class="text-sm text-gray-500 mt-1 capitalize">Organize and track your inventory</p>
                     </div>
-                </td>
-                <td>{{ rowData.category }}</td>
-                <td>Rs. {{ rowData.price | number:'1.0-0' }}</td>
 
-                <td>
-                    <p-tag [value]="rowData.status" [severity]="getSeverity(rowData.status)"></p-tag>
-                </td>
+                    <!-- // search -->
+                    <div class="relative  w-full lg:w-2/5">
+                        <i class="pi pi-search absolute right-4 top-1/2 -translate-y-1/2 text-gray"></i>
 
-                <td>
-                    <button pButton type="button" icon="pi pi-pencil" class="p-button-rounded p-button-text p-mr-2"
-                        (click)="editProduct(rowData)"></button>
-                    <button pButton type="button" icon="pi pi-trash"
-                        class="p-button-rounded p-button-text p-button-danger"
-                        (click)="deleteProduct(rowData)"></button>
-                </td>
-            </tr>
-        </ng-template>
+                        <input type="text" [(ngModel)]="globalFilterValue" (input)="onGlobalFilter($event)"
+                            placeholder="Search products, categories, status..." class="w-full h-11  bg-[#14B8A6]  rounded-sm pl-4 pr-12 
+                              transition-all" />
+                    </div>
 
-        <ng-template pTemplate="emptymessage">
-            <tr>
-                <td colspan="100%">No products found.</td>
-            </tr>
-        </ng-template>
-    </p-table>
-</div>
+                    <!-- // btn -->
+                    <div class="flex gap-3 w-full lg:w-auto">
+                        <button pButton type="button" label="New Product" icon="pi pi-plus"
+                            class="p-button-sm flex-1 lg:flex-none 
+                            bg-[#14B8A6]! text-white! 
+                             border-0! rounded-lg! px-6! py-2.5! font-medium! shadow-lg! hover:shadow-xl! transition-all!" (click)="openNew()">
+                        </button>
+                        <button pButton type="button" label="Delete" icon="pi pi-trash"
+                            class="p-button-sm flex-1 lg:flex-none bg-white! text-red-600! border-2! border-red-200! hover:bg-red-50! hover:border-red-300! rounded-lg! px-6! py-2.5! font-medium! transition-all!"
+                            [disabled]="!selectedProducts || selectedProducts.length === 0"
+                            (click)="deleteSelectedProducts()">
+                        </button>
+                    </div>
 
-<!-- Dialog for create/edit -->
-<p-dialog header="{{ product?.id ? 'Edit Product' : 'New Product' }}" [(visible)]="productDialog" [modal]="true"
-    [style]="{ width: '520px' }" [closable]="false">
-    <div class="p-fluid">
-        <div class="p-field">
-            <label for="name">Name</label>
-            <input id="name" type="text" pInputText [(ngModel)]="product.name" />
-        </div>
 
-        <div class="p-field p-grid">
-            <div class="p-col-6">
-                <label for="code">Code</label>
-                <input id="code" type="text" pInputText [(ngModel)]="product.code" />
+                </div>
+
             </div>
-            <div class="p-col-6">
-                <label for="price">Price</label>
-                <p-inputNumber [(ngModel)]="product.price" [mode]="'decimal'" [min]="0"></p-inputNumber>
+
+            <!-- Table Section -->
+            <div class=" rounded-xl shadow-xl border border-slate-200 overflow-hidden">
+
+                <p-table class="modern-table" #dt [value]="mutableProducts" [rows]="10" [paginator]="true"
+                    [rowsPerPageOptions]="[5, 10, 20, 30]" [showCurrentPageReport]="true"
+                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                    [(selection)]="selectedProducts" [rowHover]="true" dataKey="id"
+                    [globalFilterFields]="['id', 'name', 'price', 'category', 'brand', 'ratings', 'stock' ]"
+                    styleClass="p-datatable-sm " [tableStyle]="{'min-width': '72rem'}" [scrollable]="true">
+
+
+                    <!-- Header -->
+                    <ng-template pTemplate="header">
+                        <tr class="bg-slate-50/50 ">
+                            <th class="py-4! px-4! text-base" style="width: 3rem">
+                                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                            </th>
+
+                            @for (item of tableHeaders; track $index) {
+                            @if (item.icon == null) {
+                            <th [style]="item.width"
+                                class="py-4! px-4! font-semibold! text-xs! text-gray-700! tracking-wide!">
+                                {{item.title | uppercase}}
+                            </th>
+                            }
+                            @else {
+                            <th [pSortableColumn]="item.title" [style]="item.width"
+                                class="py-4!  px-4! font-semibold! text-xs! text-gray-700! tracking-wide!">
+                                {{item.title | uppercase}}
+                                <p-sortIcon field="item.title"></p-sortIcon>
+                            </th>
+                            }
+                            }
+                        </tr>
+                    </ng-template>
+
+                    <!-- Body -->
+                    <ng-template pTemplate="body" let-product let-rowIndex="rowIndex">
+                        <tr
+                            class="border-b border-slate-100 hover:cursor-pointer   transition-all duration-200 hover:shadow-sm">
+
+
+                            @for (col of tableSchema; track $index) {
+                            <td class=" hover:cursor-pointer">
+
+                                @switch (col.element) {
+
+                                @case('p-tableCheckbox') {
+                                <p-tableCheckbox [value]="product"></p-tableCheckbox>
+                                }
+
+                                @case('span') {
+                                <span [class]="col.class + ' text-sm md:text-base text-gray-700'">
+                                    @if (col.pipe) {
+                                    {{ product[col.field] | number:'1.2-2' }}
+                                    } @else if (col.field) {
+                                    {{ product[col.field] }}
+                                    }
+                                </span>
+                                }
+
+                                @case('img') {
+                                <img [src]="col.field ? product[col.field] : ''"
+                                    [alt]="col.altField ? product[col.altField] : ''"
+                                    [class]="col.class + ' rounded-lg shadow-sm hover:shadow-md  transition-shadow'" />
+                                }
+
+                                @case('p-rating') {
+                                <p-rating [ngModel]="col.field ? product[col.field] : null" [readonly]="col.readonly"
+                                    [ngClass]="col.class">
+                                </p-rating>
+                                }
+
+
+
+                                }
+                            </td>
+                            }
+
+                            <td class="!py-1">
+                                <div class="flex gap-2 justify-end">
+                                    <button pButton pRipple type="button" icon="pi pi-pencil" class="w-9! h-9! rounded-lg! bg-slate-100! hover:bg-slate-200! 
+                                        text-slate-700! border-0! shadow-sm! hover:shadow-md! transition-all"
+                                        (click)="editProduct(product)" pTooltip="Edit" tooltipPosition="top">
+                                    </button>
+
+                                    <button pButton pRipple type="button" icon="pi pi-trash"
+                                        class="w-9! h-9! rounded-lg! bg-red-50! hover:bg-red-100! text-red-600! border-0! shadow-sm! hover:shadow-md! transition-all"
+                                        (click)="deleteProduct(product)" pTooltip="Delete" tooltipPosition="top">
+                                    </button>
+                                </div>
+                            </td>
+
+                        </tr>
+                    </ng-template>
+
+                    <!-- Empty Message -->
+                    <ng-template pTemplate="emptymessage">
+                        <tr>
+                            <td colspan="9" class="text-center! py-16! text-gray-400!">
+                                <div class="flex flex-col items-center justify-center">
+                                    <i class="pi pi-inbox text-6xl mb-4 text-gray-300"></i>
+                                    <p class="text-xl font-medium text-gray-500">No products found</p>
+                                    <p class="text-sm text-gray-400 mt-2">Try adjusting your search or add a new product
+                                    </p>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+
             </div>
         </div>
 
-        <div class="p-field p-grid">
-            <div class="p-col-6">
-                <label for="category">Category</label>
-                <input id="category" type="text" pInputText [(ngModel)]="product.category" />
-            </div>
-            <div class="p-col-6">
-                <label for="status">Status</label>
-                <!-- Native select bound with ngModel (FormsModule) -->
-                <select id="status" class="p-inputtext" [(ngModel)]="product.status" name="status">
-                    <option *ngFor="let s of statuses" [value]="s.value">{{ s.label }}</option>
-                </select>
-            </div>
-        </div>
+        <!-- Create/Edit Product Dialog -->
 
-        <div class="p-field">
-            <label for="stock">Stock</label>
-            <p-inputNumber [(ngModel)]="product.stock" [min]="0"></p-inputNumber>
-        </div>
-
-        <div class="p-field">
-            <label for="description">Description</label>
-            <textarea id="description" rows="3" pInputTextarea [(ngModel)]="product.description"></textarea>
-        </div>
+        <!-- Confirmation Dialog -->
+        <p-confirmDialog></p-confirmDialog>
     </div>
-
-    <p-footer>
-        <button pButton type="button" label="Cancel" icon="pi pi-times" class="p-button-text"
-            (click)="productDialog=false"></button>
-        <button pButton type="button" label="Save" icon="pi pi-check" (click)="saveProduct()"></button>
-    </p-footer>
-</p-dialog>
-
-<p-toast></p-toast>
-<p-confirmDialog></p-confirmDialog>
+</div>

@@ -39,7 +39,7 @@ export class Header implements OnInit {
 
    constructor(
     private store: Store<{LoginReducer : LoginState }>, 
-    private cartstore: Store<{CartReducer : CartState }>, 
+
   
   ) {
           this.loginState = this.store.selectSignal(selectLogin);
@@ -53,14 +53,12 @@ export class Header implements OnInit {
     }
 
     ngOnInit(): void {
-      const session = localStorage.getItem('marketManduAuth');
+          const session = localStorage.getItem('marketManduAuth');
 
-    if (session) {
-        this.store.dispatch(restoreSessionAction.restoreSession({ payload:  JSON.parse(session)}));
-        
-     }
-
-      
+        if (session) {
+            this.store.dispatch(restoreSessionAction.restoreSession({ payload:  JSON.parse(session)}));
+            
+        }
     }
    
 getVisibleLinks() {
@@ -69,13 +67,13 @@ getVisibleLinks() {
       {text: 'Admin Dashboard', to: '/admin/dashboard', },
       {text: 'Products', to: '/admin/products',  },
       {text: 'Orders', to: '/admin/orders',  },
-      {text: 'Logout', to: '/', } 
+      {text: 'Logout', to: null, } 
     ];
   } else if (this.loginState().isLogin) {
     return [
-      {text: 'Logout', to: '/'},  
       {text: 'Cart', to: '/cart',} , 
-      {text: 'Checkout', to: '/checkout'}  
+      {text: 'Checkout', to: '/checkout'},  
+      {text: 'Logout', to: null},  
     ];
   } else {
     return [

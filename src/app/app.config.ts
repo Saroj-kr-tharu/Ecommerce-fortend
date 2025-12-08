@@ -14,8 +14,9 @@ import { provideStore } from '@ngrx/store';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { authInterceptor } from './core/interceptors/auth-interceptor';
 import { AuthLoginEffect } from './store/auth/auth.login.effect';
+import { LogoutEffect } from './store/auth/auth.logout.effect';
 import { loginReducer, registerReducer } from './store/auth/auth.reducer';
-import { AuthRegisterEffect, LogoutEffect } from './store/auth/auth.register.effect';
+import { AuthRegisterEffect } from './store/auth/auth.register.effect';
 import { cartReducer } from './store/custumer/cart.reducers';
 import { BulkDelItemEffect, bulkUpdateItemEffect, cartAddItemsEffect, clearCartEffect, getItemsCartEffect, removeItemEffect, updateItemEffect } from './store/custumer/cus.cart.effect';
 import { getProductsEffect } from './store/custumer/cus.getProducts.effect';
@@ -39,10 +40,14 @@ export const appConfig: ApplicationConfig = {
       autoClose: true,
       position: 'bottom-center',
     }),
-    provideEffects(AuthRegisterEffect,BulkDelItemEffect,bulkUpdateItemEffect, LogoutEffect, updateItemEffect,AuthLoginEffect, getProductsEffect,clearCartEffect, cartAddItemsEffect, getItemsCartEffect, removeItemEffect),
+    provideEffects(
+      AuthRegisterEffect,BulkDelItemEffect,bulkUpdateItemEffect,
+      LogoutEffect, updateItemEffect,AuthLoginEffect,
+       getProductsEffect,clearCartEffect,
+        cartAddItemsEffect, getItemsCartEffect, removeItemEffect),
     provideStore({
       RegisterReducer :registerReducer,
-      LoginReducer :loginReducer,
+      LoginReducer :loginReducer, 
       GetAllProductsReducer :getProductReducer,
       CartReducer :cartReducer,
     }),

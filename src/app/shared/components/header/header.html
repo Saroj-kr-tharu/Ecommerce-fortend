@@ -36,12 +36,14 @@
 
 
                 @for (link of getVisibleLinks(); track $index) {
+
                 @if(link.text === 'Logout'){
-                <a (click)="logoutFn()" routerLink={{link.to}} routerLinkActive="text-white bg-[#481B74]"
-                    class="text-gray-700 hover:text-white hover:bg-[#481B74] px-3 lg:px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap">
+                <a (click)="logoutFn()"
+                    class="text-gray-700 hover:text-white hover:cursor-pointer hover:bg-[#481B74] px-3 lg:px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap">
                     {{link.text}}
                 </a>
                 }
+
                 @else {
                 @if(link.text !='Cart'){
 
@@ -78,8 +80,7 @@
 
                 @for (link of getVisibleLinks(); track $index) {
                 @if(link.text === 'Logout'){
-                <a (click)="toggleMobileMenu(); logoutFn()" routerLink={{link.to}}
-                    routerLinkActive="text-white bg-[#481B74]"
+                <a (click)="toggleMobileMenu(); logoutFn()"
                     class="text-gray-700 hover:text-white hover:bg-[#481B74] block px-3 py-2 rounded-md text-base font-medium">
                     {{link.text}}
                 </a>

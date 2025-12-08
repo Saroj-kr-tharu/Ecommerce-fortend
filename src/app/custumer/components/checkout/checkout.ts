@@ -12,6 +12,7 @@ import { StepperModule } from 'primeng/stepper';
 import { FormSignin, ValidationConfig } from '../../../core/models/auth.model';
 import { orderSummary } from '../../../core/models/order.model';
 import { CusServices } from '../../../core/services/custumer/cus.services';
+import { Navigation } from '../../../core/services/custumer/navigation';
 
 @Component({
   selector: 'app-checkout',
@@ -40,6 +41,7 @@ export class Checkout implements OnInit {
   router = inject(Router);
   cusService = inject(CusServices);
   toast = inject(HotToastService);
+  navigation = inject(Navigation)
 
   
 
@@ -159,42 +161,13 @@ export class Checkout implements OnInit {
 
     constructor(){
       this.orderSummary.set(this.cusService.getOrderSummary() ) ;
-      console.log(this.orderSummary())
+      // console.log(this.orderSummary())
+      console.log('previous  => ', this.navigation.getPreviousUrl())
     }
 
     ngOnInit(): void {
-
       this.orderSummary.set(this.cusService.getOrderSummary() ) ;
-
-      console.log(this.orderSummary())
-
-      // let localStr = localStorage.getItem('marketManduAuth');
-      // let local = localStr ? JSON.parse(localStr) : null;
-      
-      // if (local && local.id) {
-      //    this.cusService.CheckoutCart(local.id).subscribe({
-      //     next: (res:any) => {
-      //       this.toast.success('Geting Cart Data')
-      //       console.log(res?.data)
-
-      //     this.orderSummary.set({
-      //     seletectItem: res?.data?.items,
-      //     subtotal: res?.data?.totalPrice,
-      //     itemCount: res?.data?.items.length,
-      //     shippingFee: res?.data?.shippingFee,
-      //     total: res?.data?.grandTotal
-      //   });
-
-
-      //     },
-      //     error: (err) => {
-      //       this.toast.error('Unable to Get Data ')
-      //     },
-      //   })
-      // }
-   
-    //  console.log('data ', this.orderSummary)
-     
+      console.log(this.orderSummary());
     }
 
 
@@ -206,8 +179,7 @@ export class Checkout implements OnInit {
 
 
 
-     
-
+    
 
   onSameAsBillingChange(): void {
     if (this.sameAsBilling) {
@@ -293,12 +265,26 @@ export class Checkout implements OnInit {
       }
 
     let orderItems: { productId: number; quantity: number }[] = [];
-    this.orderSummary().seletectItem.map((item: any) => {
-      orderItems.push({
-        productId: item.id,
-        quantity: item.quantity
-      });
-    });
+
+    console.log('previous  => ', this.navigation.getPreviousUrl())
+
+    if(this.navigation.getPreviousUrl() === '/checkout'){
+          console.log('order chckout => ', this.OrderSummaryData())
+    }
+
+    else{ 
+      this.orderSummary().seletectItem.map((item: any) => {
+          
+          console.log('item => ', item)
+          orderItems.push({
+            productId: item.id,
+            quantity: item.quantity
+          });
+
+        });
+    }
+
+    
 
       let data = {
         userId: localDa.id, 
@@ -318,12 +304,11 @@ export class Checkout implements OnInit {
         orderItems: orderItems
       };
 
-      console.log('data => ', data )
-
+     
       this.cusService.placeOrder(data).subscribe({
         next: (res:any) => {
           console.log('response => ', res)
-          this.toast.loading(' Placcing Order ..  ')
+          // this.toast.loading(' Placcing Order ..  ')
 
           this.router.navigate(['/ordersuccess'], {
               queryParams: {
@@ -334,7 +319,7 @@ export class Checkout implements OnInit {
           
         },
         complete: () => {
-          this.toast.success('Sucess fully Place order ')
+          this.toast.success('Sucessfully Place order ')
         },
         error: (err) => {
           console.log('err => ', err)

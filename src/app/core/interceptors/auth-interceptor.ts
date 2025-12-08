@@ -16,7 +16,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const toast = inject(HotToastService)
   const router = inject(Router)
 
-  // 1️⃣ GET ACCESS TOKEN
+  // 1️ GET ACCESS TOKEN
   let token: string | null = store.selectSignal(selectLogin)()?.users?.jwt || null;
   if (!token) {
     const stored = localStorage.getItem('marketManduAuth');
@@ -25,12 +25,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     }
   }
 
-  // 2️⃣ Clone request with credentials for ALL requests
+  // 2️ Clone request with credentials for ALL requests
   let authReq = req.clone({
-    withCredentials: true  // ✅ Always include credentials (cookies)
+    withCredentials: true  //  Always include credentials (cookies)
   });
 
-  // 3️⃣ Add access token header EXCEPT for refresh endpoint
+  // 3️ Add access token header EXCEPT for refresh endpoint
   const isRefreshEndpoint = req.url.includes('/auth/refresh-token');
   
   if (token && !isRefreshEndpoint) {
@@ -41,7 +41,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     });
   }
 
-  // 4️⃣ Handle the request + catch errors
+  // 4️ Handle the request + catch errors
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
       if (error.status === 401 && !isRefreshEndpoint) {
@@ -50,7 +50,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           isRefreshing = true;
           refreshTokenSubject.next(null);
 
-          // ✅ Call refresh - withCredentials already set by interceptor
+          //  Call refresh - withCredentials already set by interceptor
           return http.post<any>(`${environment.apiURL}/auth/refresh-token`, {}).pipe(
             switchMap((res) => {
               isRefreshing = false;
@@ -75,6 +75,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
               isRefreshing = false;
               refreshTokenSubject.next(null);
               localStorage.removeItem('marketManduAuth');
+              // store.dispatch(logoutAction.logout());
               toast.error('Session Expire')
               router.navigate(['/login']);
               return throwError(() => refreshError);

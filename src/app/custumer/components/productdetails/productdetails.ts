@@ -141,7 +141,7 @@ export class Productdetails implements OnInit {
 
       
       let orderSummary:orderSummary = {
-      seletectItem: prod,
+      seletectItem: [{productId:prod.id, quantity: this.quantity(), product: prod }],
       subtotal: prod.price * this.quantity(),
       total: prod.price * this.quantity(),
       itemCount: this.quantity(),

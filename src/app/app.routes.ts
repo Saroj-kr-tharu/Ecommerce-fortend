@@ -10,6 +10,7 @@ export const routes: Routes = [
             return import('./custumer/components/cus.home/cus.home').then( (m) => m.CusHome )
         }
     }, 
+     
     {
         
         path: 'product/:id/:slug',
@@ -90,6 +91,13 @@ export const routes: Routes = [
             },
 
         ]
+    },
+
+
+    {
+        path: '**',
+        redirectTo: '',
+        pathMatch: 'full'
     },
 
 

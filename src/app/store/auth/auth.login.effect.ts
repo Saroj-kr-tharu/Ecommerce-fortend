@@ -77,9 +77,59 @@ export class AuthLoginEffect {
      { dispatch: false }
     );
 
-
-
-    
-
   
 }
+
+
+
+
+// export class LogoutEffect {
+
+//   private actions$ = inject(Actions);
+//   private authServices = inject(AuthServices);
+//   private toast = inject(HotToastService);
+//   private  router = inject(Router)
+
+//   logout$ = createEffect(() =>
+//     this.actions$.pipe(
+//       ofType(logoutAction.logout),
+     
+//       exhaustMap((action: any) =>
+
+//         this.authServices.logoutService().pipe(
+          
+//           this.toast.observe({
+//             loading: 'Logout...',
+//             success: 'Sucessfully logout',
+//             error: 'Failed to Logout!',
+//           }),
+
+//           map((res: any) =>{
+//             console.log('res => ', res)
+//             localStorage.removeItem('marketManduAuth')
+          
+//             return logoutAction.sucesslogout();
+//           }
+//           ),
+
+          
+//           catchError((error) => {
+//             const errorMessage =
+                       
+//               'Logout failed!'; 
+
+//               this.toast.error(errorMessage); 
+
+//             return of(
+//               logoutAction.faillogout()
+//             );
+//           })
+//         )
+//       )
+//     )
+//   );
+
+
+  
+  
+// }

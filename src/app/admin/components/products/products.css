@@ -1,16 +1,21 @@
-/* small component CSS */
-.product-name {
-    display: flex;
-    align-items: center;
+:host ::ng-deep .p-datatable {
+    background-color: (248 250 252 / 0.5) !important;
 }
 
-.product-name .thumb {
-    width: 48px;
-    height: 48px;
-    object-fit: cover;
-    border-radius: 6px;
+:host ::ng-deep .p-datatable .p-datatable-wrapper {
+    background-color: rgb(248 250 252 / 0.5) !important;
 }
 
-:host ::ng-deep .p-dialog .p-fluid .p-field {
-    margin-bottom: 1rem;
+:host ::ng-deep .p-datatable .p-datatable-thead>tr>th {
+    background-color: rgb(248 250 252 / 0.5) !important;
+    color: black;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-tbody>tr {
+    background-color: rgb(248 250 252 / 0.5) !important;
+    color: black;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-tbody>tr:hover {
+    background-color: #FFFFFF99 !important;
 }

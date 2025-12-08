@@ -211,11 +211,6 @@ deleteSelected(): void {
 
   // this.store.dispatch(bulkUpdateItemAction.bulkUpdateItem({payload:selectedCartItems }))
     
-
-    
-
-   
-
     
   }
 

@@ -7,7 +7,6 @@ import { PaginatorModule } from 'primeng/paginator';
 import { loadProductInitalType, ProductType } from '../../../core/models/product.model';
 import { Carousel } from "../../../shared/components/carousel/carousel";
 import { ProducetItem } from "../../../shared/components/producet-item/producet-item";
-import { Typecarousel } from "../../../shared/components/typecarousel/typecarousel";
 import { getAllProductsAction, getcartsAction } from '../../../store/custumer/cus.action';
 import { selectGetAllProduct } from '../../../store/custumer/cus.selectors';
 
@@ -15,7 +14,7 @@ import { selectGetAllProduct } from '../../../store/custumer/cus.selectors';
 
 @Component({
   selector: 'app-cus.home',
-  imports: [Carousel, Typecarousel, ProducetItem,PaginatorModule, RouterLink],
+  imports: [Carousel, ProducetItem,PaginatorModule, RouterLink],
   templateUrl: './cus.home.html',
   styleUrl: './cus.home.css',
 })
@@ -57,7 +56,7 @@ export class CusHome implements OnInit  {
             
           
           const  data = {
-              limit: 10, 
+              limit: this.rows, 
               page: 1, 
             }
             this.store.dispatch( getAllProductsAction.load({payload : data}))
