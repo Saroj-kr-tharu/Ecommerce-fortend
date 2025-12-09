@@ -80,11 +80,9 @@ tableHeaders = [
   { title: "Payment Method", field: "paymentMethod", icon: "sortIcon", width: "8rem" },
   { title: "Payment Status", field: "paymentStatus", icon: "sortIcon", width: "8rem" },
   { title: "Order Status", field: "orderStatus", icon: "sortIcon", width: "8rem" },
-  { title: "Items", field: "itemsText", icon: "sortIcon", width: "8rem" },
   { title: "Shipping Address", field: "street", icon: "sortIcon", width: "8rem" },
   { title: "Delivered", field: "deliveredAt", icon: "sortIcon", width: "5rem" },
   { title: "Cancelled", field: "cancelledAt", icon: "sortIcon", width: "5rem" },
-  { title: "Created", field: "createdAt", icon: "sortIcon", width: "5rem" },
   { title: "isActive", field: "isActive", icon: "sortIcon", width: "5rem" },
   { title: "Actions", field: null, icon: null, width: "10rem" }
 ];
@@ -104,13 +102,11 @@ tableSchema = [
   { element: 'span', class: 'text-sm', field: 'paymentStatus' },
   { element: 'span', class: 'text-sm text-gray-600', field: 'orderStatus' },
 
-  { element: 'span', class: 'text-sm text-gray-600', field: 'items', type: 'items' },
 
   { element: 'span', class: 'text-sm text-gray-600', field: 'shippingAddress' },
 
   { element: 'span', class: 'text-sm text-gray-600', field: 'delivered', type: 'date' },
   { element: 'span', class: 'text-sm text-gray-600', field: 'cancelled', type: 'date' },
-  { element: 'span', class: 'text-sm text-gray-600', field: 'created', type: 'date' },
   { element: 'span', class: 'text-sm text-gray-600', field: 'isActive' },
 ];
 
@@ -163,7 +159,7 @@ orderFormConfig: FormSignin[] = [
 
     mutableOrders = computed(() => {
     console.log('computed products =>', this.Orders());
-    return [...this.Orders()];   // return a mutable clone
+    return [...this.Orders()];   
   })
 
 

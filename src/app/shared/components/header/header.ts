@@ -37,11 +37,7 @@ export class Header implements OnInit {
     }
   }
 
-   constructor(
-    private store: Store<{LoginReducer : LoginState }>, 
-
-  
-  ) {
+   constructor( private store: Store<{LoginReducer : LoginState }> ) {
           this.loginState = this.store.selectSignal(selectLogin);
           this.cartState = this.store.selectSignal(selectCart);
           
@@ -91,7 +87,6 @@ toggleMobileMenu() {
 
 logoutFn() {
 
-  // console.log('click btn ')
         this.store.dispatch(  logoutAction.logout() );
   
 }

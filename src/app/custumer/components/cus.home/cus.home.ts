@@ -45,6 +45,8 @@ export class CusHome implements OnInit  {
                 console.log('products updated => ', this.allState().data);
                 this.products.set(this.allState().data ?? []);
                 this.totalRecords.set(this.allState().totalRecords);
+
+                
                 
             });
 

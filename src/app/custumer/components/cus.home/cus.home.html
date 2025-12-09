@@ -79,7 +79,7 @@
             </h2>
 
             <!-- Product items grid -->
-            <div class="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
+            <div class="w-full  grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
                 @for (item of products(); track $index) {
                 <div class="" [routerLink]="['/product', item.id, item.name]">
                     <app-producet-item [ProductItem]="item"></app-producet-item>
@@ -89,9 +89,9 @@
             </div>
 
             <!-- Paginator - -->
-            <div class="w-full  py-4 px-4 bg-gray-700 flex justify-center">
+            <div class="w-full z-50 py-4 px-4 bg-gray-700 flex justify-center">
                 <p-paginator (onPageChange)="onPageChange($event)" [first]="first" [rows]="rows"
-                    [totalRecords]="totalRecords" [rowsPerPageOptions]="[5, 10, 15]" styleClass="!bg-transparent ">
+                    [totalRecords]="totalRecords()" [rowsPerPageOptions]="[5, 10, 15]" styleClass="!bg-transparent ">
                 </p-paginator>
             </div>
 
