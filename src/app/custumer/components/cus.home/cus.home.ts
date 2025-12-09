@@ -1,5 +1,5 @@
 
-import { Component, effect, OnInit, Signal } from '@angular/core';
+import { Component, effect, OnInit, signal, Signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import type { PaginatorState } from 'primeng/paginator';
@@ -9,7 +9,6 @@ import { Carousel } from "../../../shared/components/carousel/carousel";
 import { ProducetItem } from "../../../shared/components/producet-item/producet-item";
 import { getAllProductsAction, getcartsAction } from '../../../store/custumer/cus.action';
 import { selectGetAllProduct } from '../../../store/custumer/cus.selectors';
-
 
 
 @Component({
@@ -22,11 +21,11 @@ export class CusHome implements OnInit  {
 
   
   
-  products :ProductType[] |undefined =[]
+  products = signal<ProductType[]>([]);
   
     first: number = 0;
     rows: number = 10;
-    totalRecords: number = 0;
+    totalRecords = signal(0);
     
 
     allState !: Signal<loadProductInitalType> ;
@@ -44,8 +43,8 @@ export class CusHome implements OnInit  {
 
              effect(() => {
                 console.log('products updated => ', this.allState().data);
-                this.products = this.allState().data;
-                this.totalRecords = this.allState().totalRecords;
+                this.products.set(this.allState().data ?? []);
+                this.totalRecords.set(this.allState().totalRecords);
                 
             });
 
@@ -77,6 +76,8 @@ export class CusHome implements OnInit  {
    onPageChange(event: PaginatorState) {
     this.first = event.first ?? 0;
     this.rows = event.rows ?? 10;
+
+    console.log('page => ', event)
 
     const page = Math.floor(this.first / this.rows) + 1;
  

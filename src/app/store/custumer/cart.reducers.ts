@@ -36,12 +36,13 @@ on(addItemcartsAction.sucessAdded, (state, action) => {
 on(getcartsAction.sucessGetCart, (state, action) => {
 
   const data = action?.payload?.data;
+  const displayedDAta = data.items.filter( (item:any) => item.selected ==false )
   return {
     ...state,
     loading: false,
     success: true, 
-    itemCount: data.items.length,
-    orderItems: data.items
+    itemCount: displayedDAta.length,
+    orderItems: displayedDAta
   };
 }),
 

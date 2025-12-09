@@ -48,7 +48,8 @@ export interface sucessLoginType {
   id: number , 
   role ?: string, 
   username?: string , 
-  jwt: string 
+  jwt?: string ,
+  isActive?: boolean
 }
 
 

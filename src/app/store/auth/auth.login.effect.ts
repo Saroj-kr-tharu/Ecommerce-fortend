@@ -31,8 +31,11 @@ export class AuthLoginEffect {
           error: 'Login failed!'
         }),
 
-        map((res: any) =>
-               loginAction.sucessLogin({ payload: res?.data })
+        map((res: any) =>{
+           
+          return   loginAction.sucessLogin({ payload: res?.data })
+        }
+               
         ),
 
         catchError((error) => {

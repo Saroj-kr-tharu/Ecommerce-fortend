@@ -23,7 +23,7 @@
                 <div class="flex justify-between items-center">
                     <span class="text-sm font-medium text-gray-600">Total Amount</span>
                     <span class="text-lg font-bold text-green-600">
-                        ${{ amount }}
+                        {{ amount | currency:'NPR ':'symbol':'1.2-2' }}
                     </span>
                 </div>
             </div>

@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Store } from '@ngrx/store';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { AutoCompleteModule } from 'primeng/autocomplete';
@@ -18,7 +17,8 @@ import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 import { FormSignin, ValidationConfig } from '../../../core/models/auth.model';
-import { loadProductInitalType, ProductType, SelectOption } from '../../../core/models/product.model';
+import { FormattedOrder, FormattedOrderItem } from '../../../core/models/order.model';
+import { ProductType, SelectOption } from '../../../core/models/product.model';
 import { AdminService } from '../../../core/services/admin/admin-service';
 
 
@@ -58,10 +58,10 @@ export class Orders implements OnInit {
   toast = inject(HotToastService)
 
   //  products = computed(() => this.allState().data ??  []);
-  Orders = signal<any[]>([]);
+  Orders = signal<FormattedOrder[]>([]);
 
-  Order! : ProductType;
-  originalValue ! : ProductType
+  order! : FormattedOrder;
+  originalValue ! : FormattedOrder;
   
 
   productDialog: boolean = false;
@@ -73,28 +73,27 @@ export class Orders implements OnInit {
   globalFilterValue: string = '';
   
 
+tableHeaders = [
+  { title: "Order id", field: "id", icon: "sortIcon", width: "10rem" },
+  { title: "User", field: "username", icon: "sortIcon", width: "10rem" },
+  { title: "Total Amount", field: "totalAmount", icon: "sortIcon", width: "8rem" },
+  { title: "Payment Method", field: "paymentMethod", icon: "sortIcon", width: "8rem" },
+  { title: "Payment Status", field: "paymentStatus", icon: "sortIcon", width: "8rem" },
+  { title: "Order Status", field: "orderStatus", icon: "sortIcon", width: "8rem" },
+  { title: "Items", field: "itemsText", icon: "sortIcon", width: "8rem" },
+  { title: "Shipping Address", field: "street", icon: "sortIcon", width: "8rem" },
+  { title: "Delivered", field: "deliveredAt", icon: "sortIcon", width: "5rem" },
+  { title: "Cancelled", field: "cancelledAt", icon: "sortIcon", width: "5rem" },
+  { title: "Created", field: "createdAt", icon: "sortIcon", width: "5rem" },
+  { title: "isActive", field: "isActive", icon: "sortIcon", width: "5rem" },
+  { title: "Actions", field: null, icon: null, width: "10rem" }
+];
 
 
-    // table header 
-  tableHeaders = [
-
-{ title: "Order id", width: "8rem", icon: "sortIcon", }, 
-{ title: "User", width: "12rem", icon: "sortIcon", }, 
-{ title: "Total Amount", width: "10rem", icon: "sortIcon", }, 
-{ title: "Payment Method", width: "8rem", icon: "sortIcon", }, 
-{ title: "Payment Status", width: "10rem", icon: "sortIcon", }, 
-{ title: "Order Status", width: "8rem", icon: "sortIcon", }, 
-{ title: "Items", width: "8rem", icon: "sortIcon", }, 
-{ title: "Shipping Address", width: "8rem", icon: "sortIcon", }, 
-{ title: "Delivered", width: "5rem", icon: "sortIcon", }, 
-{ title: "Cancelled", width: "5rem", icon: "sortIcon", }, 
-{ title: "Created", width: "5rem", icon: "sortIcon", }, 
-{ title: "Actions", width: "10rem", icon: null, }, 
-]
 
 
 tableSchema = [
-  { element: 'p-tableCheckbox' },
+  
 
   { element: 'span', class: 'text-sm text-gray-600', field: 'id' },
   { element: 'span', class: 'font-medium', field: 'user' },
@@ -112,33 +111,40 @@ tableSchema = [
   { element: 'span', class: 'text-sm text-gray-600', field: 'delivered', type: 'date' },
   { element: 'span', class: 'text-sm text-gray-600', field: 'cancelled', type: 'date' },
   { element: 'span', class: 'text-sm text-gray-600', field: 'created', type: 'date' },
+  { element: 'span', class: 'text-sm text-gray-600', field: 'isActive' },
 ];
 
 
- orderForm:FormGroup = new FormGroup({
-    orderId: new FormControl('', [Validators.required]),
-    user: new FormControl('', [Validators.required]),
-    totalAmount: new FormControl('', [Validators.required, Validators.min(0)]),
-    paymentMethod: new FormControl('', [Validators.required]),
-    paymentStatus: new FormControl('', [Validators.required]),
-    orderStatus: new FormControl('', [Validators.required]),
-    items: new FormControl('', [Validators.required]),
-    shippingAddress: new FormControl('', [Validators.required]),
-    isDelivered: new FormControl(false),
-    isCancelled: new FormControl(false),
-    createdAt: new FormControl('', [Validators.required]),
-    });
+
+
+
+orderForm: FormGroup = new FormGroup({
+  orderId: new FormControl({ value: '', disabled: false }, [Validators.required]),
+  user: new FormControl({ value: '', disabled: false }, [Validators.required]),
+  totalAmount: new FormControl({ value: '', disabled: true }, [Validators.required, Validators.min(0)]),
+  paymentMethod: new FormControl({ value: '', disabled: false }, [Validators.required]),
+  paymentStatus: new FormControl({ value: '', disabled: false }, [Validators.required]),
+  orderStatus: new FormControl({ value: '', disabled: false }, [Validators.required]),
+  items: new FormControl({ value: '', disabled: true }, [Validators.required]),
+  shippingAddress: new FormControl({ value: '', disabled: true }, [Validators.required]),
+  isDelivered: new FormControl({ value: false, disabled: true }),
+  isCancelled: new FormControl({ value: false, disabled: true }),
+  isActive: new FormControl({ value: '', disabled: false }),
+  createdAt: new FormControl({ value: '', disabled: true }, [Validators.required]),
+});
+
 
 
 orderFormConfig: FormSignin[] = [
   { type: 'text', id: 'totalAmount', label: 'Total Amount', placeholder: '', autocomplete: '', disabled: true, validation: {} },
-  { type: 'textarea', id: 'items', label: 'Items', placeholder: '', autocomplete: '', disabled: true, validation: {} },
-  { type: 'textarea', id: 'shippingAddress', label: 'Shipping Address', placeholder: '', autocomplete: '', disabled: true, validation: {} },
+  { type: 'text', id: 'items', label: 'Items', placeholder: '', autocomplete: '', disabled: true, validation: {} },
+  { type: 'text', id: 'shippingAddress', label: 'Shipping Address', placeholder: '', autocomplete: '', disabled: true, validation: {} },
   { type: 'text', id: 'createdAt', label: 'Created At', placeholder: '', autocomplete: '', disabled: true, validation: {} },
-  { type: 'select', id: 'paymentMethod', autocomplete: '', label: 'Payment Method', options: ['COD', 'Card', 'Esewa'], validation: { required: 'Payment method is required' } },
-  { type: 'select', id: 'paymentStatus', label: 'Payment Status', autocomplete: '', options: ['Paid', 'Pending', 'Failed'], validation: { required: 'Payment status is required' } },
-  { type: 'checkbox', id: 'isDelivered', autocomplete: '', label: 'Delivered', validation: {} },
-  { type: 'checkbox', id: 'isCancelled', label: 'Cancelled', autocomplete: '', validation: {} }
+  { type: 'select', id: 'paymentMethod', autocomplete: '', label: 'Payment Method', options: ['COD', 'Khalti', 'Stripe' , 'Esewa'], validation: { required: 'Payment method is required' } },
+  { type: 'select', id: 'paymentStatus', label: 'Payment Status', autocomplete: '', options: ['paid', 'pending', 'failed'], validation: { required: 'Payment status is required' } },
+  { type: 'select', id: 'orderStatus', label: 'order Status', autocomplete: '', options: ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'returned'], validation: { required: 'Payment status is required' } },
+  { type: 'checkbox', id: 'isDelivered', autocomplete: '', label: 'Delivered',disabled: true, validation: {} },
+  { type: 'checkbox', id: 'isCancelled', label: 'Cancelled', autocomplete: '', disabled: true, validation: {} }
 ];
 
 
@@ -153,16 +159,13 @@ orderFormConfig: FormSignin[] = [
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
     private cd: ChangeDetectorRef,
-    private store: Store<{GetAllProductsReducer : loadProductInitalType }>
-  ) {
-      
-  }
+  ) { }
 
-  get mutableProducts() {
+    mutableOrders = computed(() => {
+    console.log('computed products =>', this.Orders());
+    return [...this.Orders()];   // return a mutable clone
+  })
 
-    console.log('calling muteable => ', [...this.Orders()])
-  return [...this.Orders()];   
-}
 
   ngOnInit(): void {
     this.loadInitialData();
@@ -175,34 +178,18 @@ orderFormConfig: FormSignin[] = [
       next: (res:any) => {
           console.log('res => ', res.data)
 
-        interface FormattedOrderItem {
-          productName: string;
-          quantity: number;
-          price: number;
-          total: number;
-        }
-
-        interface FormattedOrder {
-          id: string;
-          user: string | null;
-          totalAmount: number;
-          paymentMethod: string;
-          paymentStatus: string;
-          orderStatus: string;
-          items: FormattedOrderItem[];
-          shippingAddress: string | null;
-          delivered: string | null;
-          cancelled: string | null;
-          created: string | null;
-        }
+       
 
         const formattedOrders: FormattedOrder[] = res.data.map((order: any): FormattedOrder => ({
-          id: order.id,
+          itemId: order.id,
+          id: order.orderNumber,
           user: order.user?.email || order.user?.username || null ,
           totalAmount: order.totalAmount,
           paymentMethod: order.paymentMethod,
           paymentStatus: order.paymentStatus,
           orderStatus: order.orderStatus,
+          isActive: order.isActive,
+          itemslength:order.OrderItems.length,
           items: order.OrderItems.map((item: any): FormattedOrderItem => ({
             productName: item.productName,
             quantity: item.quantity,
@@ -281,54 +268,47 @@ orderFormConfig: FormSignin[] = [
     this.productDialog = false;
     this.submitted = false;
     this.isEditOpen.set(false)
-    this.isAddOpen.set(false)
   }
 
 
   areProductFieldsEqual(a: any, b: any): boolean {
   return (
-    a.name === b.name &&
-    a.description === b.description &&
-    a.category === b.category &&
-    a.price === b.price &&
-    a.brand === b.brand &&
-    a.stock === b.stock &&
-    a.ratings === b.ratings &&
-    (a.totalRatings ?? 0) === (b.totalRatings ?? 0) &&
-    JSON.stringify(a.images) === JSON.stringify(b.images)
+    a.id === b.id &&
+    a.user === b.user &&
+    a.totalAmount === b.totalAmount &&
+    a.paymentMethod === b.paymentMethod &&
+    a.paymentStatus === b.paymentStatus &&
+    a.orderStatus === b.orderStatus &&
+    JSON.stringify(a.items) === JSON.stringify(b.items) &&
+    a.shippingAddress === b.shippingAddress &&
+    a.delivered === b.delivered &&
+    a.cancelled === b.cancelled &&
+    a.created === b.created
   );
 }
 
   // Edit an existing product
-  editProduct(product: ProductType) {
+  editProduct(order: FormattedOrder ) {
         this.isEditOpen.set(true)
-        this.originalValue = product;
+        this.originalValue = order;
 
-    console.log('edit click ', this.originalValue)
-    //   this.product = {
-    //     isActive: product.isActive, 
-    //     brand: product.brand,
-    //     category: product?.category, 
-    //     description: product.description, 
-    //     id: product.id , 
-    //     images: product.images, 
-    //     name: product.name, 
-    //     price: product.price, 
-    //     stock: product.stock, 
-    //     ratings: product.ratings,
-    //   }
+     console.log('edit click ', this.originalValue)
+  
 
-    //     this.productForm.setValue({
-    //       name: product.name,
-    //       description: product.description,
-    //       category: product.category,
-    //       price: product.price,
-    //       brand: product.brand,
-    //       stock: product.stock,
-    //       ratings: product.ratings,
-    //       totalRatings: product.totalRatings ?? 0 ,
-    //       images: product.images
-    //     });
+        this.orderForm.setValue({
+          orderId: order.id ,
+          user: order.user ,
+          totalAmount: order.totalAmount ,
+          paymentMethod: order.paymentMethod ,
+          paymentStatus: order.paymentStatus,
+          orderStatus: order.orderStatus,
+          items: order.items ,
+          shippingAddress: order.shippingAddress ,
+          isDelivered: !!order.delivered,
+          isCancelled: !!order.cancelled,
+          isActive: order.isActive,
+          createdAt: order.created
+        });
 
      
       
@@ -340,40 +320,28 @@ orderFormConfig: FormSignin[] = [
     // Save product (create or update)
   saveProduct() {
      const formValue = this.orderForm.value ; 
-      const { id, images, ...payload } = formValue;
+     const { paymentMethod, paymentStatus, orderStatus } = formValue;
 
+     const data = {
+        paymentMethod,
+        paymentStatus,
+        orderStatus
+     }
 
-    if(this.isAddOpen()){
-      // console.log('product add btn is click')
-      
-      this.adminService.addProductService({...payload, images: [images]}).subscribe({
-      next: (res)=>  {this.toast.success('Adding Product'); 
-        // console.log('res => ', res)
-      }, 
-      complete: () => {this.toast.success('Sucessfully Added product')},
-      error: () => {this.toast.error('Faile to Add Product')}
-    });
-    }
+   
 
-    if(this.isEditOpen()){
-     
-    const isUpdated = !this.areProductFieldsEqual(this.originalValue, formValue);
-    
-    // console.log('Is value updated?', isUpdated);
-
+    const isUpdated = !this.areProductFieldsEqual(this.originalValue, data);
     if(!isUpdated) return ;
 
-    this.adminService.updateProductService(this.originalValue.id , {...formValue, images: [images]}).subscribe({
-      next: (res)=>  {this.toast.success('Editting'); 
+    this.adminService.updateOrdersService(Number(this.originalValue.itemId) , {...formValue}).subscribe({
+      next: (res)=>  {this.toast.success('Updating '); 
         console.log('res => ', res)
       }, 
-      complete: () => {this.toast.success('Sucessfully edited product')},
-      error: () => {this.toast.error('Faile to Edit Product')}
+      complete: () => {this.toast.success('Sucessfully edited orders')},
+      error: () => {this.toast.error('Faile to Edit orders')}
     });
  
-    }
-
-
+    
     this.submitted = true;
     this.hideDialog();
 
@@ -381,32 +349,25 @@ orderFormConfig: FormSignin[] = [
   }
 
   // Delete a single product
-  deleteProduct(product: ProductType) {
+  deleteProduct(order:FormattedOrder ) {
     this.confirmationService.confirm({
-      message: `Are you sure you want to delete "${product.name}"?`,
+      message: `Are you sure you want to delete "${order.id}"?`,
       header: 'Delete Confirmation',
       icon: 'pi pi-exclamation-triangle',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
-        // this.products = this.products.filter(p => p.id !== product.id);
-        // console.log('delete btn => ', product)
+        
 
-        if (product.id !== undefined) {
-          this.adminService.deleteProductService(
-            product.id
-          ).subscribe({
+        if (order.itemId !== undefined) {
+          const data = {
+            isActive: !order.isActive
+          }
+          this.adminService.updateOrdersService( order.itemId, data ).subscribe({
             next: (res:any) => { console.log(res.data) },
-            complete: ()=> { this.toast.success(`Sucessfully Delete Product id : ${product.id}`) },
+            complete: ()=> { this.toast.success(`Sucessfully Delete Product id : ${order.itemId}`) },
             error: () => { this.toast.error('Failed to delete Due to Reference Constaints') }
           });
-        } else {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Product ID is missing.',
-            life: 3000
-          });
-        }
+        } 
         
         
       }

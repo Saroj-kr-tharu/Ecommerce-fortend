@@ -1,6 +1,6 @@
 <div class="w-full min-h-[80vh] sm:justify-center items-center sm:flex flex-col mt-20 ">
-    <div class="w-full md:w-4/5 ">
-        <div class="w-full md:max-w-[95vw]">
+    <div class="w-full flex  justify-center ">
+        <div class="w-full  md:max-w-[95vw]">
 
             <!-- Header Section -->
             <div class="bg-slate-50/50  rounded-xl shadow-lg p-6 mb-4 border border-slate-200">
@@ -31,33 +31,29 @@
             <!-- Table Section -->
             <div class=" rounded-xl shadow-xl border border-slate-200 overflow-hidden">
 
-                <p-table class="modern-table" #dt [value]="mutableProducts" [rows]="5" [paginator]="true"
+                <p-table class="modern-table" #dt [value]="mutableOrders()" [rows]="5" [paginator]="true"
                     [rowsPerPageOptions]="[5, 10, 20, 30]" [showCurrentPageReport]="true"
                     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
                     [(selection)]="selectedProducts" [rowHover]="true" dataKey="id" [globalFilterFields]="[
-                            'orderNumber',
-                            'user.username',
+                            'id',
+                            'user',
                             'totalAmount',
                             'paymentMethod',
                             'paymentStatus',
                             'orderStatus',
-                            'OrderItems',       
-                            'shippingAddress.street',
-                            'shippingAddress.city',
-                            'shippingAddress.country',
-                            'deliveredAt',
-                            'cancelledAt',
-                            'createdAt'
-                        ]" styleClass="p-datatable-sm " [tableStyle]="{'min-width': '72rem'}" [scrollable]="true"
-                    lazyLoadOnInit="true">
+                            'items',
+                            'shippingAddress',
+                            'delivered',
+                            'cancelled',
+                            'created',
+                            'isActive'
+                        ]" styleClass="p-datatable-sm " [tableStyle]="{'min-width': '72rem'}" [scrollable]="true">
 
 
                     <!-- Header -->
                     <ng-template pTemplate="header">
                         <tr class="bg-slate-50/50 ">
-                            <th class="py-4! px-4! text-base" style="width: 3rem">
-                                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-                            </th>
+
 
                             @for (item of tableHeaders; track $index) {
                             @if (item.icon == null) {
@@ -67,10 +63,10 @@
                             </th>
                             }
                             @else {
-                            <th [pSortableColumn]="item.title" [style]="item.width"
+                            <th [pSortableColumn]="item.field" [style]="item.width"
                                 class="py-4!  px-4! font-semibold! text-xs! text-gray-700! tracking-wide!">
-                                {{item.title | uppercase}}
-                                <p-sortIcon field="item.title"></p-sortIcon>
+                                {{item.title| uppercase}}
+                                <p-sortIcon field="item.field"></p-sortIcon>
                             </th>
                             }
                             }
@@ -146,11 +142,11 @@
                     <!-- Empty Message -->
                     <ng-template pTemplate="emptymessage">
                         <tr>
-                            <td colspan="13" class="text-center!  py-16! text-gray-400!">
+                            <td colspan="14" class="text-center!  py-16! text-gray-400!">
                                 <div class="flex flex-col items-center justify-center">
                                     <i class="pi pi-inbox text-6xl mb-4 text-gray-300"></i>
-                                    <p class="text-xl font-medium text-gray-500">No products found</p>
-                                    <p class="text-sm text-gray-400 mt-2">Try adjusting your search or add a new product
+                                    <p class="text-xl font-medium text-gray-500">No Orders found</p>
+                                    <p class="text-sm text-gray-400 mt-2">Try adjusting your search on Orders
                                     </p>
                                 </div>
                             </td>
@@ -163,10 +159,9 @@
 
 
         <!-- Create/Edit Product Dialog -->
-        <p-dialog [(visible)]="productDialog" maskStyleClass="backdrop-blur-sm"
-            [header]="isEditOpen() ? 'Edit Product' : 'New Product'" [modal]="true"
-            [style]="{width: '550px', backgroundColor: 'white', color: 'black'}" [draggable]="false" [resizable]="false"
-            styleClass=" modern-dialog">
+        <p-dialog [(visible)]="productDialog" maskStyleClass="backdrop-blur-sm" [header]="'Update Orders'"
+            [modal]="true" [style]="{width: '550px', backgroundColor: 'white', color: 'black'}" [draggable]="false"
+            [resizable]="false" styleClass=" modern-dialog">
 
             <ng-template pTemplate="content">
 
@@ -174,25 +169,56 @@
 
 
                     @for (item of orderFormConfig; track $index) {
+                    <div id="{{ item.label }}" class="mb-4">
 
-                    <div id="{{ item.label }}">
-                        <label for="{{ item.label }}" class="block capitalize text-sm font-medium text-gray-700 mb-1">
+                        <label class="block capitalize text-sm font-medium text-gray-700 mb-1">
                             {{ item.label }}
                         </label>
 
-                        <input type="{{ item.type }}" id="{{ item.id }}" name="{{ item.id }}"
-                            formControlName="{{ item.id }}" autocomplete="{{ item.type }}"
-                            class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500
-                         text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="{{ item.placeholder }}" />
+                        <!-- TEXT INPUT -->
+                        @if(item.type === 'text') {
+                        <input [type]="item.type" [id]="item.id" [formControlName]="item.id"
+                            [placeholder]="item.placeholder" class="appearance-none rounded-md w-full px-3 py-2 border border-gray-300 
+               placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500
+               focus:border-indigo-500 sm:text-sm" />
+                        }
 
-                        @if(item.validation){ @if(orderForm.controls[item.id].touched){ @for (validationKey of
-                        getValidationKeys(item.validation); track validationKey) {
-                        @if(orderForm.controls[item.id].errors?.[validationKey]){
-                        <p class="mt-1 text-sm text-red-600">{{ item.validation[validationKey] }}</p>
-                        } } } }
+                        <!-- SELECT INPUT -->
+                        @if(item.type === 'select') {
+                        <select [id]="item.id" [formControlName]="item.id" class="appearance-none rounded-md w-full px-3 py-2 border border-gray-300 
+               text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
+               sm:text-sm">
+                            <option value="">Select {{ item.label }}</option>
+                            @for(option of item.options; track option) {
+                            <option [value]="option">{{ option }}</option>
+                            }
+                        </select>
+                        }
+
+                        <!-- CHECKBOX INPUT -->
+                        @if(item.type === 'checkbox') {
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" [id]="item.id" [formControlName]="item.id"
+                                class="h-4 w-4 text-indigo-600 border-gray-300 rounded" />
+
+                            <label [for]="item.id" class="text-sm text-gray-700">{{ item.label }}</label>
+                        </div>
+                        }
+
+                        <!-- Validation Messages -->
+                        @if(item.validation && orderForm.controls[item.id].touched) {
+                        @for (validationKey of getValidationKeys(item.validation); track validationKey) {
+                        @if(orderForm.controls[item.id].errors?.[validationKey]) {
+                        <p class="mt-1 text-sm text-red-600">
+                            {{ item.validation[validationKey] }}
+                        </p>
+                        }
+                        }
+                        }
+
                     </div>
-
                     }
+
 
                 </div>
 

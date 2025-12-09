@@ -2,7 +2,7 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -89,6 +89,7 @@ export class Checkout implements OnInit {
   ];
 
   // signal 
+  isBuyNow = signal(false)
   
 
   orderSummary = signal<orderSummary>({
@@ -159,15 +160,20 @@ export class Checkout implements OnInit {
       }
     ];
 
-    constructor(){
+    constructor(private route: ActivatedRoute){
       this.orderSummary.set(this.cusService.getOrderSummary() ) ;
-      // console.log(this.orderSummary())
-      console.log('previous  => ', this.navigation.getPreviousUrl())
+     const buyNow = this.route.snapshot.paramMap.get('buynow');
+      console.log( 'params = >', this.orderSummary())
+
+      if(buyNow == 'BuyNow'){
+        this.isBuyNow.set(true);
+      }
+
     }
 
     ngOnInit(): void {
       this.orderSummary.set(this.cusService.getOrderSummary() ) ;
-      console.log(this.orderSummary());
+      console.log('order=> ',this.orderSummary());
     }
 
 
@@ -266,23 +272,19 @@ export class Checkout implements OnInit {
 
     let orderItems: { productId: number; quantity: number }[] = [];
 
-    console.log('previous  => ', this.navigation.getPreviousUrl())
-
-    if(this.navigation.getPreviousUrl() === '/checkout'){
-          console.log('order chckout => ', this.OrderSummaryData())
+    if(this.isBuyNow()) {
+      console.log('from checkout => ', this.orderSummary())
     }
-
-    else{ 
-      this.orderSummary().seletectItem.map((item: any) => {
+    // console.log('previous  => ', )
+    this.orderSummary().seletectItem.map((item: any) => {
           
           console.log('item => ', item)
           orderItems.push({
-            productId: item.id,
+            productId:   item.productId,
             quantity: item.quantity
           });
 
         });
-    }
 
     
 
@@ -301,7 +303,8 @@ export class Checkout implements OnInit {
           country: 'Nepal' 
         },
         paymentMethod: this.paymentForm.value.paymentMethod,
-        orderItems: orderItems
+        orderItems: orderItems,
+        // cartId: this.orderSummary().seletectItem[0].
       };
 
      

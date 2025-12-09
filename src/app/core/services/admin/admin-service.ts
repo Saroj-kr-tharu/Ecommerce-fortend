@@ -10,6 +10,9 @@ export class AdminService {
 
   BaseUrl = `${environment.apiURL}`;
 
+
+
+  // products 
   deleteProductService(id:number) {
     console.log('id => ', id)
     const url = `${this.BaseUrl}/products/delete?id=${id}`
@@ -39,12 +42,38 @@ export class AdminService {
     return this.httpClient.get(url );
   }
 
-
+  // orders 
   getAllOrdersService(  ) {
-  
-    const url = `${this.BaseUrl}/orders`
+    const url = `${this.BaseUrl}/getOrderAllWithoutFilter`
     return this.httpClient.get(url );
   }
+
+
+   updateOrdersService(id:number , data:any  ) {
+    
+    const url = `${this.BaseUrl}/orders/update?orderId=${id}`
+    return this.httpClient.patch(url, data );
+  }
+
+
+  // users 
+
+   getAllUsersService(  ) {
+  
+    const url = `${this.BaseUrl}/userswithoutfilter`
+    return this.httpClient.get(url );
+  }
+
+   updateUsersByIdService(id:number ,data: any ) {
+    const url = `${this.BaseUrl}/users/update?id=${id}`
+    return this.httpClient.patch(url,data );
+  }
+  
+   BulkUsersUpdateService( data : any) {
+    const url = `${this.BaseUrl}/users/bulkupdate`
+    return this.httpClient.patch(url, {ids: data} );
+  }
+   
 
 
 }

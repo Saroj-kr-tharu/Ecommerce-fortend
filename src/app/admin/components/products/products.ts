@@ -143,7 +143,7 @@ export class Products implements OnInit {
 
   
 
-      
+       
   productForm : FormGroup = new FormGroup({
         name: new FormControl('', [Validators.required, Validators.minLength(3)]),
         description: new FormControl('', [Validators.required, Validators.minLength(5)]), 

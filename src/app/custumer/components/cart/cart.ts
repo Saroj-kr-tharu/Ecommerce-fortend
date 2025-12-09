@@ -193,15 +193,20 @@ deleteSelected(): void {
       ...item
     }));
 
+     console.log('select cart items = > ', selectedCartItems)
+   
+
     const orderSummary = {
       seletectItem: selectedCartItems,
       subtotal: this.subtotal()  ,
       total:    this.subtotal()  ,
       itemCount: this.selectedItems().size ,
       shippingFee: 0,
+      
+      
     }
 
-
+    // console.log('state => ', selectedCartItems)
     this.cusService.setOrderSummary(orderSummary)
 
     this.toast.success(' Processing To Checkout ');

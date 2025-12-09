@@ -141,7 +141,7 @@ export class Productdetails implements OnInit {
 
       
       let orderSummary:orderSummary = {
-      seletectItem: [{productId:prod.id, quantity: this.quantity(), product: prod }],
+      seletectItem: [{productId:prod.id, quantity: this.quantity()}],
       subtotal: prod.price * this.quantity(),
       total: prod.price * this.quantity(),
       itemCount: this.quantity(),
@@ -152,7 +152,8 @@ export class Productdetails implements OnInit {
       this.cusService.setOrderSummary(orderSummary)
       this.toast.success('Processing To Checkout')
       // this.addToCart()
-      this.router.navigateByUrl('/checkout')
+     this.router.navigate(['/checkout']);
+
       
      
     }

@@ -1,4 +1,4 @@
-<div class="mt-14 sm:mt-18   flex flex-col  w-full  ">
+<div class="mt-14 sm:mt-18   flex flex-col  w-full   ">
 
     <div class="w-full flex justify-center">
 
@@ -80,7 +80,7 @@
 
             <!-- Product items grid -->
             <div class="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
-                @for (item of products; track $index) {
+                @for (item of products(); track $index) {
                 <div class="" [routerLink]="['/product', item.id, item.name]">
                     <app-producet-item [ProductItem]="item"></app-producet-item>
                 </div>

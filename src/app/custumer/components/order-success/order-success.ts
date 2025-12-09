@@ -1,9 +1,10 @@
+import { CurrencyPipe } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-order-success',
-  imports: [],
+  imports: [CurrencyPipe],
   templateUrl: './order-success.html',
   styleUrl: './order-success.css',
 })
