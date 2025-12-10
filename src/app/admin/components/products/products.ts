@@ -81,7 +81,7 @@ export class Products implements OnInit {
   submitted: boolean = false;
   globalFilterValue: string = '';
   
- totalProduct = computed(() => this.products().length);
+  totalProduct = computed(() => this.products().length);
   totalDelete = computed(() => this.products().filter(product => product.isActive === false).length);
   totalStockOut = computed(() => this.products().filter(product => product.stock === 0).length);
   totalStockIN = computed(() => this.products().filter(product => product.stock > 0).length);
