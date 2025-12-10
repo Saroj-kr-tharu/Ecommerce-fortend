@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, effect, inject, OnInit, Signal, signal, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Store } from '@ngrx/store';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { AutoCompleteModule } from 'primeng/autocomplete';
@@ -17,8 +18,11 @@ import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 import { FormSignin, sucessLoginType, ValidationConfig } from '../../../core/models/auth.model';
+import { DashboardState } from '../../../core/models/dashboard.model';
 import { SelectOption } from '../../../core/models/product.model';
 import { AdminService } from '../../../core/services/admin/admin-service';
+import { Cardbanner } from "../../../shared/components/cardbanner/cardbanner";
+import { selectUsers } from '../../../store/admin/admin.selectors';
 
 
 
@@ -45,8 +49,9 @@ import { AdminService } from '../../../core/services/admin/admin-service';
     AutoCompleteModule,
     CheckboxModule,
     TooltipModule,
-    ReactiveFormsModule
-  ],
+    ReactiveFormsModule,
+    Cardbanner
+],
   providers: [MessageService, ConfirmationService]
 })
 export class Users implements OnInit {
@@ -70,7 +75,8 @@ export class Users implements OnInit {
   submitted: boolean = false;
   globalFilterValue: string = '';
   
-
+  private store = inject(Store<{ DashboardReducer: DashboardState }>);
+  usersstate!: Signal<sucessLoginType[]>;
 
 
 
@@ -95,11 +101,21 @@ export class Users implements OnInit {
     { element: 'span', class: 'text-sm text-gray-600', field: 'isActive' },
   ];
 
+
+    bannerItems = signal<any[]>([]);
+
   // Category options
   categories: SelectOption[] = [];
 
   // For autocomplete filtering
   filteredCategories: SelectOption[] = [];
+
+
+  // Set totalCustumer as a computed signal based on Users
+  totalCustumer = computed(() => this.Users().filter(user => user.role === "CUSTOMER").length);
+  totaladmin = computed(() => this.Users().filter(user => user.role === "ADMIN").length);
+  totalban = computed(() => this.Users().filter(user => user.isActive === true).length);
+  
 
   constructor(
     private messageService: MessageService,
@@ -107,7 +123,19 @@ export class Users implements OnInit {
     private cd: ChangeDetectorRef,
     
   ) {
-      
+
+     effect(() => {
+    this.bannerItems.set([
+       
+      { title: "Total Users", value: this.usersstate().length, icon: "pi pi-users" },
+      { title: "Total Custumer", value: this.totalCustumer(), icon: "pi pi-shopping-bag" },
+      { title: "Total Admin", value: this.totaladmin(), icon: "pi pi-shopping-cart" },
+      { title: "Total Ban", value: this.totalban(), icon: "pi pi-check-circle" },
+  
+    ]);
+  });
+
+
   }
 
   get mutableProducts() {
@@ -120,15 +148,20 @@ export class Users implements OnInit {
 
   loadInitialData() {
 
+    this.usersstate = this.store.selectSignal(selectUsers);
+    this.Users.set(this.usersstate())
+    // console.log('userstate -=> ', this.usersstate())
 
-    this.adminService.getAllUsersService().subscribe({
-      next: (res:any) => {
-        console.log('res => ', res)
-            this.Users.set(res.data)
-      },
-      complete: ()=> {this.toast.success('Sucessfully Loading Users') },
-      error: () => {this.toast.error('Failed To load Users')}
-    })
+    // this.adminService.getAllUsersService().subscribe({
+    //   next: (res:any) => {
+    //     console.log('res => ', res)
+    //         this.Users.set(res.data)
+    //   },
+    //   complete: ()=> {this.toast.success('Sucessfully Loading Users') },
+    //   error: () => {this.toast.error('Failed To load Users')}
+    // })
+
+    
 
     this.cd.markForCheck();
   }

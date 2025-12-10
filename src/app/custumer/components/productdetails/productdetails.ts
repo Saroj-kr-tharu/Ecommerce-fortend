@@ -163,7 +163,7 @@ export class Productdetails implements OnInit {
     const prod = this.product();
     if (prod && prod.stock && prod.stock > 0) {
 
-      // console.log('Add to cart:', prod, 'Quantity:', this.quantity());
+      
       if(!this.loginState().isLogin){
         this.toast.warning(' Please Login to add in  cart ');
         return;
@@ -181,15 +181,6 @@ export class Productdetails implements OnInit {
 
 
       this.cartStore.dispatch(addItemcartsAction.addItem({payload: data}))
-      // this.cartStore.dispatch(getcartsAction.getCart({payload: {userId: 1} }))
-      // let userid = 1
-      // let cartItemId = 8
-      // this.cartStore.dispatch(clearCartAction.clearCart({payload: userid }))
-      // this.cartStore.dispatch(removeItemAction.removeItem({payload: cartItemId }))
-      
-
-
-      
       
     }
   }
@@ -204,7 +195,7 @@ export class Productdetails implements OnInit {
       }
 
       this.toast.success(' sucessfully added to WishList ');
-      // Implement add to wishlist logic
+      
     }
   }
 

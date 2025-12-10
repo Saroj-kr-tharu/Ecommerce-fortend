@@ -13,6 +13,8 @@ import { provideEffects } from '@ngrx/effects';
 import { provideStore } from '@ngrx/store';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { authInterceptor } from './core/interceptors/auth-interceptor';
+import { DashboardEffects } from './store/admin/admin.effects';
+import { dashboardReducer } from './store/admin/admin.reducers';
 import { AuthLoginEffect } from './store/auth/auth.login.effect';
 import { LogoutEffect } from './store/auth/auth.logout.effect';
 import { loginReducer, registerReducer } from './store/auth/auth.reducer';
@@ -44,12 +46,13 @@ export const appConfig: ApplicationConfig = {
       AuthRegisterEffect,BulkDelItemEffect,bulkUpdateItemEffect,
       LogoutEffect, updateItemEffect,AuthLoginEffect,
        getProductsEffect,clearCartEffect,
-        cartAddItemsEffect, getItemsCartEffect, removeItemEffect),
+        cartAddItemsEffect, getItemsCartEffect, removeItemEffect, DashboardEffects),
     provideStore({
       RegisterReducer :registerReducer,
       LoginReducer :loginReducer, 
       GetAllProductsReducer :getProductReducer,
       CartReducer :cartReducer,
+      DashboardReducer:dashboardReducer
     }),
     provideStoreDevtools({
       maxAge: 25, 

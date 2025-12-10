@@ -85,7 +85,8 @@ export class SearchComponent implements OnInit {
   maxPriceInput: number = 0; 
   selectedRating: number = 0;
   
-  products: ProductType[] | undefined = [];
+ 
+  products = signal<ProductType[] | undefined>([]);
   keyword: string | null = null;
   sort: string | null = null;
   page: string | null = null;
@@ -100,12 +101,12 @@ export class SearchComponent implements OnInit {
     
     effect(() => {
      
-      this.products = this.allState().data;
+      this.products.set(this.allState().data);
       this.totalRecords = this.allState().totalRecords || 0; 
 
       const categories = Array.from(
         new Set(
-          (this.products || [])
+          (this.products() || [])
             .map(p => (p as any)?.category)
             .filter((c: string | undefined) => !!c)
         )
@@ -113,7 +114,7 @@ export class SearchComponent implements OnInit {
 
       const brands = Array.from(
         new Set(
-          (this.products || [])
+          (this.products() || [])
             .map(p => (p as any)?.brand)
             .filter((b: string | undefined) => !!b)
         )

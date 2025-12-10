@@ -21,7 +21,7 @@ export class Dashboard {
 
   constructor(private store: Store<{LoginReducer : LoginState }>){
     
-  }
+  } 
   
 
   menuItems = [

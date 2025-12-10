@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, inject, OnInit, signal, Signal, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, effect, inject, OnInit, signal, Signal, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { HotToastService } from '@ngxpert/hot-toast';
@@ -18,8 +18,11 @@ import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 import { FormSignin, ValidationConfig } from '../../../core/models/auth.model';
+import { DashboardState } from '../../../core/models/dashboard.model';
 import { loadProductInitalType, ProductType, SelectOption } from '../../../core/models/product.model';
 import { AdminService } from '../../../core/services/admin/admin-service';
+import { Cardbanner } from "../../../shared/components/cardbanner/cardbanner";
+import { selectProducts } from '../../../store/admin/admin.selectors';
 import { selectGetAllProduct } from '../../../store/custumer/cus.selectors';
 
 
@@ -46,8 +49,9 @@ import { selectGetAllProduct } from '../../../store/custumer/cus.selectors';
     AutoCompleteModule,
     CheckboxModule,
     TooltipModule,
-    ReactiveFormsModule
-  ],
+    ReactiveFormsModule,
+    Cardbanner
+],
   providers: [MessageService, ConfirmationService]
 })
 export class Products implements OnInit {
@@ -56,9 +60,15 @@ export class Products implements OnInit {
   adminService = inject(AdminService)
   toast = inject(HotToastService)
 
+  bannerItems = signal<any[]>([]);
+
+  private store = inject(Store<{ DashboardReducer: DashboardState }>);
+  productstate!: Signal<ProductType[]>;
+  
+  
   //  products = computed(() => this.allState().data ??  []);
   products = signal<ProductType[]>([]);
-
+  
   product! : ProductType;
   originalValue ! : ProductType
   
@@ -66,11 +76,15 @@ export class Products implements OnInit {
   productDialog: boolean = false;
   isEditOpen = signal(false)
   isAddOpen = signal(false)
-
+  
   selectedProducts: ProductType[] = [];
   submitted: boolean = false;
   globalFilterValue: string = '';
   
+ totalProduct = computed(() => this.products().length);
+  totalDelete = computed(() => this.products().filter(product => product.isActive === false).length);
+  totalStockOut = computed(() => this.products().filter(product => product.stock === 0).length);
+  totalStockIN = computed(() => this.products().filter(product => product.stock > 0).length);
 
 
 
@@ -114,9 +128,21 @@ export class Products implements OnInit {
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
     private cd: ChangeDetectorRef,
-    private store: Store<{GetAllProductsReducer : loadProductInitalType }>
+    // private store: Store<{GetAllProductsReducer : loadProductInitalType }>
   ) {
       this.allState = this.store.selectSignal(selectGetAllProduct)
+
+        effect(() => {
+    this.bannerItems.set([
+       
+      { title: "Total Product", value: this.totalProduct(), icon: "pi pi-users" },
+      { title: "Total Delete", value: this.totalDelete(), icon: "pi pi-shopping-bag" },
+      { title: "Stock Out", value: this.totalStockOut(), icon: "pi pi-shopping-cart" },
+      { title: "Stock IN ", value: this.totalStockIN(), icon: "pi pi-check-circle" },
+  
+    ]);
+  });
+
   }
 
   get mutableProducts() {
@@ -128,15 +154,18 @@ export class Products implements OnInit {
   }
 
   loadInitialData() {
+    
+    
 
-
-    this.adminService.getAllProductService().subscribe({
-      next: (res:any) => {
-            this.products.set(res.data)
-      },
-      complete: ()=> {this.toast.success('Sucessfully Loading Data') },
-      error: () => {this.toast.error('Fail To Load All Data')}
-    })
+     this.productstate = this.store.selectSignal(selectProducts);
+    this.products.set(this.productstate())
+    // this.adminService.getAllProductService().subscribe({
+    //   next: (res:any) => {
+    //         this.products.set(res.data)
+    //   },
+    //   complete: ()=> {this.toast.success('Sucessfully Loading Data') },
+    //   error: () => {this.toast.error('Fail To Load All Data')}
+    // })
 
     this.cd.markForCheck();
   }

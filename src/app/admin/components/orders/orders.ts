@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, computed, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, effect, inject, OnInit, Signal, signal, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Store } from '@ngrx/store';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { AutoCompleteModule } from 'primeng/autocomplete';
@@ -17,9 +18,12 @@ import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 import { FormSignin, ValidationConfig } from '../../../core/models/auth.model';
+import { DashboardState } from '../../../core/models/dashboard.model';
 import { FormattedOrder, FormattedOrderItem } from '../../../core/models/order.model';
 import { ProductType, SelectOption } from '../../../core/models/product.model';
 import { AdminService } from '../../../core/services/admin/admin-service';
+import { Cardbanner } from "../../../shared/components/cardbanner/cardbanner";
+import { selectOrders } from '../../../store/admin/admin.selectors';
 
 
 
@@ -47,8 +51,8 @@ import { AdminService } from '../../../core/services/admin/admin-service';
     CheckboxModule,
     TooltipModule,
     ReactiveFormsModule,
-    
-  ],
+    Cardbanner
+],
   providers: [MessageService, ConfirmationService]
 })
 export class Orders implements OnInit {
@@ -63,6 +67,10 @@ export class Orders implements OnInit {
   order! : FormattedOrder;
   originalValue ! : FormattedOrder;
   
+    bannerItems = signal<any[]>([]);
+
+    private store = inject(Store<{ DashboardReducer: DashboardState }>);
+  orderState!: Signal<any[]>;
 
   productDialog: boolean = false;
   isEditOpen = signal(false)
@@ -71,6 +79,17 @@ export class Orders implements OnInit {
   selectedProducts: ProductType[] = [];
   submitted: boolean = false;
   globalFilterValue: string = '';
+
+
+totalOrders = computed(() => this.Orders().length);
+totalConfirmOrders = computed(() => this.Orders().filter(order => order.orderStatus === 'confirmed').length);
+totalPendingOrders = computed(() => this.Orders().filter(order => order.orderStatus === 'pending').length);
+totalDeliveredOrders = computed(() => this.Orders().filter(order => order.orderStatus === 'delivered').length);
+totalCancelledOrders = computed(() => this.Orders().filter(order => order.orderStatus === 'cancelled').length);
+totalPendingPayment = computed(() => this.Orders().filter(order => order.paymentStatus === 'pending').length);
+totalConfirmendPaymnet = computed(() => this.Orders().filter(order => order.paymentStatus === 'paid').length);
+toalFailedPaymnet = computed(() => this.Orders().filter(order => order.paymentStatus === 'failed').length);
+
   
 
 tableHeaders = [
@@ -155,7 +174,24 @@ orderFormConfig: FormSignin[] = [
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
     private cd: ChangeDetectorRef,
-  ) { }
+  ) { 
+
+       effect(() => {
+    this.bannerItems.set([
+       
+      { title: "Total Orders", value: this.totalOrders(), icon: "pi pi-users" },
+      { title: "Confirm Orders", value: this.totalConfirmOrders(), icon: "pi pi-shopping-bag" },
+      { title: "Pending Orders", value: this.totalPendingOrders(), icon: "pi pi-shopping-cart" },
+      { title: "Delivered Orders ", value: this.totalDeliveredOrders(), icon: "pi pi-check-circle" },
+      { title: "Cancell Orders ", value: this.totalCancelledOrders(), icon: "pi pi-check-circle" },
+      { title: "Pending Payment ", value: this.totalPendingPayment(), icon: "pi pi-check-circle" },
+      { title: "Confirmed Payment ", value: this.totalConfirmendPaymnet(), icon: "pi pi-check-circle" },
+      { title: "Failed Payment ", value: this.toalFailedPaymnet(), icon: "pi pi-check-circle" },
+  
+    ]);
+  });
+
+   }
 
     mutableOrders = computed(() => {
     console.log('computed products =>', this.Orders());
@@ -169,14 +205,10 @@ orderFormConfig: FormSignin[] = [
 
   loadInitialData() {
 
+    this.orderState = this.store.selectSignal(selectOrders);
+    // this.products.set(this.productstate())
 
-    this.adminService.getAllOrdersService().subscribe({
-      next: (res:any) => {
-          console.log('res => ', res.data)
-
-       
-
-        const formattedOrders: FormattedOrder[] = res.data.map((order: any): FormattedOrder => ({
+     const formattedOrders: FormattedOrder[] = this.orderState().map((order: any): FormattedOrder => ({
           itemId: order.id,
           id: order.orderNumber,
           user: order.user?.email || order.user?.username || null ,
@@ -200,12 +232,46 @@ orderFormConfig: FormSignin[] = [
           created: order.createdAt ? new Date(order.createdAt).toISOString() : null
         }));
 
-          console.log(formattedOrders);
-            this.Orders.set(formattedOrders)
-      },
-      complete: ()=> {this.toast.success('Sucessfully Loading Orders') },
-      error: () => {this.toast.error('Fail To load Orders')}
-    })
+        this.Orders.set(formattedOrders);
+
+
+
+    // this.adminService.getAllOrdersService().subscribe({
+    //   next: (res:any) => {
+    //       console.log('res => ', res.data)
+
+       
+
+    //     const formattedOrders: FormattedOrder[] = res.data.map((order: any): FormattedOrder => ({
+    //       itemId: order.id,
+    //       id: order.orderNumber,
+    //       user: order.user?.email || order.user?.username || null ,
+    //       totalAmount: order.totalAmount,
+    //       paymentMethod: order.paymentMethod,
+    //       paymentStatus: order.paymentStatus,
+    //       orderStatus: order.orderStatus,
+    //       isActive: order.isActive,
+    //       itemslength:order.OrderItems.length,
+    //       items: order.OrderItems.map((item: any): FormattedOrderItem => ({
+    //         productName: item.productName,
+    //         quantity: item.quantity,
+    //         price: item.productPrice,
+    //         total: item.total
+    //       })),
+    //       shippingAddress: order.shippingAddress
+    //         ? `${order.shippingAddress.street}, ${order.shippingAddress.city}, ${order.shippingAddress.zip}, ${order.shippingAddress.country}`
+    //         : null,
+    //       delivered: order.deliveredAt ? new Date(order.deliveredAt).toISOString() : null,
+    //       cancelled: order.cancelledAt ? new Date(order.cancelledAt).toISOString() : null,
+    //       created: order.createdAt ? new Date(order.createdAt).toISOString() : null
+    //     }));
+
+    //       console.log(formattedOrders);
+    //         this.Orders.set(formattedOrders)
+    //   },
+    //   complete: ()=> {this.toast.success('Sucessfully Loading Orders') },
+    //   error: () => {this.toast.error('Fail To load Orders')}
+    // })
 
     this.cd.markForCheck();
   }

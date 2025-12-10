@@ -86,7 +86,7 @@
                 <div>
                     <div
                         class="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
-                        @for (item of products; track item.id) {
+                        @for (item of products(); track item.id) {
                         <div class="" [routerLink]="['/product', item.id, item.name]">
                             <app-producet-item [ProductItem]="item"></app-producet-item>
                         </div>
@@ -95,7 +95,7 @@
                 </div>
 
                 <!-- No Results -->
-                @if(products?.length === 0){
+                @if(products()?.length === 0){
                 <div class="bg-white rounded-lg shadow-sm p-12 text-center">
                     <i class="pi pi-search text-6xl text-gray-300 mb-4"></i>
                     <h3 class="text-xl font-semibold text-gray-700 mb-2">No products found</h3>
@@ -107,7 +107,7 @@
 
 
                 <!-- Paginator  -->
-                @if((products?.length ?? 0) > 0) {
+                @if((products()?.length ?? 0) > 0) {
                 <div class="flex justify-center">
                     <div class="w-full shadow-lg z-10">
                         <div class="w-full sm:container mx-auto px-2 sm:px-4">
