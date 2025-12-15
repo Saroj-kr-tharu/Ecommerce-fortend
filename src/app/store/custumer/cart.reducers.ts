@@ -36,7 +36,7 @@ on(addItemcartsAction.sucessAdded, (state, action) => {
 on(getcartsAction.sucessGetCart, (state, action) => {
 
   const data = action?.payload?.data;
-  const displayedDAta = data.items.filter( (item:any) => item.selected ==false )
+  const displayedDAta = data.items.filter( (item:any) => item.selected == false )
   return {
     ...state,
     loading: false,

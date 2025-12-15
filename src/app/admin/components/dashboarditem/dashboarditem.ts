@@ -158,11 +158,11 @@ export class Dashboarditem implements OnInit {
     let monthRevenue = 0;
     
     orders.forEach(order => {
-      const orderDate = new Date(order.createdAt); // Adjust field name to match your data
+      const orderDate = new Date(order.createdAt);
       if (orderDate.getMonth() === date.getMonth() && 
           orderDate.getFullYear() === date.getFullYear()) {
         count++;
-        monthRevenue += order.totalAmount || 0; // Adjust field name to match your data
+        monthRevenue += order.totalAmount || 0; 
       }
     });
     
@@ -308,6 +308,8 @@ export class Dashboarditem implements OnInit {
       const textColorSecondary = documentStyle.getPropertyValue('--p-text-muted-color');
       const surfaceBorder = documentStyle.getPropertyValue('--p-content-border-color');
        const chartData = this.getMonthlyOrderData();
+
+       console.log('chartDAta => ', chartData)
 
       this.linedata = {
         labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],

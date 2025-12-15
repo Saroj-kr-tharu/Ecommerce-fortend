@@ -13,6 +13,8 @@ import { FormSignin, ValidationConfig } from '../../../core/models/auth.model';
 import { orderSummary } from '../../../core/models/order.model';
 import { CusServices } from '../../../core/services/custumer/cus.services';
 import { Navigation } from '../../../core/services/custumer/navigation';
+import { Payment } from '../../../core/services/payment/payment';
+import { environment } from '../../../environments/environment.development';
 
 @Component({
   selector: 'app-checkout',
@@ -40,6 +42,7 @@ export class Checkout implements OnInit {
   OrderSummaryData: any; 
   router = inject(Router);
   cusService = inject(CusServices);
+  paymentService = inject(Payment);
   toast = inject(HotToastService);
   navigation = inject(Navigation)
 
@@ -263,19 +266,11 @@ export class Checkout implements OnInit {
       return;
     }
 
-    if(this.paymentForm.value?.paymentMethod.toLowerCase() ==='cod' ){
       let local = localStorage.getItem('marketManduAuth');
       let localDa = JSON.parse(local || 'null');
-      if(localDa == null ){
-        return ;
-      }
+      if(localDa == null ) return ; 
 
     let orderItems: { productId: number; quantity: number }[] = [];
-
-    if(this.isBuyNow()) {
-      console.log('from checkout => ', this.orderSummary())
-    }
-    // console.log('previous  => ', )
     this.orderSummary().seletectItem.map((item: any) => {
           
           console.log('item => ', item)
@@ -287,9 +282,12 @@ export class Checkout implements OnInit {
         });
 
     
-
       let data = {
+    
         userId: localDa.id, 
+        userEmail: localDa.email,
+        gateway: this.paymentForm.value.paymentMethod,
+        paymentMethod: this.paymentForm.value.paymentMethod,
         shippingAddress: {
           street: this.shippingForm.value.address,
           city: this.shippingForm.value.city,
@@ -302,34 +300,125 @@ export class Checkout implements OnInit {
           zip: this.billingForm.value.zip,
           country: 'Nepal' 
         },
-        paymentMethod: this.paymentForm.value.paymentMethod,
         orderItems: orderItems,
-        // cartId: this.orderSummary().seletectItem[0].
+  
       };
 
-     
+    if(this.paymentForm.value?.paymentMethod.toLowerCase() ==='cod' ){   
       this.cusService.placeOrder(data).subscribe({
         next: (res:any) => {
           console.log('response => ', res)
-          // this.toast.loading(' Placcing Order ..  ')
+          this.toast.loading(' Placcing Order ..  ')
 
-          this.router.navigate(['/ordersuccess'], {
-              queryParams: {
-                orderNumber: res.data.orderNumber,
-                amount: res.data.totalAmount
-              }
-            });
+          const url = res?.data.data;
+          window.location.href = url;
+          
           
         },
-        complete: () => {
-          this.toast.success('Sucessfully Place order ')
-        },
+       
         error: (err) => {
           console.log('err => ', err)
           this.toast.error('Failed to Place Orders ')
         }
       })
+    }
 
+    if(this.paymentForm.value?.paymentMethod.toLowerCase() ==='stripe' ){   
+      this.paymentService.paymentIntialize(data)
+      .subscribe({
+        next: (res:any) => {
+          this.toast.loading(' Placcing Order ..  ')
+          
+          const url = res?.data.data;
+             window.location.href = url;
+        },
+       
+        error: (err) => {
+          console.log('err => ', err)
+          this.toast.error('Failed to Place Orders ')
+        }
+      })
+    }
+
+
+    if(this.paymentForm.value?.paymentMethod.toLowerCase() ==='khalti' ){   
+      this.paymentService.paymentIntialize(data)
+      .subscribe({
+        next: (res:any) => {
+          console.log('response => ', res)
+          
+          const url = res?.data.data.payment_url;
+            window.location.href = url;
+          
+        },
+      
+        error: (err) => {
+          console.log('err => ', err)
+          this.toast.error('Failed to Place Orders ')
+        }
+      })
+    }
+
+
+
+    if(this.paymentForm.value?.paymentMethod.toLowerCase() ==='esewa' ){  
+      
+      // Create and submit a form programmatically 
+       const   submitPayment = (data: any): void =>  {
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = 'https://rc-epay.esewa.com.np/api/epay/main/v2/form';
+          form.target = '_blank';
+          
+          Object.keys(data).forEach(key => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = data[key];
+            form.appendChild(input);
+          });
+
+          document.body.appendChild(form);
+          form.submit();
+          document.body.removeChild(form);
+        }
+
+       
+
+
+       this.paymentService.paymentIntialize(data).subscribe({
+        next: (res:any) => {
+          // console.log('response from esewa => ', res.data?.data) 
+          let initalizeEsewadata = res?.data?.data;
+
+          this.toast.loading('Placing Order ... ')
+
+          console.log('data= > ', initalizeEsewadata)
+
+           let finalDataesewa = {
+            amount: initalizeEsewadata?.amount, 
+            tax_amount: 0,
+            total_amount:initalizeEsewadata?.amount ,
+            transaction_uuid: initalizeEsewadata.transactionId,  
+            product_code: 'EPAYTEST' ,
+            product_service_charge: 0,
+            product_delivery_charge: 0,  
+            success_url: `${environment.PAYMENT_BACKEND_URL}/complete-payment`,
+            failure_url: "https://developer.esewa.com.np/failure", 
+            signed_field_names:  "total_amount,transaction_uuid,product_code", 
+            signature: initalizeEsewadata.hash.signature,
+            secret: "8gBm/:&EnhH.1/q",
+           }
+           submitPayment(finalDataesewa)
+          
+          
+        },
+       
+        error: (err) => {
+          console.log('err => ', err)
+          this.toast.error('Failed to Place Orders ')
+        }
+      })
     }
 
   }

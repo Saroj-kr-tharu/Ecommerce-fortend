@@ -40,10 +40,9 @@ export class AuthLoginEffect {
 
         catchError((error) => {
           const errorMessage =
-           
-            'Login failed!';
+            error.error.message ;
 
-          
+          console.log('error => ', error.error.message )
           this.toast.error(errorMessage);
 
           return of(loginAction.failedLogin());
