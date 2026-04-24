@@ -27,14 +27,14 @@ export class Searchbar implements OnInit, OnDestroy  {
         takeUntil(this.destroy$)
       )
       .subscribe(value => {
-        console.log('Search value changed:', value);
+        // console.log('Search value changed:', value);
       });
   }
 
   onSearch(): void {
     const searchText = this.searchControl.value?.trim();
     if (searchText) {
-      console.log('Search submitted:', searchText);
+      // console.log('Search submitted:', searchText);
       this.router.navigate(['/search'], {
         queryParams: {
         q: searchText

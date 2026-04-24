@@ -38,58 +38,54 @@ export class Header implements OnInit {
   }
 
    constructor( private store: Store<{LoginReducer : LoginState }> ) {
-          this.loginState = this.store.selectSignal(selectLogin);
           this.cartState = this.store.selectSignal(selectCart);
+          this.loginState = this.store.selectSignal(selectLogin);
           
           effect( ()=> {
+            this.loginState = this.store.selectSignal(selectLogin);
             this.cartState = this.store.selectSignal(selectCart);
-             this.loginState = this.store.selectSignal(selectLogin);
           } );
 
     }
 
     ngOnInit(): void {
           const session = localStorage.getItem('marketManduAuth');
-
         if (session) {
             this.store.dispatch(restoreSessionAction.restoreSession({ payload:  JSON.parse(session)}));
-            
         }
     }
-   
-getVisibleLinks() {
-  if (this.loginState().isAdmin) {
-    return [
-      {text: 'Dashboard', to: '/admin/dashboard', },
-      {text: 'Products', to: '/admin/products',  },
-      {text: 'Users', to: '/admin/users',  },
-      {text: 'Orders', to: '/admin/orders',  },
-      {text: 'Logout', to: null, } 
-    ];
-  } else if (this.loginState().isLogin) {
-    return [
-      {text: 'Cart', to: '/cart',} , 
-      {text: 'Checkout', to: '/checkout'},  
-      {text: 'Logout', to: null},  
-    ];
-  } else {
-    return [
-      {text: 'Login', to: '/login' ,},
-      {text: 'Register', to: '/signup' ,}
-    ];
+    
+  getVisibleLinks() {
+    if (this.loginState().isAdmin) {
+      return [
+        {text: 'Dashboard', to: '/admin/dashboard', },
+        {text: 'Products', to: '/admin/products',  },
+        {text: 'Users', to: '/admin/users',  },
+        {text: 'Orders', to: '/admin/orders',  },
+        {text: 'Logout', to: null, } 
+      ];
+    } else if (this.loginState().isLogin) {
+      return [
+        {text: 'Cart', to: '/cart',} , 
+        // {text: 'Checkout', to: '/checkout'},  
+        {text: 'Logout', to: null},  
+      ];
+    } else {
+      return [
+        {text: 'Login', to: '/login' ,},
+        {text: 'Register', to: '/signup' ,}
+      ];
+    }
+  }  
+    
+    
+  toggleMobileMenu() {
+      this.isMobileMenuOpen.update(value => !value);
   }
-}  
-  
-  
-toggleMobileMenu() {
-    this.isMobileMenuOpen.update(value => !value);
-}
 
-logoutFn() {
-
+  logoutFn() {
         this.store.dispatch(  logoutAction.logout() );
-  
-}
+  }
 
 }
 

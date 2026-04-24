@@ -191,7 +191,7 @@ export class SearchComponent implements OnInit {
       payload.sort = this.selectedSort.value;
     }
 
-    console.log('Dispatching with payload:', payload);
+    // console.log('Dispatching with payload:', payload);
     this.store.dispatch(getAllProductsAction.load({ payload }));
     
     
@@ -240,26 +240,26 @@ export class SearchComponent implements OnInit {
 
   // Handle sort selection
   onSortSelect(event: any): void {
-    console.log('Sort Selected:', event.value);
+    // console.log('Sort Selected:', event.value);
     this.selectedSort = event.value;
     this.loadProducts();
   }
 
   // Handle category selection
   onCategoryChange(): void {
-    console.log('Category Changed:', this.selectedCategory);
+    // console.log('Category Changed:', this.selectedCategory);
     this.loadProducts();
   }
 
   // Handle brand checkbox change
   onBrandChange(): void {
-    console.log('Brands Selected:', this.selectedBrands);
+    // console.log('Brands Selected:', this.selectedBrands);
     this.loadProducts();
   }
 
   // Handle min price change
   onMinPriceChange(): void {
-    console.log('Min Price Changed:', this.minPriceInput);
+    // console.log('Min Price Changed:', this.minPriceInput);
     // if (this.minPriceInput > this.maxPriceInput) {
     //   this.minPriceInput = this.maxPriceInput;
     // }
@@ -268,7 +268,7 @@ export class SearchComponent implements OnInit {
 
   // Handle max price change
   onMaxPriceChange(): void {
-    console.log('Max Price Changed:', this.maxPriceInput);
+    // console.log('Max Price Changed:', this.maxPriceInput);
     if (this.maxPriceInput < this.minPriceInput) {
       this.maxPriceInput = this.minPriceInput;
     }
@@ -278,20 +278,20 @@ export class SearchComponent implements OnInit {
   // Handle rating selection
   onRatingChange(rating: number): void {
     this.selectedRating = rating;
-    console.log('Rating Selected:', rating);
+    // console.log('Rating Selected:', rating);
     this.loadProducts();
   }
 
   // Apply all filters
   applyFilters(): void {
-    console.log('Applying Filters...');
+    // console.log('Applying Filters...');
     this.loadProducts();
     this.drawerVisible = false; // Close drawer after applying
   }
 
   // Clear all filters
   clearAllFilters(): void {
-    console.log('Clearing All Filters');
+    // console.log('Clearing All Filters');
     this.selectedCategory = null;
     this.selectedBrands = [];
     this.minPriceInput = this.filterOptions.minPrice;
@@ -312,14 +312,14 @@ export class SearchComponent implements OnInit {
 
   // Remove category filter
   removeCategory(): void {
-    console.log('Removing Category Filter');
+    // console.log('Removing Category Filter');
     this.selectedCategory = null;
     this.loadProducts();
   }
 
   // Remove brand filter
   removeBrand(brand: string): void {
-    console.log('Removing Brand:', brand);
+    // console.log('Removing Brand:', brand);
     this.selectedBrands = this.selectedBrands.filter(b => b !== brand);
     this.loadProducts();
   }

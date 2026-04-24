@@ -73,7 +73,7 @@ export class Productdetails implements OnInit {
 
   ngOnInit(): void {
     const productId = this.route.snapshot.paramMap.get('id');
-    console.log('Product ID from route:', productId);
+    // console.log('Product ID from route:', productId);
     
     if (productId) {
       this.loadProduct(parseInt(productId));
@@ -86,12 +86,12 @@ export class Productdetails implements OnInit {
 
     this.productService.getProductByIdService(id).subscribe({
       next: (res:any) => {
-        console.log('Product loaded:', res);
+        // console.log('Product loaded:', res);
         this.product.set(res.data);
         this.isLoading.set(false);
       },
       error: (err) => {
-        console.error('Error loading product:', err);
+        // console.error('Error loading product:', err);
         this.error.set('Failed to load product');
         this.isLoading.set(false);
       }
@@ -133,7 +133,7 @@ export class Productdetails implements OnInit {
     const prod = this.product();
     
     if (prod && prod.stock && prod.stock > 0) {
-      console.log('Buy now:', prod, 'Quantity:', this.quantity());
+      // console.log('Buy now:', prod, 'Quantity:', this.quantity());
        if(!this.loginState().isLogin){
         this.toast.warning(' Please Login  ');
         return;
@@ -188,7 +188,7 @@ export class Productdetails implements OnInit {
   addToWishlist(): void {
     const prod = this.product();
     if (prod) {
-      console.log('Add to wishlist:', prod);
+      // console.log('Add to wishlist:', prod);
       if(!this.loginState().isLogin){
         this.toast.warning(' Please Login ');
         return;

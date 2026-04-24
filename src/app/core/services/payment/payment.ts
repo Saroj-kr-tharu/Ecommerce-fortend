@@ -8,13 +8,13 @@ import { environment } from '../../../environments/environment.development';
 export class Payment {
   httpClient = inject(HttpClient)
 
-  BaseUrl = `${environment.apiURL}`;
+  BaseUrl = `${environment.apiURL}`; 
 
 
 
   // products 
   paymentIntialize(data:any) {
-    const url = `${this.BaseUrl}/orders/orderIntial`
+    const url = `${this.BaseUrl}/ecommerce/orders/orderIntial`
     return  this.httpClient.post(url, data) ; 
   }
 

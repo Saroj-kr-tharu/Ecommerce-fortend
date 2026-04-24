@@ -18,7 +18,7 @@ export const authGuard: CanActivateFn  = (route, state) => {
 
   return store.select(selectLogin).pipe(
     map((state) => {
-      console.log('auth guard => here  ')
+      // console.log('auth guard => here  ')
       // 1. Check store
       if (state?.isLogin) return true;
 

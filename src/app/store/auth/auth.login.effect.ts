@@ -32,7 +32,6 @@ export class AuthLoginEffect {
         }),
 
         map((res: any) =>{
-           
           return   loginAction.sucessLogin({ payload: res?.data })
         }
                
@@ -44,7 +43,6 @@ export class AuthLoginEffect {
 
           console.log('error => ', error.error.message )
           this.toast.error(errorMessage);
-
           return of(loginAction.failedLogin());
         })
       )
@@ -59,7 +57,7 @@ export class AuthLoginEffect {
       this.actions$.pipe(
         ofType(loginAction.sucessLogin),
         tap((action) => {
-          console.log('action => ',action?.payload?.role)
+          // console.log('action => ',action?.payload?.role)
           if(action?.payload?.role?.toLowerCase() === 'admin') 
             this.router.navigateByUrl('/admin/dashboard');
           else

@@ -166,7 +166,7 @@ export class Checkout implements OnInit {
     constructor(private route: ActivatedRoute){
       this.orderSummary.set(this.cusService.getOrderSummary() ) ;
      const buyNow = this.route.snapshot.paramMap.get('buynow');
-      console.log( 'params = >', this.orderSummary())
+      // console.log( 'params = >', this.orderSummary())
 
       if(buyNow == 'BuyNow'){
         this.isBuyNow.set(true);
@@ -176,7 +176,7 @@ export class Checkout implements OnInit {
 
     ngOnInit(): void {
       this.orderSummary.set(this.cusService.getOrderSummary() ) ;
-      console.log('order=> ',this.orderSummary());
+      // console.log('order=> ',this.orderSummary());
     }
 
 
@@ -273,7 +273,7 @@ export class Checkout implements OnInit {
     let orderItems: { productId: number; quantity: number }[] = [];
     this.orderSummary().seletectItem.map((item: any) => {
           
-          console.log('item => ', item)
+          // console.log('item => ', item)
           orderItems.push({
             productId:   item.productId,
             quantity: item.quantity
@@ -307,7 +307,7 @@ export class Checkout implements OnInit {
     if(this.paymentForm.value?.paymentMethod.toLowerCase() ==='cod' ){   
       this.cusService.placeOrder(data).subscribe({
         next: (res:any) => {
-          console.log('response => ', res)
+          // console.log('response => ', res)
           this.toast.loading(' Placcing Order ..  ')
 
           const url = res?.data.data;
@@ -345,7 +345,7 @@ export class Checkout implements OnInit {
       this.paymentService.paymentIntialize(data)
       .subscribe({
         next: (res:any) => {
-          console.log('response => ', res)
+          // console.log('response => ', res)
           
           const url = res?.data.data.payment_url;
             window.location.href = url;
@@ -393,7 +393,7 @@ export class Checkout implements OnInit {
 
           this.toast.loading('Placing Order ... ')
 
-          console.log('data= > ', initalizeEsewadata)
+          // console.log('data= > ', initalizeEsewadata)
 
            let finalDataesewa = {
             amount: initalizeEsewadata?.amount, 

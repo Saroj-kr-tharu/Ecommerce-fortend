@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { BehaviorSubject, catchError, filter, switchMap, take, throwError } from 'rxjs';
 import { environment } from '../../environments/environment.development';
+import { restoreSessionAction } from '../../store/auth/auth.actions';
 import { selectLogin } from '../../store/auth/auth.selectors';
 
 let isRefreshing = false;
@@ -15,7 +16,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const http = inject(HttpClient);
   const toast = inject(HotToastService)
   const router = inject(Router)
-
+ 
   // 1️ GET ACCESS TOKEN
   let token: string | null = store.selectSignal(selectLogin)()?.users?.jwt || null;
   if (!token) {
@@ -27,7 +28,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   // 2️ Clone request with credentials for ALL requests
   let authReq = req.clone({
-    withCredentials: true  //  Always include credentials (cookies)
+    withCredentials: true  
   });
 
   // 3️ Add access token header EXCEPT for refresh endpoint
@@ -54,11 +55,14 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           return http.post<any>(`${environment.apiURL}/auth/refresh-token`, {}).pipe(
             switchMap((res) => {
               isRefreshing = false;
+              // console.log("new Refresh token => ", res) 
               const newAccessToken = res.data.jwt;
               
+              // need to dispatch the login reducer to store 
+               store.dispatch(restoreSessionAction.restoreSession({ payload: res.data }));
+
               // Save new access token
               localStorage.setItem('marketManduAuth', JSON.stringify(res.data));
-
               refreshTokenSubject.next(newAccessToken);
 
               // Retry original request with new token

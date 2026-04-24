@@ -10,9 +10,7 @@ import { loadProductType } from '../../models/product.model';
 export class CusServices {
       
   httpClient = inject(HttpClient)
-
   BaseUrl = `${environment.apiURL}`;
-
   private orderSummary: any;
  
 
@@ -25,92 +23,71 @@ export class CusServices {
       const savedSummary = localStorage.getItem('orderSummary');
       if (savedSummary) {
         this.orderSummary = (JSON.parse(savedSummary));
-
       } 
     return this.orderSummary;
   }
 
-
   
     getAllProductsService(data: loadProductType) {
-      const url = `${this.BaseUrl}/products`
-      
-    
+      const url = `${this.BaseUrl}/ecommerce/products`
       const params = { ...data } as Record<string, string | number | boolean>;
       return this.httpClient.get(url, { params });
-      
     }
     
+    // products 
     getProductByIdService(data: number) {
-      const url = `${this.BaseUrl}/product?id=${data}`
-      
-    
+      const url = `${this.BaseUrl}/ecommerce/product?id=${data}`
       const params = { id: data } as Record<string,  | number >;
       return this.httpClient.get(url);
-      
     }
 
     placeOrder(data: any ) {
-      const url = `${this.BaseUrl}/orders/addOrder`
-      
+      const url = `${this.BaseUrl}/ecommerce/orders/addOrder`
       return this.httpClient.post(url, data );
-      
     }
 
     // cart 
     addItemToCart(data: addItemToCart ) {
-      const url = `${this.BaseUrl}/cart/add`
-      
+      const url = `${this.BaseUrl}/ecommerce/cart/items`
       return this.httpClient.post(url, data );
-      
     }
     getCart(userId:number ) {
-      const url = `${this.BaseUrl}/cart/getCart`
-      
+      const url = `${this.BaseUrl}/ecommerce/cart`
+      // console.log("data => ", userId)
       return this.httpClient.post(url, userId );
-      
     }
 
     deleteCart(userId:number ) {
-      const url = `${this.BaseUrl}/cart/delete`
-      console.log('servie => ', userId)
-      
+      const url = `${this.BaseUrl}/ecommerce/cart/items`     
       return this.httpClient.delete(url, { params: { userId } });
-      
     }
 
   removeItemToCart(cartItemId: number ) {
-      const url = `${this.BaseUrl}/cart/removeItem`
-      
-      return this.httpClient.delete(url, { params: { cartItemId: cartItemId } });
-      
+      const url = `${this.BaseUrl}/ecommerce/cart/items/${cartItemId}`
+      return this.httpClient.delete(url);
     }
 
   BulkremoveItemToCart(cartItemIds: number[] ) {
-      const url = `${this.BaseUrl}/cart/bulkdelete`
-      
-      return this.httpClient.post(url, cartItemIds);
+      const url = `${this.BaseUrl}/ecommerce/cart/items`
+      return this.httpClient.delete(url, {
+        body: { cartItemIds }
+      });
   }
 
   BulkupdateItemToCart(cartItemIds: any ) {
-      const url = `${this.BaseUrl}/cart/bulkupdate`
-        
-    
+      const url = `${this.BaseUrl}/ecommerce/cart/items`
       return this.httpClient.patch(url, cartItemIds);
   }
 
     updateItemToCart(data: updateItemCart ) {
-      const url = `${this.BaseUrl}/cart/updateItem`
-      
+      // console.log("data from delete update => ", data )
+      const url = `${this.BaseUrl}/ecommerce/cart/items/${data.cartItemId}`
       return this.httpClient.patch(url, data );
-      
     }
 
     CheckoutCart(userId: number ) {
-      const url = `${this.BaseUrl}/cart/checkout`
-      
+      const url = `${this.BaseUrl}/ecommerce/cart/checkout`
       return this.httpClient.get(url, { params: { userId: userId } });
-      
     }
   
 }

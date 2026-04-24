@@ -23,7 +23,7 @@ export class AuthServices {
     return  this.httpClient.post(url, data) ; 
   }
   
-    logoutService() {
+  logoutService() {
       const url = `${this.BaseUrl}/logout`
        return  this.httpClient.post(url, {}) ; 
   }

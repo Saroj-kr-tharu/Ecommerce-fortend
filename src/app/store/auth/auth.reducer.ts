@@ -71,7 +71,6 @@ export const loginReducer = createReducer(
     };
 
     localStorage.setItem('marketManduAuth', JSON.stringify(action?.payload));
-
     return data;
   }),
 
@@ -87,26 +86,27 @@ export const loginReducer = createReducer(
 
 
   on(restoreSessionAction.restoreSession, (state, action) => {
-    console.log('Restore session reducer fired', action);
-    // console.log('action => ', action?.payload)
+    // console.log('retore session action  action => ', action?.payload)
+    
+    localStorage.removeItem('marketManduAuth');
     const data = {
-      ...state,
-      users: action?.payload,
-      loading: false,
-      error: null,
-
-      success: true,
-      isAdmin: action?.payload.role?.toLowerCase() === 'admin' ? true : false,
-      isLogin: true,
+        ...state,
+        loading: false,
+        error: null,
+        success: true,
+        isAdmin: action?.payload.role?.toLowerCase() === 'admin' ? true : false,
+        isLogin: true,
+        users: action?.payload,
     };
 
+    localStorage.setItem('marketManduAuth', JSON.stringify(action?.payload));
     return data;
   }),
 
 
    on(logoutAction.sucesslogout, (state) => {
-    console.log('hhelo => ', )
-    console.log("Logout sucess reducer fired");
+    // console.log('hhelo => ', )
+    // console.log("Logout sucess reducer fired");
 
     localStorage.removeItem('marketManduAuth');
     const data = {
@@ -124,7 +124,7 @@ export const loginReducer = createReducer(
 
    on(logoutAction.logout, (state) => {
    
-    console.log("Logout reducer fired");
+    // console.log("Logout reducer fired");
 
     
     const data = {

@@ -15,8 +15,6 @@ const productIntialState: loadProductInitalType = {
 };
 
 
-
-
 export const getProductReducer = createReducer(
     productIntialState, 
     on(getAllProductsAction.load,  (state) => ({
@@ -29,33 +27,27 @@ export const getProductReducer = createReducer(
     })),
 
     on(getAllProductsAction.sucessLoading, (state, action) => {
-
-           
-
-          const DisplayData = action?.payload?.rows.filter((item) => item.isActive === true)
-            
+ 
+            // console.log("sucess => ", action?.payload.rows)
+            const DisplayData = action?.payload?.rows.filter((item) => item.isActive !== true)
             const cate = DisplayData.map( (item) =>  item.category   );
             const brand = DisplayData.map( (item) =>  item.brand   );
 
-            console.log('sucess loading => ', DisplayData)
             const data ={ 
-            ...state,
-            loading: false,
-            error: null,
-            success: true,
-            category: cate , 
-            brand: brand,
-            totalRecords:action?.payload?.count , 
-            data: DisplayData
+                ...state,
+                loading: false,
+                error: null,
+                success: true,
+                category: cate , 
+                brand: brand,
+                totalRecords:action?.payload?.count , 
+                data: DisplayData
             }
 
             if( localStorage.getItem('category') == null ){
-
                 localStorage.setItem('category', JSON.stringify(cate) )
             }
-
             return data ;
-
             }),
 
 

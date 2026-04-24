@@ -19,17 +19,13 @@ import { selectGetAllProduct } from '../../../store/custumer/cus.selectors';
 })
 export class CusHome implements OnInit  {
 
-  
-  
   products = signal<ProductType[]>([]);
   
     first: number = 0;
     rows: number = 10;
     totalRecords = signal(0);
     
-
     allState !: Signal<loadProductInitalType> ;
-
     bannerOffers = [
                   {title: 'Best Seller', items: this.products , },
                   {title: 'Popular Items', items: this.products , },
@@ -37,25 +33,15 @@ export class CusHome implements OnInit  {
                 ]
     
      constructor(private store: Store<{GetAllProductsReducer : loadProductInitalType }> ) {
-
-
             this.allState = this.store.selectSignal(selectGetAllProduct)
-
              effect(() => {
-                console.log('products updated => ', this.allState().data);
+                // console.log('products updated => ', this.allState().data);
                 this.products.set(this.allState().data ?? []);
                 this.totalRecords.set(this.allState().totalRecords);
-
-                
-                
             });
-
-
         }
 
         ngOnInit(): void {
-            
-          
           const  data = {
               limit: this.rows, 
               page: 1, 
@@ -67,11 +53,10 @@ export class CusHome implements OnInit  {
             local = localStr ? JSON.parse(localStr) : null;
 
             if (local && local.id) {
+              // console.log('local => ', local)
               let user = { userId: local.id };
               this.store.dispatch(getcartsAction.getCart({ payload: user }));
             }
-
-           
 
         }
 
@@ -79,7 +64,7 @@ export class CusHome implements OnInit  {
     this.first = event.first ?? 0;
     this.rows = event.rows ?? 10;
 
-    console.log('page => ', event)
+    // console.log('page event => ', event)
 
     const page = Math.floor(this.first / this.rows) + 1;
  
@@ -90,10 +75,5 @@ export class CusHome implements OnInit  {
 
     this.store.dispatch(getAllProductsAction.load({ payload: data }));
   }
-
-    
-  
-  
-
 
 }

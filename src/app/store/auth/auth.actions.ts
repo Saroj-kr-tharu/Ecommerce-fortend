@@ -14,7 +14,7 @@ export const registerAction = createActionGroup({
 
 export const loginAction = createActionGroup({
     source: 'auth login api', 
-    events: {   
+    events: {    
         'login': props<{payload: loginType }>(), 
         'sucess login': props <{payload: sucessLoginType}> (),
         'failed login': emptyProps()
