@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, computed, effect, inject, OnInit, signal, Signal, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -24,8 +25,6 @@ import { AdminService } from '../../../core/services/admin/admin-service';
 import { Cardbanner } from "../../../shared/components/cardbanner/cardbanner";
 import { selectProducts } from '../../../store/admin/admin.selectors';
 import { selectGetAllProduct } from '../../../store/custumer/cus.selectors';
-
-
 
 
 @Component({
@@ -59,6 +58,7 @@ export class Products implements OnInit {
 
   adminService = inject(AdminService)
   toast = inject(HotToastService)
+  router = inject(Router) 
 
   bannerItems = signal<any[]>([]);
 
@@ -85,9 +85,6 @@ export class Products implements OnInit {
   totalDelete = computed(() => this.products().filter(product => product.isActive === false).length);
   totalStockOut = computed(() => this.products().filter(product => product.stock === 0).length);
   totalStockIN = computed(() => this.products().filter(product => product.stock > 0).length);
-
-
-
 
     // table header 
   tableHeaders = [
@@ -131,6 +128,7 @@ export class Products implements OnInit {
     // private store: Store<{GetAllProductsReducer : loadProductInitalType }>
   ) {
       this.allState = this.store.selectSignal(selectGetAllProduct)
+      
 
         effect(() => {
     this.bannerItems.set([
@@ -145,6 +143,10 @@ export class Products implements OnInit {
 
   }
 
+  navigateToProduct(product: any) {
+    this.router.navigate(['/product', product.id, product.name]);
+  }
+
   get mutableProducts() {
   return [...this.products()];   
 }
@@ -154,19 +156,8 @@ export class Products implements OnInit {
   }
 
   loadInitialData() {
-    
-    
-
-     this.productstate = this.store.selectSignal(selectProducts);
+    this.productstate = this.store.selectSignal(selectProducts);
     this.products.set(this.productstate())
-    // this.adminService.getAllProductService().subscribe({
-    //   next: (res:any) => {
-    //         this.products.set(res.data)
-    //   },
-    //   complete: ()=> {this.toast.success('Sucessfully Loading Data') },
-    //   error: () => {this.toast.error('Fail To Load All Data')}
-    // })
-
     this.cd.markForCheck();
   }
 
@@ -418,8 +409,6 @@ export class Products implements OnInit {
     });
  
     }
-
-
     this.submitted = true;
     console.log(this.productForm.value)
     this.hideDialog();
@@ -461,9 +450,9 @@ export class Products implements OnInit {
   }
 
 
-   getValidationKeys(validation: ValidationConfig): string[] {
+  getValidationKeys(validation: ValidationConfig): string[] {
       return Object.keys(validation);
-    }
+  }
 
   // Delete multiple selected products
   deleteSelectedProducts() {
@@ -500,8 +489,6 @@ export class Products implements OnInit {
           error: () => { this.toast.error('Failed To Bulk Delete') }
         })
         this.selectedProducts = [];
-
-        
       }
     });
   }

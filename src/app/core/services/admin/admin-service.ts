@@ -49,14 +49,19 @@ export class AdminService {
   }
 
 
-   updateOrdersService(id:number , data:any  ) {
+  updateOrdersService(id:number , data:any  ) {
     const url = `${this.BaseUrl}/ecommerce/orders/update?orderId=${id}`
     return this.httpClient.patch(url, data );
   }
 
+  getOrderByOrderNo(id:string  ) {
+    const url = `${this.BaseUrl}/ecommerce/orders/orderByNO/${id}`
+    return this.httpClient.get(url );
+  }
+
 
   // users 
-   getAllUsersService(  ) {
+    getAllUsersService(  ) {
     const url = `${this.BaseUrl}/auth/userswithoutfilter`
     return this.httpClient.get(url );
   }
@@ -70,7 +75,11 @@ export class AdminService {
     const url = `${this.BaseUrl}/auth/users/bulkupdate`
     return this.httpClient.patch(url, {ids: data} );
   }
-   
+  
+  getUserByUserId( userId : any) {
+   const url = `${this.BaseUrl}/auth/email/${userId}`
+   return this.httpClient.get(url );
+  }
 
 
 }

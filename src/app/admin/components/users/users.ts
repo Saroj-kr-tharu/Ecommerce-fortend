@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, computed, effect, inject, OnInit, Signal, signal, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -59,6 +60,7 @@ export class Users implements OnInit {
 
   adminService = inject(AdminService)
   toast = inject(HotToastService)
+  router = inject(Router)
 
   //  products = computed(() => this.allState().data ??  []);
   Users = signal<sucessLoginType[]>([]);
@@ -76,7 +78,7 @@ export class Users implements OnInit {
   globalFilterValue: string = '';
   
   private store = inject(Store<{ DashboardReducer: DashboardState }>);
-  usersstate!: Signal<sucessLoginType[]>;
+  usersstate!: Signal<sucessLoginType[]>; 
 
 
 
@@ -102,7 +104,7 @@ export class Users implements OnInit {
   ];
 
 
-    bannerItems = signal<any[]>([]);
+  bannerItems = signal<any[]>([]);
 
   // Category options
   categories: SelectOption[] = [];
@@ -121,21 +123,17 @@ export class Users implements OnInit {
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
     private cd: ChangeDetectorRef,
-    
   ) {
-
      effect(() => {
-    this.bannerItems.set([
-       
-      { title: "Total Users", value: this.usersstate().length, icon: "pi pi-users" },
-      { title: "Total Custumer", value: this.totalCustumer(), icon: "pi pi-shopping-bag" },
-      { title: "Total Admin", value: this.totaladmin(), icon: "pi pi-shopping-cart" },
-      { title: "Total Ban", value: this.totalban(), icon: "pi pi-check-circle" },
-  
-    ]);
-  });
-
-
+      this.bannerItems.set([
+        
+        { title: "Total Users", value: this.usersstate().length, icon: "pi pi-users" },
+        { title: "Total Custumer", value: this.totalCustumer(), icon: "pi pi-shopping-bag" },
+        { title: "Total Admin", value: this.totaladmin(), icon: "pi pi-shopping-cart" },
+        { title: "Total Ban", value: this.totalban(), icon: "pi pi-check-circle" },
+    
+      ]);
+    });
   }
 
   get mutableProducts() {
@@ -147,26 +145,14 @@ export class Users implements OnInit {
   }
 
   loadInitialData() {
-
     this.usersstate = this.store.selectSignal(selectUsers);
     this.Users.set(this.usersstate())
-    // console.log('userstate -=> ', this.usersstate())
-
-    // this.adminService.getAllUsersService().subscribe({
-    //   next: (res:any) => {
-    //     console.log('res => ', res)
-    //         this.Users.set(res.data)
-    //   },
-    //   complete: ()=> {this.toast.success('Sucessfully Loading Users') },
-    //   error: () => {this.toast.error('Failed To load Users')}
-    // })
-
-    
-
     this.cd.markForCheck();
   }
 
-  
+  navigateToUser(product: any) {
+    this.router.navigate(['/admin/user', product.id]);
+  }
 
        
   UsersForm : FormGroup = new FormGroup({
@@ -184,9 +170,6 @@ export class Users implements OnInit {
     { type: 'select', id: 'role', label: 'Role', placeholder: 'Select role...', autocomplete: '', options: [ { label: 'CUSTOMER', value: 'CUSTOMER' }, { label: 'ADMIN', value: 'ADMIN' } ], validation: { required: 'Role is required' } },
     { type: 'select', id: 'isActive', label: 'Active Status', placeholder: 'Select status...', autocomplete: '', options: [ { label: 'Active', value: true }, { label: 'Inactive', value: false } ], validation: { required: 'Active status is required' } }
   ];
-
-
-
 
 
   // Autocomplete filter for Category
@@ -241,7 +224,7 @@ export class Users implements OnInit {
         this.isEditOpen.set(true)
         this.originalValue = user;
 
-    console.log('edit click ', this.originalValue)
+    // console.log('edit click ', this.originalValue)
       this.user = {
         id:user.id,
         isActive: user.isActive, 
@@ -284,14 +267,10 @@ export class Users implements OnInit {
       error: () => {this.toast.error('Faile to Edit Product')}
     });
  
-    
-
 
     this.submitted = true;
     console.log(this.UsersForm.value)
     this.hideDialog();
-
-    
   }
 
   // Delete a single product
@@ -371,17 +350,10 @@ export class Users implements OnInit {
   }
 
 
-
-
-
   // Helper: Find product index by ID
   findIndexById(id: string): number {
   //   // return this.products.findIndex(p => p.id === id);
   return 0
   }
-
-
-
-
 
 }

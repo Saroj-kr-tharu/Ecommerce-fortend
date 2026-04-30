@@ -1,53 +1,49 @@
-<div class="mb-6">
-    <h2 class="text-3xl font-bold text-gray-800">Orders</h2>
-    <p class="text-gray-600 mt-1">Manage Orders </p>
+<div animate.enter="fade-in-element" class="mb-6">
+  <h2 class="text-3xl font-bold text-gray-800">Orders</h2>
+  <p class="text-gray-600 mt-1">Manage Orders </p>
 </div>
 
 <!-- Stats Grid -->
 <div>
-    <app-cardbanner [banner]="bannerItems"></app-cardbanner>
+  <app-cardbanner [banner]="bannerItems"></app-cardbanner>
 </div>
 
 
 
 
 <div class="w-full  sm:justify-center items-center sm:flex flex-col">
-    <div class="w-full flex  justify-center ">
-        <div class="w-full  md:max-w-[95vw]">
+  <div class="w-full flex  justify-center ">
+    <div class="w-full  md:max-w-[95vw]">
 
-            <!-- Header Section -->
-            <div class="bg-slate-50/50  rounded-xl shadow-lg p-6 mb-4 border border-slate-200">
+      <!-- Header Section -->
+      <div animate.enter="fade-in-element" class="bg-slate-50/50  rounded-xl shadow-lg p-6 mb-4 border border-slate-200">
 
-                <!-- Action Buttons Row -->
-                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+        <!-- Action Buttons Row -->
+        <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
 
-                    <div>
-                        <h2 class="text-2xl font-bold  text-gray-800  bg-clip-text ">
-                            Manage Orders
-                        </h2>
-                        <p class="text-sm text-gray-500 mt-1 capitalize">Organize and track Order</p>
-                    </div>
+          <div>
+            <h2 class="text-2xl font-bold  text-gray-800  bg-clip-text ">
+              Manage Orders
+            </h2>
+            <p class="text-sm text-gray-500 mt-1 capitalize">Organize and track Order</p>
+          </div>
 
-                    <!-- // search -->
-                    <div class="relative  w-full lg:w-2/5">
-                        <i class="pi pi-search absolute right-4 top-1/2 -translate-y-1/2 text-gray"></i>
+          <!-- // search -->
+          <div class="relative  w-full lg:w-2/5">
+            <i class="pi pi-search absolute right-4 top-1/2 -translate-y-1/2 text-gray"></i>
 
-                        <input type="text" [(ngModel)]="globalFilterValue" (input)="onGlobalFilter($event)"
-                            placeholder="Search orders..." class="w-full h-11  bg-[#14B8A6]  rounded-sm pl-4 pr-12 
+            <input type="text" [(ngModel)]="globalFilterValue" (input)="onGlobalFilter($event)" placeholder="Search orders..." class="w-full h-11  bg-[#14B8A6]  rounded-sm pl-4 pr-12 
                               transition-all" />
-                    </div>
+          </div>
 
-                </div>
+        </div>
 
-            </div>
+      </div>
 
-            <!-- Table Section -->
-            <div class=" rounded-xl shadow-xl border border-slate-200 overflow-hidden">
+      <!-- Table Section -->
+      <div class=" rounded-xl shadow-xl border border-slate-200 overflow-hidden">
 
-                <p-table class="modern-table" #dt [value]="mutableOrders()" [rows]="5" [paginator]="true"
-                    [rowsPerPageOptions]="[5, 10, 20, 30]" [showCurrentPageReport]="true"
-                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-                    [(selection)]="selectedProducts" [rowHover]="true" dataKey="id" [globalFilterFields]="[
+        <p-table animate.enter="fade-in-element" class="modern-table" #dt [value]="mutableOrders()" [rows]="5" [paginator]="true" [rowsPerPageOptions]="[5, 10, 20, 30]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [(selection)]="selectedProducts" [rowHover]="true" dataKey="id" [globalFilterFields]="[
                             'id',
                             'user',
                             'totalAmount',
@@ -62,195 +58,186 @@
                         ]" styleClass="p-datatable-sm " [tableStyle]="{'min-width': '72rem'}" [scrollable]="true">
 
 
-                    <!-- Header -->
-                    <ng-template pTemplate="header">
-                        <tr class="bg-slate-50/50 ">
+          <!-- Header -->
+          <ng-template pTemplate="header">
+            <tr class="bg-slate-50/50 ">
 
 
-                            @for (item of tableHeaders; track $index) {
-                            @if (item.icon == null) {
-                            <th [style]="item.width"
-                                class="py-4! px-4! font-semibold! text-xs! text-gray-700! tracking-wide!">
-                                {{item.title | uppercase}}
-                            </th>
-                            }
-                            @else {
-                            <th [pSortableColumn]="item.field" [style]="item.width"
-                                class="py-4!  px-4! font-semibold! text-xs! text-gray-700! tracking-wide!">
-                                {{item.title| uppercase}}
-                                <p-sortIcon field="item.field"></p-sortIcon>
-                            </th>
-                            }
-                            }
-                        </tr>
-                    </ng-template>
+              @for (item of tableHeaders; track $index) {
+              @if (item.icon == null) {
+              <th [style]="item.width" class="py-4! px-4! font-semibold! text-xs! text-gray-700! tracking-wide!">
+                {{item.title | uppercase}}
+              </th>
+              }
+              @else {
+              <th [pSortableColumn]="item.field" [style]="item.width" class="py-4!  px-4! font-semibold! text-xs! text-gray-700! tracking-wide!">
+                {{item.title| uppercase}}
+                <p-sortIcon field="item.field"></p-sortIcon>
+              </th>
+              }
+              }
+            </tr>
+          </ng-template>
 
-                    <!-- Body -->
-                    <ng-template pTemplate="body" let-product let-rowIndex="rowIndex">
-                        <tr
-                            class="border-b border-slate-100 hover:cursor-pointer   transition-all duration-200 hover:shadow-sm">
+          <!-- Body -->
+          <ng-template pTemplate="body" let-product let-rowIndex="rowIndex">
+            <tr class="border-b border-slate-100 hover:cursor-pointer   transition-all duration-200 hover:shadow-sm" (click)="navigateToOrder(product)">
 
 
-                            @for (col of tableSchema; track $index) {
-                            <td class="hover:cursor-pointer">
+              @for (col of tableSchema; track $index) {
+              <td class="hover:cursor-pointer">
 
-                                @switch (col.element) {
+                @switch (col.element) {
 
-                                @case('p-tableCheckbox') {
-                                <p-tableCheckbox [value]="product"></p-tableCheckbox>
-                                }
+                @case('p-tableCheckbox') {
+                <p-tableCheckbox [value]="product"></p-tableCheckbox>
+                }
 
-                                @case('span') {
-                                <span [class]="col.class + ' text-sm md:text-base text-gray-700'">
+                @case('span') {
+                <span [class]="col.class + ' text-sm md:text-base text-gray-700'">
 
-                                    @switch(col.type) {
+                  @switch(col.type) {
 
-                                    <!-- Number pipe -->
-                                    @case('number') {
-                                    {{ product[col.field] | number:'1.2-2' }}
-                                    }
+                  <!-- Number pipe -->
+                  @case('number') {
+                  {{ product[col.field] | number:'1.2-2' }}
+                  }
 
-                                    <!-- Date pipe -->
-                                    @case('date') {
-                                    {{ product[col.field] | date:'dd/MMM/yy' }}
-                                    }
+                  <!-- Date pipe -->
+                  @case('date') {
+                  {{ product[col.field] | date:'dd/MMM/yy' }}
+                  }
 
-                                    <!-- Items array -->
-                                    @case('items') {
-                                    {{ formatItems(product[col.field]) }}
-                                    }
+                  <!-- Items array -->
+                  @case('items') {
+                  {{ formatItems(product[col.field]) }}
+                  }
 
-                                    <!-- Default plain text -->
-                                    @default {
-                                    {{ col.field ? product[col.field] : '' }}
-                                    }
-                                    }
-                                </span>
-                                }
+                  <!-- Default plain text -->
+                  @default {
+                  {{ col.field ? product[col.field] : '' }}
+                  }
+                  }
+                </span>
+                }
 
-                                }
-                            </td>
-                            }
+                }
+              </td>
+              }
 
 
 
-                            <td class="py-1!">
-                                <div class="flex gap-2 justify-end">
-                                    <button pButton pRipple type="button" icon="pi pi-pencil" class="w-9! h-9! rounded-lg! bg-slate-100! hover:bg-slate-200! 
-                                        text-slate-700! border-0! shadow-sm! hover:shadow-md! transition-all"
-                                        (click)="editProduct(product)" pTooltip="Edit" tooltipPosition="top">
-                                    </button>
+              <td class="py-1!">
+                <div class="flex gap-2 justify-end">
+                  <button pButton pRipple type="button" icon="pi pi-pencil" class="w-9! h-9! rounded-lg! bg-slate-100! hover:bg-slate-200! 
+                                        text-slate-700! border-0! shadow-sm! hover:shadow-md! transition-all" (click)="editProduct(product); $event.stopPropagation()" pTooltip="Edit" tooltipPosition="top">
+                  </button>
 
-                                    <button pButton pRipple type="button" icon="pi pi-trash"
-                                        class="w-9! h-9! rounded-lg! bg-red-50! hover:bg-red-100! text-red-600! border-0! shadow-sm! hover:shadow-md! transition-all"
-                                        (click)="deleteProduct(product)" pTooltip="Delete" tooltipPosition="top">
-                                    </button>
-                                </div>
-                            </td>
+                  <button pButton pRipple type="button" icon="pi pi-trash" class="w-9! h-9! rounded-lg! bg-red-50! hover:bg-red-100! text-red-600! border-0! shadow-sm! hover:shadow-md! transition-all" (click)="deleteProduct(product); $event.stopPropagation()" pTooltip="Delete" tooltipPosition="top">
+                  </button>
+                </div>
+              </td>
 
-                        </tr>
-                    </ng-template>
+            </tr>
+          </ng-template>
 
-                    <!-- Empty Message -->
-                    <ng-template pTemplate="emptymessage">
-                        <tr>
-                            <td colspan="14" class="text-center!  py-16! text-gray-400!">
-                                <div class="flex flex-col items-center justify-center">
-                                    <i class="pi pi-inbox text-6xl mb-4 text-gray-300"></i>
-                                    <p class="text-xl font-medium text-gray-500">No Orders found</p>
-                                    <p class="text-sm text-gray-400 mt-2">Try adjusting your search on Orders
-                                    </p>
-                                </div>
-                            </td>
-                        </tr>
-                    </ng-template>
-                </p-table>
+          <!-- Empty Message -->
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="14" class="text-center!  py-16! text-gray-400!">
+                <div class="flex flex-col items-center justify-center">
+                  <i class="pi pi-inbox text-6xl mb-4 text-gray-300"></i>
+                  <p class="text-xl font-medium text-gray-500">No Orders found</p>
+                  <p class="text-sm text-gray-400 mt-2">Try adjusting your search on Orders
+                  </p>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
 
-            </div>
-        </div>
+      </div>
+    </div>
 
 
-        <!-- Create/Edit Product Dialog -->
-        <p-dialog [(visible)]="productDialog" maskStyleClass="backdrop-blur-sm" [header]="'Update Orders'"
-            [modal]="true" [style]="{width: '550px', backgroundColor: 'white', color: 'black'}" [draggable]="false"
-            [resizable]="false" styleClass=" modern-dialog">
+    <!-- Create/Edit Product Dialog -->
+    <p-dialog [(visible)]="productDialog" maskStyleClass="backdrop-blur-sm" [header]="'Update Orders'" [modal]="true" [style]="{width: '550px', backgroundColor: 'white', color: 'black'}" [draggable]="false" [resizable]="false" styleClass=" modern-dialog">
 
-            <ng-template pTemplate="content">
+      <ng-template pTemplate="content">
 
-                <div [formGroup]="orderForm" (ngSubmit)="saveProduct()">
+        <div [formGroup]="orderForm" (ngSubmit)="saveProduct()">
 
 
-                    @for (item of orderFormConfig; track $index) {
-                    <div id="{{ item.label }}" class="mb-4">
+          @for (item of orderFormConfig; track $index) {
+          <div id="{{ item.label }}" class="mb-4">
 
-                        <label class="block capitalize text-sm font-medium text-gray-700 mb-1">
-                            {{ item.label }}
-                        </label>
+            <label class="block capitalize text-sm font-medium text-gray-700 mb-1">
+              {{ item.label }}
+            </label>
 
-                        <!-- TEXT INPUT -->
-                        @if(item.type === 'text') {
-                        <input [type]="item.type" [id]="item.id" [formControlName]="item.id"
-                            [placeholder]="item.placeholder" class="appearance-none rounded-md w-full px-3 py-2 border border-gray-300 
+            <!-- TEXT INPUT -->
+            @if(item.type === 'text') {
+            <input [type]="item.type" [id]="item.id" [formControlName]="item.id" [placeholder]="item.placeholder" class="appearance-none rounded-md w-full px-3 py-2 border border-gray-300 
                placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500
                focus:border-indigo-500 sm:text-sm" />
-                        }
+            }
 
-                        <!-- SELECT INPUT -->
-                        @if(item.type === 'select') {
-                        <select [id]="item.id" [formControlName]="item.id" class="appearance-none rounded-md w-full px-3 py-2 border border-gray-300 
+            <!-- SELECT INPUT -->
+            @if(item.type === 'select') {
+            <select [id]="item.id" [formControlName]="item.id" class="appearance-none rounded-md w-full px-3 py-2 border border-gray-300 
                text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
                sm:text-sm">
-                            <option value="">Select {{ item.label }}</option>
-                            @for(option of item.options; track option) {
-                            <option [value]="option">{{ option }}</option>
-                            }
-                        </select>
-                        }
+              <option value="">Select
+                {{ item.label }}
+              </option>
+              @for(option of item.options; track option) {
+              <option [value]="option">
+                {{ option }}
+              </option>
+              }
+            </select>
+            }
 
-                        <!-- CHECKBOX INPUT -->
-                        @if(item.type === 'checkbox') {
-                        <div class="flex items-center gap-2">
-                            <input type="checkbox" [id]="item.id" [formControlName]="item.id"
-                                class="h-4 w-4 text-indigo-600 border-gray-300 rounded" />
+            <!-- CHECKBOX INPUT -->
+            @if(item.type === 'checkbox') {
+            <div class="flex items-center gap-2">
+              <input type="checkbox" [id]="item.id" [formControlName]="item.id" class="h-4 w-4 text-indigo-600 border-gray-300 rounded" />
 
-                            <label [for]="item.id" class="text-sm text-gray-700">{{ item.label }}</label>
-                        </div>
-                        }
+              <label [for]="item.id" class="text-sm text-gray-700">
+                {{ item.label }}</label>
+            </div>
+            }
 
-                        <!-- Validation Messages -->
-                        @if(item.validation && orderForm.controls[item.id].touched) {
-                        @for (validationKey of getValidationKeys(item.validation); track validationKey) {
-                        @if(orderForm.controls[item.id].errors?.[validationKey]) {
-                        <p class="mt-1 text-sm text-red-600">
-                            {{ item.validation[validationKey] }}
-                        </p>
-                        }
-                        }
-                        }
+            <!-- Validation Messages -->
+            @if(item.validation && orderForm.controls[item.id].touched) {
+            @for (validationKey of getValidationKeys(item.validation); track validationKey) {
+            @if(orderForm.controls[item.id].errors?.[validationKey]) {
+            <p class="mt-1 text-sm text-red-600">
+              {{ item.validation[validationKey] }}
+            </p>
+            }
+            }
+            }
 
-                    </div>
-                    }
+          </div>
+          }
 
 
-                </div>
+        </div>
 
-            </ng-template>
+      </ng-template>
 
-            <ng-template pTemplate="footer">
-                <div class="flex gap-3 justify-end p-2">
-                    <button pButton type="button" label="Cancel" icon="pi pi-times"
-                        class="bg-white! text-gray-700! border-2! border-gray-200! hover:bg-gray-50! rounded-lg! px-6!"
-                        (click)="hideDialog()">
-                    </button>
-                    <button pButton type="button" label="Save" icon="pi pi-check" [disabled]="orderForm.invalid "
-                        class="bg-linear-to-r! from-slate-800! to-slate-700! text-white! border-0! rounded-lg! px-6! shadow-lg! hover:shadow-xl!"
-                        (click)="saveProduct()">
-                    </button>
-                </div>
-            </ng-template>
-        </p-dialog>
+      <ng-template pTemplate="footer">
+        <div class="flex gap-3 justify-end p-2">
+          <button pButton type="button" label="Cancel" icon="pi pi-times" class="bg-white! text-gray-700! border-2! border-gray-200! hover:bg-gray-50! rounded-lg! px-6!" (click)="hideDialog()">
+          </button>
+          <button pButton type="button" label="Save" icon="pi pi-check" [disabled]="orderForm.invalid " class="bg-linear-to-r! from-slate-800! to-slate-700! text-white! border-0! rounded-lg! px-6! shadow-lg! hover:shadow-xl!" (click)="saveProduct()">
+          </button>
+        </div>
+      </ng-template>
+    </p-dialog>
 
-        <!-- Confirmation Dialog -->
-        <p-confirmDialog></p-confirmDialog>
-    </div>
+    <!-- Confirmation Dialog -->
+    <p-confirmDialog></p-confirmDialog>
+  </div>
 </div>

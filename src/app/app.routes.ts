@@ -89,13 +89,19 @@ export const routes: Routes = [
                     m.Orders  )
                 }
             },
-            {path: 'users', 
+            {path: 'orders/:id', 
                 loadComponent: () => {
-                    return import('./admin/components/users/users').then( (m) => 
-                    m.Users  )
+                    return import('./admin/components/ordersdetails/ordersdetails').then( (m) => 
+                    m.Ordersdetails  )
                 }
             },
-
+            
+            {path: 'user/:id', 
+                loadComponent: () => {
+                    return import('./admin/components/userdetails/userdetails').then( (m) => 
+                    m.Userdetails  )
+                }
+            },
         ]
     },
 

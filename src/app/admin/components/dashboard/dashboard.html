@@ -1,14 +1,14 @@
 <!-- Mobile Header -->
 <div class="lg:hidden fixed top-0 left-0 right-0 bg-[#14b8a6] text-white z-50 shadow-lg">
-    <div class="flex items-center justify-between p-4">
-        <div class="flex items-center gap-3">
-            <img src="assets/images/logo of marketmandu.png" alt="Logo" class="h-12 w-auto" />
-            <h1 class="text-xl font-bold">MarketMandu</h1>
-        </div>
-        <button (click)="toggleMobileMenu()" class="text-2xl hover:cursor-pointer focus:outline-none">
-            <i [class]="isMobileMenuOpen ? 'pi pi-times' : 'pi pi-bars'"></i>
-        </button>
+  <div class="flex items-center justify-between p-4">
+    <div class="flex items-center gap-3">
+      <img src="assets/images/logo of marketmandu.png" alt="Logo" class="h-12 w-auto" />
+      <h1 class="text-xl font-bold">MarketMandu</h1>
     </div>
+    <button (click)="toggleMobileMenu()" class="text-2xl hover:cursor-pointer focus:outline-none">
+      <i [class]="isMobileMenuOpen ? 'pi pi-times' : 'pi pi-bars'"></i>
+    </button>
+  </div>
 </div>
 
 <!-- Mobile Menu Overlay -->
@@ -21,115 +21,98 @@
 <!-- Main Container -->
 <div class="flex min-h-screen mt-2 sm:mt-0  bg-gray-50">
 
-    <!-- Desktop Sidebar -->
-    <aside class="hidden lg:flex flex-col w-64 bg-white shadow-xl fixed h-full">
-        <!-- Logo -->
-        <div class="bg-[#14b8a6] text-white py-4 px-2 font-bold tracking-tight">
-            <div class="flex items-center gap-3 hover:cursor-pointer">
-                <img src="assets/images/logo of marketmandu.png" alt="Logo" class="h-10 sm:h-12 md:h-14 w-auto" />
-                <h1 class="text-2xl font-bold">MarketMandu</h1>
-            </div>
-        </div>
+  <!-- Desktop Sidebar -->
+  <aside class="hidden  lg:flex flex-col w-64 bg-white shadow-xl fixed h-full">
+    <!-- Logo -->
+    <div class="bg-[#14b8a6] text-white py-4 px-2 font-bold tracking-tight">
+      <div class="flex items-center gap-3 hover:cursor-pointer">
+        <img src="assets/images/logo of marketmandu.png" alt="Logo" class="h-10 sm:h-12 md:h-14 w-auto" />
+        <h1 class="text-2xl font-bold">MarketMandu</h1>
+      </div>
+    </div>
 
-        <!-- Navigation -->
-        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
-            @for (item of menuItems; track $index) {
+    <!-- Navigation -->
+    <nav animate.enter="slide-down" class="flex-1 p-4 -mt- space-y-2 overflow-y-auto">
+      @for (item of menuItems; track $index) {
 
-            <button (click)="navigateTo(item)" [class.bg-[#14b8a6]]="item.active" [class.text-white]="item.active"
-                [class.text-gray-700]="!item.active" [class.hover:bg-teal-300]="!item.active"
-                class="w-full flex items-center gap-3 px-4 py-3 hover:cursor-pointer rounded-lg transition-all duration-200 font-medium">
-                <i [class]="item.icon + ' text-lg'"></i>
-                <span>{{ item.label }}</span>
-            </button>
-            }
-        </nav>
+      <button animate.enter="slide-down" (click)="navigateTo(item)" [class.bg-[#14b8a6]]="item.active" [class.text-white]="item.active" [class.text-gray-700]="!item.active" [class.hover:bg-teal-300]="!item.active" class="w-full flex items-center gap-3 px-4 py-3 hover:cursor-pointer rounded-lg  font-medium">
+        <i [class]="item.icon + ' text-lg'"></i>
+        <span>
+          {{ item.label }}</span>
+      </button>
+      }
+    </nav>
 
-        <!-- Logout Button -->
-        <div class="p-4 border-t border-gray-200 hover:cursor-pointer" (click)="logout()">
-            <button (click)="logout()"
-                class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 font-medium">
-                <i class="pi pi-sign-out text-lg"></i>
-                <span>Logout</span>
-            </button>
-        </div>
-    </aside>
+    <!-- Logout Button -->
+    <div animate.enter="slide-up" class="p-4 border-t  border-gray-200 hover:cursor-pointer" (click)="logout()">
+      <button (click)="logout()" class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 font-medium">
+        <i class="pi pi-sign-out text-lg"></i>
+        <span>Logout</span>
+      </button>
+    </div>
 
-    <!-- Mobile Sidebar -->
-    <aside [class.translate-x-0]="isMobileMenuOpen" [class.-translate-x-full]="!isMobileMenuOpen"
-        class="lg:hidden fixed top-20 left-0 w-64 bg-white shadow-xl h-[calc(100vh-4rem)] z-40 transform transition-transform duration-300 ease-in-out flex flex-col">
+  </aside>
 
-        <!-- Navigation -->
-        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
-            @for (item of menuItems; track $index) {
+  <!-- Mobile Sidebar -->
+  <aside [class.translate-x-0]="isMobileMenuOpen" [class.-translate-x-full]="!isMobileMenuOpen" class="lg:hidden fixed top-20 left-0 w-64 bg-white shadow-xl h-[calc(100vh-4rem)] z-40 transform transition-transform duration-300 ease-in-out flex flex-col">
 
-            <button (click)="navigateTo(item)" [class.bg-[#14b8a6]]="item.active" [class.text-white]="item.active"
-                [class.text-gray-700]="!item.active" [class.hover:bg-teal-300]="!item.active"
-                class="w-full flex items-center gap-3 px-4 py-3 hover:cursor-pointer rounded-lg transition-all duration-200 font-medium">
-                <i [class]="item.icon + ' text-lg'"></i>
-                <span>{{ item.label }}</span>
-            </button>
-            }
-        </nav>
+    <!-- Navigation -->
+    <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+      @for (item of menuItems; track $index) {
 
-        <!-- Logout Button -->
-        <div class="p-4 border-t  ">
-            <p-divider />
-            <button (click)="logout()"
-                class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 font-medium">
-                <i class="pi pi-sign-out text-lg"></i>
-                <span>Logout</span>
-            </button>
-        </div>
-    </aside>
+      <button (click)="navigateTo(item)" [class.bg-[#14b8a6]]="item.active" [class.text-white]="item.active" [class.text-gray-700]="!item.active" [class.hover:bg-teal-300]="!item.active" class="w-full flex items-center gap-3 px-4 py-3 hover:cursor-pointer rounded-lg transition-all duration-200 font-medium">
+        <i [class]="item.icon + ' text-lg'"></i>
+        <span>
+          {{ item.label }}</span>
+      </button>
+      }
+    </nav>
 
-    <!-- Main Content -->
-    <main class="flex-1 w-full overflow-x-auto lg:ml-64 mt-16 lg:mt-0 p-4 md:p-6 lg:p-8">
-        <!-- Dashboard View -->
-        @if (currentView === 'dashboard') {
+    <!-- Logout Button -->
+    <div class="p-4 border-t  ">
+      <p-divider />
+      <button (click)="logout()" class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 font-medium">
+        <i class="pi pi-sign-out text-lg"></i>
+        <span>Logout</span>
+      </button>
+    </div>
+  </aside>
 
-        <app-dashboarditem />
+  <!-- Main Content -->
+  <main class="flex-1 w-full overflow-x-auto lg:ml-64 mt-16 lg:mt-0 p-4 md:p-6 lg:p-8">
+    <!-- Dashboard View -->
+    @if (currentView === 'dashboard') {
+    <app-dashboarditem />
+    }
 
+    @if (currentView === 'users') {
+    <div class=" w-full min-h-screen">
+      <div class="w-full overflow-y-auto">
+        <app-users />
+      </div>
+    </div>
+    }
 
-        }
+    <!-- Products View -->
+    @if (currentView === 'products') {
+    <div class=" w-full min-h-screen">
+      <div class="w-full">
+        <app-products />
+      </div>
+    </div>
 
-        @if (currentView === 'users') {
-        <div class=" w-full min-h-screen">
+    }
 
+    <!-- Orders View -->
+    @if (currentView === 'orders') {
+    <div class=" w-full min-h-screen">
+      <div class="w-full">
+        <app-orders />
+      </div>
+    </div>
 
-            <div class="w-full overflow-y-auto">
-
-                <app-users />
-            </div>
-        </div>
-        }
-
-        <!-- Products View -->
-        @if (currentView === 'products') {
-
-        <div class=" w-full min-h-screen">
-
-
-            <div class="w-full">
-
-                <app-products />
-            </div>
-        </div>
-
-        }
-
-        <!-- Orders View -->
-        @if (currentView === 'orders') {
-
-        <div class=" w-full min-h-screen">
-
-            <div class="w-full">
-
-                <app-orders />
-            </div>
-        </div>
-
-        }
-    </main>
+    }
+  </main>
 
 
 

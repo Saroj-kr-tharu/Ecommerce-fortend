@@ -19,3 +19,22 @@
 :host ::ng-deep .p-datatable .p-datatable-tbody>tr:hover {
     background-color: #FFFFFF99 !important;
 }
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Apply to the class */
+.fade-in-element {
+    transition-delay: 0.3s;
+    animation: fadeIn 0.8s ease-out forwards;
+}

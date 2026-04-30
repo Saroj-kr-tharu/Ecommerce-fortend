@@ -1,7 +1,7 @@
 import { CurrencyPipe } from '@angular/common';
 import { Component, computed, effect, inject, Signal, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -17,7 +17,7 @@ import { selectCart } from '../../../store/custumer/cus.selectors';
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CheckboxModule, FormsModule, ButtonModule, DividerModule, CurrencyPipe, ConfirmDialog],
+  imports: [CheckboxModule, FormsModule, ButtonModule, DividerModule, CurrencyPipe, ConfirmDialog, RouterLink],
   providers: [ConfirmationService, MessageService],
   templateUrl: './cart.html',
   styleUrl: './cart.css',
@@ -29,6 +29,9 @@ export class Cart  {
   toast = inject(HotToastService);
   router = inject(Router);
   cusService = inject(CusServices);
+
+  private observer: IntersectionObserver | null = null;
+  
 
   subtotal = computed(() => {
     const selected = this.selectedItems();
@@ -72,7 +75,7 @@ export class Cart  {
 
   constructor(private store: Store<{ cartReducer: CartState }>) {
     this.cartStates = this.store.selectSignal(selectCart);
-
+    
     const localStr = localStorage.getItem('marketManduAuth');
     let local: { id?: number } | null = null;
 
@@ -85,13 +88,21 @@ export class Cart  {
 
     effect(() => {
       const stateItems = this.cartStates().orderItems;
-      console.log('Cart items updated => ', stateItems);
       this.cartItems.set(stateItems);
+
+      if (stateItems?.length > 0) {
+      setTimeout(() => this.initObserver(), 0); 
+    }
     });
+
+    
   }
 
+  ngAfterViewInit() {
+   this.initObserver();
+}
 
-
+ 
   increment(itemId: number): void {
      const item = this.cartItems().find(item => item.id === itemId);
     let quan = item ? item.quantity : 0;
@@ -104,6 +115,24 @@ export class Cart  {
     
   }
 
+  private initObserver(): void {
+    this.observer?.disconnect();
+
+    const cards = document.querySelectorAll('.chart-card');
+    this.observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    cards.forEach(card => {
+      card.classList.remove('visible'); // reset before observing
+      this.observer!.observe(card);
+    });
+  }
+
   decrement(itemId: number): void {
 
     const item = this.cartItems().find(item => item.id === itemId);
@@ -114,14 +143,12 @@ export class Cart  {
         cartItemId: itemId , 
         quantity: quan - 1  , 
       }
-
       this.store.dispatch(updateItemAction.updateItem({payload: daa }))
   }
 
 
 removeItem(itemId: number): void {
   this.store.dispatch(removeItemAction.removeItem({ payload: itemId }));
-
 }
 
 // 
@@ -133,10 +160,9 @@ deleteSelected(): void {
 
   // Store all selected item IDs in an array
   const selectedItemIds = Array.from(selected);
-  console.log('Selected item IDs:', selectedItemIds);
+  // console.log('Selected item IDs:', selectedItemIds);
 
   this.store.dispatch(deleteBulkItemAction.deleteBulkItem({payload:selectedItemIds }))
-
 
 }
 
@@ -163,7 +189,10 @@ deleteSelected(): void {
     if (this.selectAll()) {
       this.selectedItems.set(new Set());
     } else {
-      const allIds = items.map(item => item.id);
+      const allIds = items
+      .filter((item) => item?.product?.stock > 0)
+      .map((item) => item.id);
+      // console.log("all ids of  select => ", allIds)
       this.selectedItems.set(new Set(allIds));
     }
   }
@@ -171,7 +200,6 @@ deleteSelected(): void {
   isItemSelected(itemId: number): boolean {
     return this.selectedItems().has(itemId);
   }
-
 
 
   getSelectedCartItems(): CartItem[] {

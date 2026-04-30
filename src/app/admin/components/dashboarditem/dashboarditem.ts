@@ -39,7 +39,6 @@ export class Dashboarditem implements OnInit {
   pieoptions: any;
 
   Paymentpiedata: any;
-
   salespiedata: any;
 
   Productpiedata: any;
@@ -63,6 +62,9 @@ export class Dashboarditem implements OnInit {
   averageOrderValue: Signal<number>;
   totalSales: Signal<number>;
 
+  
+  
+
     // products 
     totalDelete = computed(() => this.products().filter(product => product.isActive === false).length);
     totalStockOut = computed(() => this.products().filter(product => product.stock === 0).length);
@@ -75,6 +77,7 @@ export class Dashboarditem implements OnInit {
 
   // Computed banner items that update automatically
   bannerItems = signal<any[]>([]);
+  chartItems = signal<any[]>([]);
 
   constructor() {
     // Initialize all signals from store
@@ -119,7 +122,16 @@ export class Dashboarditem implements OnInit {
   
     ]);
 
-      console.log(' confiremed =>  ', this.confirmedOrders())
+    this.chartItems.set(
+      [
+      { title: 'Orders Chart', type: 'pie', data: 'piedata', options: 'pieoptions' },
+      { title: 'Payment Chart', type: 'pie', data: 'Paymentpiedata', options: 'pieoptions' },
+      { title: 'Sales Chart', type: 'pie', data: 'salespiedata', options: 'pieoptions' },
+      { title: 'Product Chart', type: 'pie', data: 'Productpiedata', options: 'pieoptions' },
+      ]
+    )
+
+      // console.log(' confiremed =>  ', this.confirmedOrders())
     if ( isPlatformBrowser(this.platformId)) {
       this.pieChart();
       this.lineChart();
@@ -129,12 +141,20 @@ export class Dashboarditem implements OnInit {
   }
 
   ngOnInit() {
-    // Dispatch load action first
     this.store.dispatch(DashboardActions.load());
-    
-    // this.lineChart();
-    // this.pieChart();
   }
+
+  ngAfterViewInit() { 
+  const cards = document.querySelectorAll('.chart-card');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.2 });
+  cards.forEach(card => observer.observe(card));
+}
 
   private getMonthlyOrderData() {
   const orders = this.orders();
@@ -203,12 +223,15 @@ export class Dashboarditem implements OnInit {
      };
 
       this.pieoptions = {
+        animation: {
+          duration: 1000,
+          easing: 'easeInOutQuart',  // smooth spin-in
+          animateRotate: true,        // pie spins in
+          animateScale: true          // pie scales up
+        },
         plugins: {
           legend: {
-            labels: {
-              usePointStyle: true,
-              color: textColor
-            }
+            labels: { usePointStyle: true, color: textColor }
           }
         }
       };

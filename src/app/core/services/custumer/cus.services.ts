@@ -89,5 +89,10 @@ export class CusServices {
       const url = `${this.BaseUrl}/ecommerce/cart/checkout`
       return this.httpClient.get(url, { params: { userId: userId } });
     }
+     
+    GetOrdersByUserId(userId: any, page:number, limit:number){
+      const url = `${this.BaseUrl}/ecommerce/orders/getByUser`
+      return this.httpClient.get(url, { params: { page:page, limit:limit, id:userId } });
+    }
   
 }

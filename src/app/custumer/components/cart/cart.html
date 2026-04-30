@@ -2,9 +2,9 @@
   <div class="grid max-w-7xl mx-auto grid-cols-1 lg:grid-cols-3 gap-6">
 
     <!-- Cart Items Section (Left Side) -->
-    <div class="lg:col-span-2 space-y-4">
+    <div class=" lg:col-span-2 space-y-4">
       <!-- Header with Select All and Delete -->
-      <div class="bg-white rounded-lg shadow-sm p-4 flex items-center justify-between">
+      <div animate.enter="fade-in-element" class="bg-white rounded-lg shadow-sm p-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
           <p-checkbox inputId="selectAll" [ngModel]="selectAll()" (onChange)="toggleSelectAll()" [binary]="true" />
           <label for="selectAll" class="cursor-pointer font-medium text-gray-700">
@@ -26,28 +26,59 @@
         <!-- Items in cart -->
         @for (item of cartItems(); track $index) {
 
-        <div class="p-4 border-b border-gray-100 last:border-b-0">
-          <div class="flex gap-4">
+        <div class="p-4 border-b  chart-card border-gray-100 last:border-b-0 hover:bg-gray-300/50 ">
+          <div class="flex gap-4 hover:cursor-pointer   ">
             <!-- Checkbox -->
             <div class="shrink-0 pt-1">
+              @if (item.product.stock > 0) {
               <p-checkbox [binary]="true" [ngModel]="isItemSelected(item.id)" (onChange)="toggleItemSelection(item.id)" />
+              }
             </div>
+
+
 
             <!-- Product Image -->
             <div class="shrink-0">
-              <div class="relative w-20 h-20 sm:w-24 sm:h-24">
-                <img [src]="item.product.images[0]" [alt]="item.name" class="w-full h-full object-cover rounded-lg border border-gray-200" />
-              </div>
+              <span [routerLink]="['/product', item.product.id, item.product.name]">
+                <div class="relative w-20 h-20 sm:w-24 sm:h-24">
+                  <img [src]="item.product.images[0]" [alt]="item.name" class="w-full h-full object-cover rounded-lg border border-gray-200" />
+                </div>
+              </span>
             </div>
 
             <!-- Product Details -->
             <div class="flex-1 min-w-0">
-              <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+              <div class="flex flex-col  sm:flex-row sm:items-start sm:justify-between gap-3">
                 <!-- Product Info -->
                 <div class="flex-1 min-w-0">
-                  <h3 class="text-sm sm:text-base text-gray-800 font-medium line-clamp-2 mb-1">
-                    {{ item.product.name }}
-                  </h3>
+                  <span [routerLink]="['/product', item.product.id, item.product.name]">
+
+                    <h3 class="text-sm sm:text-base text-gray-800 font-medium line-clamp-2 mb-1">
+                      {{ item.product.name }}
+                    </h3>
+
+                    <div>
+                      <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">
+                        {{ item.product!.brand }}
+                      </span>
+                      <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-full">
+                        {{ item.product!.category }}
+                      </span>
+                      @if (item.product!.stock && item.product!.stock! > 0) {
+                      <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
+                        In Stock
+                      </span>
+                      } @else {
+                      <span class="px-2 py-1 bg-red-100 text-red-700 text-xs font-semibold rounded-full">
+                        Out of Stock
+                      </span>}
+                    </div>
+
+                    <h4 class="text-sm pt-2 sm:text-base text-gray-800 font-normal  line-clamp-2 mb-1">
+                      {{ item.product!!.description }}
+                    </h4>
+                  </span>
+
                 </div>
 
                 <!-- Price and Actions -->
@@ -58,6 +89,8 @@
                       {{ item.product.price }}
                     </div>
                   </div>
+
+                  @if (item.product.stock > 0) {
 
                   <!-- Quantity Controls -->
                   <div class="flex items-center gap-2 border border-gray-300 rounded-lg">
@@ -71,6 +104,7 @@
                       <i class="pi pi-plus text-sm"></i>
                     </button>
                   </div>
+                  }
 
                   <!-- Action Buttons -->
                   <div class="flex items-center gap-3">
@@ -81,9 +115,13 @@
                       <i class="pi pi-trash text-lg"></i>
                     </button>
                   </div>
+
+
                 </div>
               </div>
             </div>
+
+
           </div>
         </div>
         }
@@ -92,7 +130,7 @@
 
       <!-- Empty Cart Message -->
       @if (cartItems().length === 0) {
-      <div class="bg-white rounded-lg shadow-sm p-12 text-center">
+      <div animate.enter="fade-in-element" class="bg-white rounded-lg shadow-sm p-12 text-center">
         <i class="pi pi-shopping-cart text-6xl text-gray-300 mb-4"></i>
         <h3 class="text-xl font-medium text-gray-800 mb-2">Your cart is empty</h3>
         <p class="text-gray-600 mb-6">Add items to your cart to see them here</p>
@@ -105,7 +143,7 @@
 
     <!-- Order Summary Section (Right Side) -->
     <div class="lg:col-span-1">
-      <div class="bg-white rounded-lg shadow-sm p-6 sticky top-20">
+      <div animate.enter="fade-in-element" class="bg-white rounded-lg shadow-sm p-6 sticky top-20">
         <h2 class="text-xl font-bold text-gray-800 mb-6">Order Summary</h2>
 
         <!-- Summary Details -->

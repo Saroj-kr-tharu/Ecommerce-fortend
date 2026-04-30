@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, computed, effect, inject, OnInit, Signal, signal, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -60,6 +61,7 @@ export class Orders implements OnInit {
 
   adminService = inject(AdminService)
   toast = inject(HotToastService)
+  router = inject(Router)
 
   //  products = computed(() => this.allState().data ??  []);
   Orders = signal<FormattedOrder[]>([]);
@@ -67,28 +69,28 @@ export class Orders implements OnInit {
   order! : FormattedOrder;
   originalValue ! : FormattedOrder;
   
+  orderState!: Signal<any[]>;
     bannerItems = signal<any[]>([]);
 
     private store = inject(Store<{ DashboardReducer: DashboardState }>);
-  orderState!: Signal<any[]>;
 
-  productDialog: boolean = false;
-  isEditOpen = signal(false)
-  isAddOpen = signal(false)
+    productDialog: boolean = false;
+    isEditOpen = signal(false)
+    isAddOpen = signal(false)
 
-  selectedProducts: ProductType[] = [];
-  submitted: boolean = false;
-  globalFilterValue: string = '';
+    selectedProducts: ProductType[] = [];
+    submitted: boolean = false;
+    globalFilterValue: string = '';
 
-
-totalOrders = computed(() => this.Orders().length);
-totalConfirmOrders = computed(() => this.Orders().filter(order => order.orderStatus === 'confirmed').length);
-totalPendingOrders = computed(() => this.Orders().filter(order => order.orderStatus === 'pending').length);
-totalDeliveredOrders = computed(() => this.Orders().filter(order => order.orderStatus === 'delivered').length);
-totalCancelledOrders = computed(() => this.Orders().filter(order => order.orderStatus === 'cancelled').length);
-totalPendingPayment = computed(() => this.Orders().filter(order => order.paymentStatus === 'pending').length);
-totalConfirmendPaymnet = computed(() => this.Orders().filter(order => order.paymentStatus === 'paid').length);
-toalFailedPaymnet = computed(() => this.Orders().filter(order => order.paymentStatus === 'failed').length);
+ 
+  totalOrders = computed(() => this.Orders().length);
+  totalConfirmOrders = computed(() => this.Orders().filter(order => order.orderStatus === 'confirmed').length);
+  totalPendingOrders = computed(() => this.Orders().filter(order => order.orderStatus === 'pending').length);
+  totalDeliveredOrders = computed(() => this.Orders().filter(order => order.orderStatus === 'delivered').length);
+  totalCancelledOrders = computed(() => this.Orders().filter(order => order.orderStatus === 'cancelled').length);
+  totalPendingPayment = computed(() => this.Orders().filter(order => order.paymentStatus === 'pending').length);
+  totalConfirmendPaymnet = computed(() => this.Orders().filter(order => order.paymentStatus === 'paid').length);
+  toalFailedPaymnet = computed(() => this.Orders().filter(order => order.paymentStatus === 'failed').length);
 
   
 
@@ -105,9 +107,6 @@ tableHeaders = [
   { title: "isActive", field: "isActive", icon: "sortIcon", width: "5rem" },
   { title: "Actions", field: null, icon: null, width: "10rem" }
 ];
-
-
-
 
 tableSchema = [
   
@@ -129,10 +128,6 @@ tableSchema = [
   { element: 'span', class: 'text-sm text-gray-600', field: 'isActive' },
 ];
 
-
-
-
-
 orderForm: FormGroup = new FormGroup({
   orderId: new FormControl({ value: '', disabled: false }, [Validators.required]),
   user: new FormControl({ value: '', disabled: false }, [Validators.required]),
@@ -148,8 +143,6 @@ orderForm: FormGroup = new FormGroup({
   createdAt: new FormControl({ value: '', disabled: true }, [Validators.required]),
 });
 
-
-
 orderFormConfig: FormSignin[] = [
   { type: 'text', id: 'totalAmount', label: 'Total Amount', placeholder: '', autocomplete: '', disabled: true, validation: {} },
   { type: 'text', id: 'items', label: 'Items', placeholder: '', autocomplete: '', disabled: true, validation: {} },
@@ -161,8 +154,6 @@ orderFormConfig: FormSignin[] = [
   { type: 'checkbox', id: 'isDelivered', autocomplete: '', label: 'Delivered',disabled: true, validation: {} },
   { type: 'checkbox', id: 'isCancelled', label: 'Cancelled', autocomplete: '', disabled: true, validation: {} }
 ];
-
-
 
   // Category options
   categories: SelectOption[] = [];
@@ -176,25 +167,25 @@ orderFormConfig: FormSignin[] = [
     private cd: ChangeDetectorRef,
   ) { 
 
-       effect(() => {
-    this.bannerItems.set([
-       
-      { title: "Total Orders", value: this.totalOrders(), icon: "pi pi-users" },
-      { title: "Confirm Orders", value: this.totalConfirmOrders(), icon: "pi pi-shopping-bag" },
-      { title: "Pending Orders", value: this.totalPendingOrders(), icon: "pi pi-shopping-cart" },
-      { title: "Delivered Orders ", value: this.totalDeliveredOrders(), icon: "pi pi-check-circle" },
-      { title: "Cancell Orders ", value: this.totalCancelledOrders(), icon: "pi pi-check-circle" },
-      { title: "Pending Payment ", value: this.totalPendingPayment(), icon: "pi pi-check-circle" },
-      { title: "Confirmed Payment ", value: this.totalConfirmendPaymnet(), icon: "pi pi-check-circle" },
-      { title: "Failed Payment ", value: this.toalFailedPaymnet(), icon: "pi pi-check-circle" },
-  
-    ]);
-  });
+    effect(() => {
+      this.bannerItems.set([
+        
+        { title: "Total Orders", value: this.totalOrders(), icon: "pi pi-users" },
+        { title: "Confirm Orders", value: this.totalConfirmOrders(), icon: "pi pi-shopping-bag" },
+        { title: "Pending Orders", value: this.totalPendingOrders(), icon: "pi pi-shopping-cart" },
+        { title: "Delivered Orders ", value: this.totalDeliveredOrders(), icon: "pi pi-check-circle" },
+        { title: "Cancell Orders ", value: this.totalCancelledOrders(), icon: "pi pi-check-circle" },
+        { title: "Pending Payment ", value: this.totalPendingPayment(), icon: "pi pi-check-circle" },
+        { title: "Confirmed Payment ", value: this.totalConfirmendPaymnet(), icon: "pi pi-check-circle" },
+        { title: "Failed Payment ", value: this.toalFailedPaymnet(), icon: "pi pi-check-circle" },
+    
+      ]);
+    });
 
    }
 
     mutableOrders = computed(() => {
-    console.log('computed products =>', this.Orders());
+    console.log('computed orders  =>', this.Orders());
     return [...this.Orders()];   
   })
 
@@ -204,11 +195,9 @@ orderFormConfig: FormSignin[] = [
   }
 
   loadInitialData() {
-
     this.orderState = this.store.selectSignal(selectOrders);
-    // this.products.set(this.productstate())
 
-     const formattedOrders: FormattedOrder[] = this.orderState().map((order: any): FormattedOrder => ({
+    const formattedOrders: FormattedOrder[] = this.orderState().map((order: any): FormattedOrder => ({
           itemId: order.id,
           id: order.orderNumber,
           user: order.user?.email || order.user?.username || null ,
@@ -231,51 +220,14 @@ orderFormConfig: FormSignin[] = [
           cancelled: order.cancelledAt ? new Date(order.cancelledAt).toISOString() : null,
           created: order.createdAt ? new Date(order.createdAt).toISOString() : null
         }));
-
-        this.Orders.set(formattedOrders);
-
-
-
-    // this.adminService.getAllOrdersService().subscribe({
-    //   next: (res:any) => {
-    //       console.log('res => ', res.data)
-
-       
-
-    //     const formattedOrders: FormattedOrder[] = res.data.map((order: any): FormattedOrder => ({
-    //       itemId: order.id,
-    //       id: order.orderNumber,
-    //       user: order.user?.email || order.user?.username || null ,
-    //       totalAmount: order.totalAmount,
-    //       paymentMethod: order.paymentMethod,
-    //       paymentStatus: order.paymentStatus,
-    //       orderStatus: order.orderStatus,
-    //       isActive: order.isActive,
-    //       itemslength:order.OrderItems.length,
-    //       items: order.OrderItems.map((item: any): FormattedOrderItem => ({
-    //         productName: item.productName,
-    //         quantity: item.quantity,
-    //         price: item.productPrice,
-    //         total: item.total
-    //       })),
-    //       shippingAddress: order.shippingAddress
-    //         ? `${order.shippingAddress.street}, ${order.shippingAddress.city}, ${order.shippingAddress.zip}, ${order.shippingAddress.country}`
-    //         : null,
-    //       delivered: order.deliveredAt ? new Date(order.deliveredAt).toISOString() : null,
-    //       cancelled: order.cancelledAt ? new Date(order.cancelledAt).toISOString() : null,
-    //       created: order.createdAt ? new Date(order.createdAt).toISOString() : null
-    //     }));
-
-    //       console.log(formattedOrders);
-    //         this.Orders.set(formattedOrders)
-    //   },
-    //   complete: ()=> {this.toast.success('Sucessfully Loading Orders') },
-    //   error: () => {this.toast.error('Fail To load Orders')}
-    // })
-
+    this.Orders.set(formattedOrders);
     this.cd.markForCheck();
   }
 
+  navigateToOrder(product: any) {
+    // console.log('order => ', product) 
+    this.router.navigate(['/admin/orders',  product.id]);
+  }
   
 
   formatItems(items: any[]): string {
@@ -292,9 +244,7 @@ orderFormConfig: FormSignin[] = [
   }
 }
 
-      
-
-
+    
 
   // Autocomplete filter for Category
   filterCategory(event: any) {
@@ -321,7 +271,6 @@ orderFormConfig: FormSignin[] = [
          this.isAddOpen.set(true)
         this.submitted = false;
         this.productDialog = true;
-
         this.orderForm.reset()
   }
 
@@ -353,10 +302,7 @@ orderFormConfig: FormSignin[] = [
   editProduct(order: FormattedOrder ) {
         this.isEditOpen.set(true)
         this.originalValue = order;
-
-     console.log('edit click ', this.originalValue)
-  
-
+        // console.log('edit click ', this.originalValue)
         this.orderForm.setValue({
           orderId: order.id ,
           user: order.user ,
@@ -372,8 +318,6 @@ orderFormConfig: FormSignin[] = [
           createdAt: order.created
         });
 
-     
-      
     this.submitted = false;
     this.productDialog = true;
   }
@@ -406,8 +350,6 @@ orderFormConfig: FormSignin[] = [
     
     this.submitted = true;
     this.hideDialog();
-
-    
   }
 
   // Delete a single product
@@ -436,8 +378,7 @@ orderFormConfig: FormSignin[] = [
     });
   }
 
-
-   getValidationKeys(validation: ValidationConfig): string[] {
+  getValidationKeys(validation: ValidationConfig): string[] {
       return Object.keys(validation);
     }
 

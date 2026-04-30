@@ -13,15 +13,16 @@ import { Users } from "../users/users";
   imports: [DividerModule, Products, Users, Orders, Dashboarditem],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
+  
 })
 
 export class Dashboard { 
     isMobileMenuOpen = false;
-  currentView = 'dashboard';
+    currentView = 'dashboard';
 
   constructor(private store: Store<{LoginReducer : LoginState }>){
-    
-  } 
+     
+  }  
   
 
   menuItems = [
@@ -43,9 +44,8 @@ export class Dashboard {
   }
 
   logout(): void {
-    console.log('Logout clicked');
+    // console.log('Logout clicked');
     // Implement logout logic here
-
     this.store.dispatch(  logoutAction.logout() );
   }
 }

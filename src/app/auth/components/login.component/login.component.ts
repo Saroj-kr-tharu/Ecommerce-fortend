@@ -11,16 +11,17 @@ import { selectLogin } from '../../../store/auth/auth.selectors';
 
 @Component({
   selector: 'app-login.component',
-  imports: [ReactiveFormsModule,ProgressSpinner ],
+  imports: [ReactiveFormsModule, ProgressSpinner],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
 export class LoginComponent {
   toast = inject(HotToastService);
   router = inject(Router);
-  authsevice= inject(AuthServices)
+  authsevice = inject(AuthServices);
 
   loginState: Signal<LoginState>;
+  passwordVisible = false;
 
   constructor(private store: Store<{ LoginReducer: LoginState }>) {
     this.loginState = this.store.selectSignal(selectLogin);
@@ -53,6 +54,10 @@ export class LoginComponent {
     },
   ];
 
+  togglePasswordVisibility(): void {
+    this.passwordVisible = !this.passwordVisible;
+  }
+
   getValidationKeys(validation: ValidationConfig): string[] {
     return Object.keys(validation);
   }
@@ -71,13 +76,8 @@ export class LoginComponent {
     };
     this.signupForm.markAllAsTouched();
 
- 
-    
     this.store.dispatch(loginAction.login({ payload: data }));
 
     this.signupForm.reset();
-
-    
-
   }
 }

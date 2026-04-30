@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, OnInit, Signal, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { MenuItem } from 'primeng/api';
@@ -19,8 +19,8 @@ import { addItemcartsAction } from '../../../store/custumer/cus.action';
 @Component({
   selector: 'app-productdetails',
   standalone: true,
-  imports: [CommonModule, FormsModule, BreadcrumbModule, RatingModule, ClassNamesModule],
-   templateUrl: './productdetails.html',
+  imports: [CommonModule, FormsModule, BreadcrumbModule, RatingModule, ClassNamesModule,RouterModule],
+  templateUrl: './productdetails.html',
   styleUrl: './productdetails.css',
 })
 export class Productdetails implements OnInit {
@@ -45,15 +45,22 @@ export class Productdetails implements OnInit {
 
   
   breadcrumbItems = computed<MenuItem[]>(() => {
-    const prod = this.product();
-    if (!prod) return [{ label: 'Home', routerLink: '/' }];
-    
-    return [
-      { label: 'Home', routerLink: '/' },
-      { label: prod.category || 'Category', routerLink: '/products' },
-      { label: prod.name }
-    ];
-  });
+  const prod = this.product();
+  if (!prod) return [];
+  
+  return [
+    { 
+      label: prod.category || 'Category', 
+      command: () => this.router.navigate(['/products']) 
+    },
+    { label: prod.name }
+  ];
+});
+
+homeItem: MenuItem = { 
+  icon: 'pi pi-home', 
+  command: () => this.router.navigate(['/']) 
+};
 
   constructor(
  
@@ -61,20 +68,20 @@ export class Productdetails implements OnInit {
     private cartStore: Store<{ CartReducer: CartState }>
   ) {
     this.loginState = this.store.selectSignal(selectLogin);
-
+ 
     // Effect to update selected image when product changes
     effect(() => {
       const prod = this.product();
+      console.log('breadCumb = >', this.breadcrumbItems())
       if (prod && prod.images && prod.images.length > 0) {
         this.selectedImage.set(prod.images[0]);
       }
     });
   }
 
-  ngOnInit(): void {
-    const productId = this.route.snapshot.paramMap.get('id');
+  ngOnInit(): void { 
+    const productId = this.route.snapshot.paramMap.get('id'); 
     // console.log('Product ID from route:', productId);
-    
     if (productId) {
       this.loadProduct(parseInt(productId));
     }

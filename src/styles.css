@@ -4,3 +4,338 @@
 @import "tailwindcss";
 @import '@ngxpert/hot-toast/styles.css';
 @import "primeicons/primeicons.css";
+
+
+/* ── Remove all backgrounds ── */
+.p-paginator {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* ── Inactive page numbers ── */
+.p-paginator .p-paginator-page {
+    color: #475569 !important;
+    background: transparent !important;
+    border: 2px solid #cbd5e1 !important;
+    /* thick border */
+    font-weight: 500 !important;
+    border-radius: 6px !important;
+    transition: all 0.2s !important;
+}
+
+.p-paginator .p-paginator-page:hover {
+    color: #ffffff !important;
+    background: #1DB1A1 !important;
+    /* same teal fill as arrows */
+    border-color: #1DB1A1 !important;
+    border-radius: 6px !important;
+}
+
+/* ── Active page ── */
+.p-paginator .p-paginator-page-selected {
+    background-color: #1DB1A1 !important;
+    color: #ffffff !important;
+    border-radius: 6px !important;
+    border: 2px solid #1DB1A1 !important;
+    font-weight: 600 !important;
+}
+
+/* ── Arrows ── */
+.p-paginator .p-paginator-first,
+.p-paginator .p-paginator-prev,
+.p-paginator .p-paginator-next,
+.p-paginator .p-paginator-last {
+    color: #334155 !important;
+    background: transparent !important;
+    border: 2px solid #cbd5e1 !important;
+    /* thick border */
+    border-radius: 6px !important;
+    transition: all 0.2s !important;
+}
+
+.p-paginator .p-paginator-first:hover,
+.p-paginator .p-paginator-prev:hover,
+.p-paginator .p-paginator-next:hover,
+.p-paginator .p-paginator-last:hover {
+    color: #ffffff !important;
+    background: #1DB1A1 !important;
+    border-color: #1DB1A1 !important;
+}
+
+/* ── Disabled arrows ── */
+.p-paginator .p-paginator-first.p-disabled,
+.p-paginator .p-paginator-prev.p-disabled,
+.p-paginator .p-paginator-next.p-disabled,
+.p-paginator .p-paginator-last.p-disabled {
+    color: #cbd5e1 !important;
+    border-color: #e2e8f0 !important;
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+}
+
+/* ── Rows-per-page dropdown ── */
+.p-paginator-rpp-dropdown {
+    background: transparent !important;
+    border: 2px solid #cbd5e1 !important;
+    /* thick border */
+    color: #334155 !important;
+    border-radius: 6px !important;
+    transition: all 0.2s !important;
+}
+
+.p-paginator-rpp-dropdown:hover {
+    background: #1DB1A1 !important;
+    /* same teal fill */
+    border-color: #1DB1A1 !important;
+}
+
+.p-paginator-rpp-dropdown .p-select-label {
+    color: #334155 !important;
+    font-weight: 500 !important;
+    transition: color 0.2s !important;
+}
+
+.p-paginator-rpp-dropdown:hover .p-select-label {
+    color: #ffffff !important;
+}
+
+.p-paginator-rpp-dropdown .p-select-dropdown {
+    color: #334155 !important;
+    transition: color 0.2s !important;
+}
+
+.p-paginator-rpp-dropdown:hover .p-select-dropdown {
+    color: #ffffff !important;
+}
+
+/* ── Dropdown overlay ── */
+.p-paginator .p-select-overlay {
+    border: none !important;
+    background: #ffffff !important;
+
+    border-radius: 8px !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10) !important;
+}
+
+.p-paginator .p-select-list {
+    background: #ffffff !important;
+}
+
+/* ── Dropdown options ── */
+.p-paginator .p-select-option {
+    color: #475569 !important;
+    background: transparent !important;
+    font-weight: 500 !important;
+    border-radius: 4px !important;
+    transition: all 0.2s !important;
+}
+
+.p-paginator .p-select-option:hover {
+    background: #1DB1A1 !important;
+    /* same teal fill */
+    color: #ffffff !important;
+}
+
+/* ── Selected option ── */
+.p-paginator .p-select-option-selected {
+    background: #1DB1A1 !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+}
+
+.p-paginator .p-select-option-selected:hover {
+    background: #17998b !important;
+    /* slightly darker teal */
+    color: #ffffff !important;
+}
+
+
+/* auto Complete  */
+p-autocomplete .p-autocomplete-input {
+    background-color: #17998b !important;
+}
+
+
+p-autocomplete .p-autocomplete-input,
+p-autocomplete .p-autocomplete-dropdown {
+    background-color: #17998b !important;
+}
+
+
+/* Dropdown panel/overlay */
+p-autocomplete .p-autocomplete-overlay {
+    background-color: #17998b !important;
+}
+
+/* Each option item */
+p-autocomplete .p-autocomplete-option {
+    background-color: #17998b !important;
+    color: #ffffff !important;
+}
+
+/* Hovered option */
+p-autocomplete .p-autocomplete-option:hover,
+p-autocomplete .p-autocomplete-option.p-focus {
+    background-color: #128a7d !important;
+    color: #ffffff !important;
+}
+
+/* Selected/active option */
+p-autocomplete .p-autocomplete-option.p-autocomplete-option-selected {
+    background-color: #0f756a !important;
+    color: #ffffff !important;
+}
+
+
+
+/* p select */
+/* Select trigger/label area */
+.p-select {
+    background-color: #17998b !important;
+    border-color: #17998b !important;
+}
+
+p-select .p-select {
+    background-color: #17998b !important;
+    border-color: #17998b !important;
+    color: #ffffff !important;
+}
+
+/* Label text */
+p-select .p-select-label {
+    color: #ffffff !important;
+}
+
+/* Dropdown arrow icon */
+p-select .p-select-dropdown {
+    background-color: #17998b !important;
+    color: #ffffff !important;
+}
+
+/* Dropdown panel/overlay */
+p-select .p-select-overlay {
+    background-color: #17998b !important;
+}
+
+/* Each option item */
+p-select .p-select-option {
+    background-color: #17998b !important;
+    color: #ffffff !important;
+}
+
+/* Hovered option */
+p-select .p-select-option:hover,
+p-select .p-select-option.p-focus {
+    background-color: #128a7d !important;
+    color: #ffffff !important;
+}
+
+/* Selected option */
+p-select .p-select-option.p-select-option-selected {
+    background-color: #0f756a !important;
+    color: #ffffff !important;
+}
+
+/* Placeholder text */
+p-select .p-select-label.p-placeholder {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+
+/* Input field background */
+.p-inputnumber-input {
+    background-color: #17998b !important;
+    color: #ffffff !important;
+    border-color: #17998b !important;
+}
+
+/* Placeholder text */
+.p-inputnumber-input::placeholder {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+
+/* Off star (empty) - border color */
+.p-rating-off-icon {
+    color: #17998b !important;
+}
+
+/* On star (filled) - active color */
+.p-rating-on-icon {
+    color: #17998b !important;
+}
+
+/* Radio circle - border */
+.p-rating-option .p-rating-icon {
+    color: #17998b !important;
+}
+
+/* Circle - not active (border only, white bg) */
+.p-rating-option:first-child .p-icon {
+    color: #17998b !important;
+    fill: white !important;
+    stroke: #17998b !important;
+}
+
+/* Circle - active (filled with #17998b) */
+.p-rating-option-active:first-child .p-icon {
+    color: #17998b !important;
+    fill: #17998b !important;
+    stroke: #17998b !important;
+}
+
+
+/* Checkbox box - unchecked (border only) */
+.p-checkbox-box {
+    background-color: white !important;
+    border-color: #17998b !important;
+}
+
+/* Checkbox box - checked (filled) */
+.p-checkbox-checked .p-checkbox-box {
+    background-color: #17998b !important;
+    border-color: #17998b !important;
+}
+
+/* Check icon color */
+.p-checkbox-icon {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
+}
+
+/* Hover state */
+.p-checkbox:not(.p-checkbox-checked) .p-checkbox-box:hover {
+    border-color: #17998b !important;
+}
+
+/* Focus ring */
+.p-checkbox-input:focus+.p-checkbox-box {
+    box-shadow: 0 0 0 2px #17998b40 !important;
+}
+
+
+
+
+/* Drawer background */
+.p-drawer {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+}
+
+/* Drawer header */
+.p-drawer-header {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+}
+
+/* Drawer content area */
+.p-drawer-content {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+}
+
+/* Close button */
+.p-drawer-close-button {
+    color: #000000 !important;
+}

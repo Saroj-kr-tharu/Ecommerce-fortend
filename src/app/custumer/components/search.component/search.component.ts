@@ -120,7 +120,7 @@ export class SearchComponent implements OnInit {
         )
       );
 
-       this.filterOptions.categories = categories;
+      this.filterOptions.categories = categories;
       this.filterOptions.brands = brands;
      
     });

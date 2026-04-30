@@ -1,0 +1,18 @@
+.paginator-container .p-paginator {
+    background: transparent;
+    border: none;
+}
+
+.paginator-container .p-dropdown {
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+}
+
+.paginator-container .p-dropdown .p-dropdown-label {
+    color: #374151;
+}
+
+.paginator-container .p-dropdown-trigger {
+    color: #374151;
+}

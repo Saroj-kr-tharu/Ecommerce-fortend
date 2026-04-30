@@ -1,0 +1,17 @@
+@keyframes slide-down {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.banner-card {
+    /* Ensures the card stays invisible until the animation starts */
+    opacity: 0;
+    animation: slide-down 0.4s ease forwards;
+}

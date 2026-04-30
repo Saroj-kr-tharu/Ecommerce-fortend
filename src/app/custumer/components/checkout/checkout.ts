@@ -35,8 +35,6 @@ import { environment } from '../../../environments/environment.development';
   styleUrl: './checkout.css',
 })
 
-
-
 export class Checkout implements OnInit {
   activeStep: number = 1;
   OrderSummaryData: any; 
@@ -93,8 +91,6 @@ export class Checkout implements OnInit {
 
   // signal 
   isBuyNow = signal(false)
-  
-
   orderSummary = signal<orderSummary>({
     seletectItem: [],
     subtotal: 0,
@@ -165,9 +161,7 @@ export class Checkout implements OnInit {
 
     constructor(private route: ActivatedRoute){
       this.orderSummary.set(this.cusService.getOrderSummary() ) ;
-     const buyNow = this.route.snapshot.paramMap.get('buynow');
-      // console.log( 'params = >', this.orderSummary())
-
+      const buyNow = this.route.snapshot.paramMap.get('buynow'); 
       if(buyNow == 'BuyNow'){
         this.isBuyNow.set(true);
       }
@@ -179,16 +173,9 @@ export class Checkout implements OnInit {
       // console.log('order=> ',this.orderSummary());
     }
 
-
-   
-
       getValidationKeys(validation: ValidationConfig): string[] {
         return Object.keys(validation);
       }
-
-
-
-    
 
   onSameAsBillingChange(): void {
     if (this.sameAsBilling) {
@@ -204,6 +191,15 @@ export class Checkout implements OnInit {
       this.shippingForm.reset();
     }
   }
+  
+  canNavigateToStep(targetStep: number): boolean {
+  if (targetStep <= this.activeStep) return true; 
+
+  if (targetStep >= 2 && !this.validateStep1()) return false;
+  if (targetStep >= 3 && !this.validateStep2()) return false;
+
+  return true;
+}
 
   validateStep1(): boolean {
     this.billingForm.markAllAsTouched();
@@ -232,11 +228,6 @@ export class Checkout implements OnInit {
   }
 
   onSubmit(): void {
-    // console.log('Order submitted!');
-    // console.log('Billing:', this.billingForm.value);
-    // console.log('Shipping:', this.sameAsBilling ? 'Same as billing' : this.shippingForm.value);
-    // console.log('Payment:', this.paymentForm.value);
-
     if (
       !this.billingForm.value.firstName &&
       !this.billingForm.value.lastName &&
@@ -272,8 +263,6 @@ export class Checkout implements OnInit {
 
     let orderItems: { productId: number; quantity: number }[] = [];
     this.orderSummary().seletectItem.map((item: any) => {
-          
-          // console.log('item => ', item)
           orderItems.push({
             productId:   item.productId,
             quantity: item.quantity
@@ -307,13 +296,9 @@ export class Checkout implements OnInit {
     if(this.paymentForm.value?.paymentMethod.toLowerCase() ==='cod' ){   
       this.cusService.placeOrder(data).subscribe({
         next: (res:any) => {
-          // console.log('response => ', res)
           this.toast.loading(' Placcing Order ..  ')
-
           const url = res?.data.data;
           window.location.href = url;
-          
-          
         },
        
         error: (err) => {
@@ -345,11 +330,8 @@ export class Checkout implements OnInit {
       this.paymentService.paymentIntialize(data)
       .subscribe({
         next: (res:any) => {
-          // console.log('response => ', res)
-          
           const url = res?.data.data.payment_url;
-            window.location.href = url;
-          
+          window.location.href = url;
         },
       
         error: (err) => {
@@ -366,8 +348,8 @@ export class Checkout implements OnInit {
       // Create and submit a form programmatically 
        const   submitPayment = (data: any): void =>  {
           const form = document.createElement('form');
-          form.method = 'POST';
-          form.action = 'https://rc-epay.esewa.com.np/api/epay/main/v2/form';
+          form.method = 'POST'; 
+          form.action = environment.esewa_url; 
           form.target = '_blank';
           
           Object.keys(data).forEach(key => {
@@ -377,28 +359,21 @@ export class Checkout implements OnInit {
             input.value = data[key];
             form.appendChild(input);
           });
-
+ 
           document.body.appendChild(form);
           form.submit();
           document.body.removeChild(form);
         }
 
-       
-
-
        this.paymentService.paymentIntialize(data).subscribe({
         next: (res:any) => {
-          // console.log('response from esewa => ', res.data?.data) 
           let initalizeEsewadata = res?.data?.data;
-
           this.toast.loading('Placing Order ... ')
-
-          // console.log('data= > ', initalizeEsewadata)
 
            let finalDataesewa = {
             amount: initalizeEsewadata?.amount, 
             tax_amount: 0,
-            total_amount:initalizeEsewadata?.amount ,
+            total_amount:initalizeEsewadata?.amount , 
             transaction_uuid: initalizeEsewadata.transactionId,  
             product_code: 'EPAYTEST' ,
             product_service_charge: 0,
@@ -407,8 +382,9 @@ export class Checkout implements OnInit {
             failure_url: "https://developer.esewa.com.np/failure", 
             signed_field_names:  "total_amount,transaction_uuid,product_code", 
             signature: initalizeEsewadata.hash.signature,
-            secret: "8gBm/:&EnhH.1/q",
+            secret: environment.esewa_secret, 
            }
+           console.log('final => ', finalDataesewa)
            submitPayment(finalDataesewa)
           
           

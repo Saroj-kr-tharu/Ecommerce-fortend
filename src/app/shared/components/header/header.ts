@@ -1,7 +1,8 @@
 import { Component, effect, ElementRef, HostListener, inject, OnInit, Signal, signal, ViewChild } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { HotToastService } from '@ngxpert/hot-toast';
+import { filter } from 'rxjs';
 import { LoginState } from '../../../core/models/auth.model';
 import { CartState } from '../../../core/models/cart.model';
 import { logoutAction, restoreSessionAction } from '../../../store/auth/auth.actions';
@@ -25,6 +26,7 @@ export class Header implements OnInit {
   router = inject(Router)
   toast = inject(HotToastService)
   cartCount = signal(0);
+  isAdminDashboard = signal(false)
 
   
   @HostListener('document:click', ['$event'])
@@ -37,9 +39,11 @@ export class Header implements OnInit {
     }
   }
 
-   constructor( private store: Store<{LoginReducer : LoginState }> ) {
+   constructor( private store: Store<{LoginReducer : LoginState }>, private route: ActivatedRoute ) {
           this.cartState = this.store.selectSignal(selectCart);
           this.loginState = this.store.selectSignal(selectLogin);
+
+          
           
           effect( ()=> {
             this.loginState = this.store.selectSignal(selectLogin);
@@ -49,12 +53,33 @@ export class Header implements OnInit {
     }
 
     ngOnInit(): void {
-          const session = localStorage.getItem('marketManduAuth');
+        const session = localStorage.getItem('marketManduAuth');
+          
         if (session) {
             this.store.dispatch(restoreSessionAction.restoreSession({ payload:  JSON.parse(session)}));
         }
+
+        this.router.events
+        .pipe(filter(event => event instanceof NavigationEnd))
+        .subscribe((event: NavigationEnd) => {
+          const currentUrl = event.urlAfterRedirects;
+          // console.log("current url => ", currentUrl); 
+ 
+          if (currentUrl.includes('/admin/dashboard')) {
+            // console.log('User is on admin dashboard ✓');
+              this.isAdminDashboard.set(true);
+            }else{
+            this.isAdminDashboard.set(false);
+          }
+        });
     }
+  adminNavLinks() {
+    return [
+        {text: 'Dashboard', to: '/admin/dashboard', },
+        {text: 'Logout', to: null, } 
     
+      ];
+  }
   getVisibleLinks() {
     if (this.loginState().isAdmin) {
       return [
