@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { AfterViewInit, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdminService } from '../../../core/services/admin/admin-service';
 
@@ -66,7 +66,7 @@ export interface OrderType {
   templateUrl: './ordersdetails.html',
   styleUrl: './ordersdetails.css',
 })
-export class Ordersdetails implements OnInit {
+export class Ordersdetails implements OnInit, AfterViewInit {
 
   route = inject(ActivatedRoute);
   adminService = inject(AdminService);
@@ -151,6 +151,18 @@ export class Ordersdetails implements OnInit {
   ngOnInit(): void {
     const orderId = this.route.snapshot.paramMap.get('id');
     if (orderId) this.loadOrder(orderId);
+  }
+
+   ngAfterViewInit() {
+    const cards = document.querySelectorAll('.chart-card');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.2 });
+    cards.forEach(card => observer.observe(card));
   }
 
   navigateToProduct(product: any) {

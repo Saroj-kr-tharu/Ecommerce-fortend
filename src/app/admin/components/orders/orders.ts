@@ -69,7 +69,7 @@ export class Orders implements OnInit {
   order! : FormattedOrder;
   originalValue ! : FormattedOrder;
   
-  orderState!: Signal<any[]>;
+    orderState!: Signal<any[]>;
     bannerItems = signal<any[]>([]);
 
     private store = inject(Store<{ DashboardReducer: DashboardState }>);
@@ -184,10 +184,10 @@ orderFormConfig: FormSignin[] = [
 
    }
 
-    mutableOrders = computed(() => {
+  mutableOrders = computed(() => {
     console.log('computed orders  =>', this.Orders());
     return [...this.Orders()];   
-  })
+    })
 
 
   ngOnInit(): void {
@@ -196,7 +196,7 @@ orderFormConfig: FormSignin[] = [
 
   loadInitialData() {
     this.orderState = this.store.selectSignal(selectOrders);
-
+    console.log("orders state => ", this.orderState())
     const formattedOrders: FormattedOrder[] = this.orderState().map((order: any): FormattedOrder => ({
           itemId: order.id,
           id: order.orderNumber,
@@ -228,7 +228,7 @@ orderFormConfig: FormSignin[] = [
     // console.log('order => ', product) 
     this.router.navigate(['/admin/orders',  product.id]);
   }
-  
+
 
   formatItems(items: any[]): string {
   if (!items) return '';
@@ -242,9 +242,8 @@ orderFormConfig: FormSignin[] = [
   } catch {
     return '';
   }
-}
+  }
 
-    
 
   // Autocomplete filter for Category
   filterCategory(event: any) {

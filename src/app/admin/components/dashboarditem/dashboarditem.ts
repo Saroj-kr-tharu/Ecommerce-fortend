@@ -62,9 +62,6 @@ export class Dashboarditem implements OnInit {
   averageOrderValue: Signal<number>;
   totalSales: Signal<number>;
 
-  
-  
-
     // products 
     totalDelete = computed(() => this.products().filter(product => product.isActive === false).length);
     totalStockOut = computed(() => this.products().filter(product => product.stock === 0).length);
