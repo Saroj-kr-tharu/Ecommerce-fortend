@@ -9,7 +9,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { StepperModule } from 'primeng/stepper';
-import { FormSignin, ValidationConfig } from '../../../core/models/auth.model';
+import { ValidationConfig } from '../../../core/models/auth.model';
 import { orderSummary } from '../../../core/models/order.model';
 import { CusServices } from '../../../core/services/custumer/cus.services';
 import { Navigation } from '../../../core/services/custumer/navigation';
@@ -46,26 +46,102 @@ export class Checkout implements OnInit {
 
   
 
-  // Billing Address Form
-  billingForm: FormGroup = new FormGroup({
-    firstName: new FormControl('', [Validators.required]),
-    lastName: new FormControl('', [Validators.required]),
-    email: new FormControl('', [Validators.required, Validators.email]),
-    phone: new FormControl('', [Validators.required]),
-    address: new FormControl('', [Validators.required]),
-    city: new FormControl('', [Validators.required]),
-    zip: new FormControl('', [Validators.required])
-  });
+  //  Form Config 
+billingFormConfig = [
+  {
+    id: 'firstName', label: 'First Name', type: 'text',
+    placeholder: 'John',
+    validation: {
+      required:   'First name is required.',
+      minlength:  'Minimum 2 characters.',
+      maxlength:  'Maximum 50 characters.',
+      pattern:    'Only letters, spaces, hyphens allowed.'
+    }
+  },
+  {
+    id: 'lastName', label: 'Last Name', type: 'text',
+    placeholder: 'Doe',
+    validation: {
+      required:  'Last name is required.',
+      minlength: 'Minimum 2 characters.',
+      maxlength: 'Maximum 50 characters.',
+      pattern:   'Only letters, spaces, hyphens allowed.'
+    }
+  },
+  {
+    id: 'email', label: 'Email', type: 'email',
+    placeholder: 'john@example.com',
+    validation: {
+      required:  'Email is required.',
+      email:     'Enter a valid email.',
+      maxlength: 'Maximum 100 characters.',
+      pattern:   'Invalid email format.'
+    }
+  },
+  {
+    id: 'phone', label: 'Phone', type: 'tel',
+    placeholder: '+977-9800000000',
+    validation: {
+      required:  'Phone number is required.',
+      minlength: 'Minimum 7 digits.',
+      maxlength: 'Maximum 15 digits.',
+      pattern:   'Only digits, +, -, () allowed.'
+    }
+  },
+  {
+    id: 'address', label: 'Address', type: 'text',
+    placeholder: '123 Main Street',
+    validation: {
+      required:  'Address is required.',
+      minlength: 'Minimum 5 characters.',
+      maxlength: 'Maximum 150 characters.',
+      pattern:   'Invalid address characters.'
+    }
+  },
+  {
+    id: 'city', label: 'City', type: 'text',
+    placeholder: 'Kathmandu',
+    validation: {
+      required:  'City is required.',
+      minlength: 'Minimum 2 characters.',
+      maxlength: 'Maximum 100 characters.',
+      pattern:   'Only letters and spaces allowed.'
+    }
+  },
+  {
+    id: 'zip', label: 'ZIP Code', type: 'text',
+    placeholder: '44600',
+    validation: {
+      required:  'ZIP code is required.',
+      minlength: 'Minimum 4 digits.',
+      maxlength: 'Maximum 10 characters.',
+      pattern:   'Enter valid ZIP (e.g. 44600 or 44600-1234).'
+    }
+  }
+];
 
-    // Shipping Address Form
-  shippingForm: FormGroup = new FormGroup({
-    firstName: new FormControl('', [Validators.required]),
-    lastName: new FormControl('', [Validators.required]),
-    phone: new FormControl('', [Validators.required]),
-    address: new FormControl('', [Validators.required]),
-    city: new FormControl('', [Validators.required]),
-    zip: new FormControl('', [Validators.required])
-  });
+//  Billing Form 
+billingForm: FormGroup = new FormGroup({
+  firstName: new FormControl('', [Validators.required, Validators.minLength(2),  Validators.maxLength(50),  Validators.pattern(/^[a-zA-Z\s'-]+$/)]),
+  lastName:  new FormControl('', [Validators.required, Validators.minLength(2),  Validators.maxLength(50),  Validators.pattern(/^[a-zA-Z\s'-]+$/)]),
+  email:     new FormControl('', [Validators.required, Validators.email,         Validators.maxLength(100), Validators.pattern(/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/)]),
+  phone:     new FormControl('', [Validators.required, Validators.minLength(7),  Validators.maxLength(15),  Validators.pattern(/^\+?[0-9\s\-().]{7,15}$/)]),
+  address:   new FormControl('', [Validators.required, Validators.minLength(5),  Validators.maxLength(150), Validators.pattern(/^[a-zA-Z0-9\s,.\-#/]+$/)]),
+  city:      new FormControl('', [Validators.required, Validators.minLength(2),  Validators.maxLength(100), Validators.pattern(/^[a-zA-Z\s\-'.]+$/)]),
+  zip:       new FormControl('', [Validators.required, Validators.minLength(4),  Validators.maxLength(10),  Validators.pattern(/^[0-9]{4,6}(-[0-9]{4})?$/)])
+});
+
+//  Shipping Form 
+shippingForm: FormGroup = new FormGroup({
+  firstName: new FormControl('', [Validators.required, Validators.minLength(2),  Validators.maxLength(50),  Validators.pattern(/^[a-zA-Z\s'-]+$/)]),
+  lastName:  new FormControl('', [Validators.required, Validators.minLength(2),  Validators.maxLength(50),  Validators.pattern(/^[a-zA-Z\s'-]+$/)]),
+  phone:     new FormControl('', [Validators.required, Validators.minLength(7),  Validators.maxLength(15),  Validators.pattern(/^\+?[0-9\s\-().]{7,15}$/)]),
+  address:   new FormControl('', [Validators.required, Validators.minLength(5),  Validators.maxLength(150), Validators.pattern(/^[a-zA-Z0-9\s,.\-#/]+$/)]),
+  city:      new FormControl('', [Validators.required, Validators.minLength(2),  Validators.maxLength(100), Validators.pattern(/^[a-zA-Z\s\-'.]+$/)]),
+  zip:       new FormControl('', [Validators.required, Validators.minLength(4),  Validators.maxLength(10),  Validators.pattern(/^[0-9]{4,6}(-[0-9]{4})?$/)])
+});
+
+ 
 
 
     // Payment Form
@@ -100,64 +176,6 @@ export class Checkout implements OnInit {
   });
 
 
-    billingFormConfig: FormSignin[] = [
-      {
-        type: 'text',
-        id: 'firstName',
-        label: 'First Name',
-        placeholder: 'First name...',
-        autocomplete: 'given-name',
-        validation: { required: 'First name is required' },
-      },
-      {
-        type: 'text',
-        id: 'lastName',
-        label: 'Last Name',
-        placeholder: 'Last name...',
-        autocomplete: 'family-name',
-        validation: { required: 'Last name is required' },
-      },
-      {
-        type: 'email',
-        id: 'email',
-        label: 'Email Address',
-        placeholder: 'Email...',
-        autocomplete: 'email',
-        validation: { required: 'Email is required', email: 'Please enter a valid email address' },
-      },
-      {
-        type: 'text',
-        id: 'phone',
-        label: 'Phone',
-        placeholder: 'Phone...',
-        autocomplete: 'tel',
-        validation: { required: 'Phone is required' },
-      },
-      {
-        type: 'text',
-        id: 'address',
-        label: 'Address',
-        placeholder: 'Address...',
-        autocomplete: 'street-address',
-        validation: { required: 'Address is required' },
-      },
-      {
-        type: 'text',
-        id: 'city',
-        label: 'City',
-        placeholder: 'City...',
-        autocomplete: 'address-level2',
-        validation: { required: 'City is required' },
-      },
-      {
-        type: 'text',
-        id: 'zip',
-        label: 'ZIP Code',
-        placeholder: 'ZIP...',
-        autocomplete: 'postal-code',
-        validation: { required: 'ZIP code is required' },
-      }
-    ];
 
     constructor(private route: ActivatedRoute){
       this.orderSummary.set(this.cusService.getOrderSummary() ) ;
@@ -174,7 +192,7 @@ export class Checkout implements OnInit {
     }
 
       getValidationKeys(validation: ValidationConfig): string[] {
-        return Object.keys(validation);
+        return Object.keys(validation).filter(key => validation[key] !== undefined);
       }
 
   onSameAsBillingChange(): void {
@@ -193,13 +211,13 @@ export class Checkout implements OnInit {
   }
   
   canNavigateToStep(targetStep: number): boolean {
-  if (targetStep <= this.activeStep) return true; 
+    if (targetStep <= this.activeStep) return true; 
 
-  if (targetStep >= 2 && !this.validateStep1()) return false;
-  if (targetStep >= 3 && !this.validateStep2()) return false;
+    if (targetStep >= 2 && !this.validateStep1()) return false;
+    if (targetStep >= 3 && !this.validateStep2()) return false;
 
-  return true;
-}
+    return true;
+  }
 
   validateStep1(): boolean {
     this.billingForm.markAllAsTouched();
@@ -270,9 +288,9 @@ export class Checkout implements OnInit {
 
         });
 
-    
+      const idempotencyKey = window.crypto.randomUUID();
       let data = {
-    
+        idempotencyKey: idempotencyKey,
         userId: localDa.id, 
         userEmail: localDa.email,
         gateway: this.paymentForm.value.paymentMethod,
@@ -384,7 +402,7 @@ export class Checkout implements OnInit {
             signature: initalizeEsewadata.hash.signature,
             secret: environment.esewa_secret, 
            }
-           console.log('final => ', finalDataesewa)
+          //  console.log('final => ', finalDataesewa)
            submitPayment(finalDataesewa)
           
           

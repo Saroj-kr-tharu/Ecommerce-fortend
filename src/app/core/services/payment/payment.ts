@@ -10,11 +10,9 @@ export class Payment {
 
   BaseUrl = `${environment.apiURL}`; 
 
-
-
   // products 
   paymentIntialize(data:any) {
-    const url = `${this.BaseUrl}/ecommerce/orders/orderIntial`
+    const url = `${this.BaseUrl}/ecommerce/orders/orderIntial`;
     return  this.httpClient.post(url, data) ; 
   }
 
