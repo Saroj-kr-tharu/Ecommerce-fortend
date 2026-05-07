@@ -28,7 +28,7 @@ export class Dashboard {
 
   menuItems = [
     { label: 'Dashboard', icon: 'pi pi-th-large', component: 'dashboard', active: true },
-    { label: 'Banner', icon: 'pi pi-th-large', component: 'banner', active: false },
+    { label: 'Banner', icon: 'pi pi-image', component: 'banner', active: false },
     { label: 'Users', icon: 'pi pi-users', component: 'users', active: false },
     { label: 'Products', icon: 'pi pi-shopping-bag', component: 'products', active: false },
     { label: 'Orders', icon: 'pi pi-shopping-cart', component: 'orders', active: false },

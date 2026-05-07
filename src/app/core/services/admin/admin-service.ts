@@ -1,5 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { HotToastService } from '@ngxpert/hot-toast';
+import { from, Observable, switchMap } from 'rxjs';
 import { environment } from '../../../environments/environment.development';
 
 @Injectable({
@@ -7,7 +9,8 @@ import { environment } from '../../../environments/environment.development';
 })
 export class AdminService {
   httpClient = inject(HttpClient)
-
+  toast = inject(HotToastService)
+  
   BaseUrl = `${environment.apiURL}`;
 
  
@@ -79,6 +82,102 @@ export class AdminService {
   getUserByUserId( userId : any) {
    const url = `${this.BaseUrl}/auth/email/${userId}`
    return this.httpClient.get(url );
+  }
+
+  // banners 
+  getAllBanner() {
+    const url = `${this.BaseUrl}/ecommerce/banners`
+    return this.httpClient.get(url );
+  }
+
+   editBanner(id:number,data: any ) { 
+    const url = `${this.BaseUrl}/ecommerce/banner/${id}`
+    return this.httpClient.patch(url,data );
+  }
+  
+   deleteBanner( id:any ,  objId:any) {
+    const hash = objId.split('/').pop()
+    const url = `${this.BaseUrl}/ecommerce/banner/${id}`
+    const params = new HttpParams().set('objId', hash);
+    return this.httpClient.delete(url, { params });
+  }
+
+  
+   private getSignedUrl(){
+        const url = `${this.BaseUrl}/ecommerce/s3/Url`
+        return this.httpClient.get(url);
+      }
+  
+    uploadFileToS3(file: File): Observable<any> {
+      return this.getSignedUrl().pipe(
+        switchMap((response: any) => {
+          const presignedUrl = response.data; 
+          // console.log('presignedUrl =>', presignedUrl)
+          this.toast.info("uploading image to s3");
+
+          return from(
+            fetch(presignedUrl, {
+              method: 'PUT',
+              headers: { 'Content-Type': file.type },
+              body: file,
+            }).then(res => {
+              if (!res.ok) throw new Error(`S3 upload failed: ${res.status}`);
+              return { uploadedUrl: presignedUrl.split('?')[0] }; 
+            })
+          );
+        })
+      );
+    }
+
+  
+  
+  createBanner(file: File, bannerInfo: any): Observable<any> {
+    const url = `${this.BaseUrl}/ecommerce/banner`;
+    // 1. Start by uploading the file
+    return this.uploadFileToS3(file).pipe(
+      switchMap((uploadRes: any) => {
+        let uploadedUrl: string = uploadRes.uploadedUrl;
+        uploadedUrl= environment.CLOUDFRONT_DOMAIN+uploadedUrl.split('/').pop(); 
+        // console.log('uploaded Url => ', uploadedUrl)
+        const finalPayload = {
+          ...bannerInfo,
+          imageUrl: uploadedUrl 
+        };
+
+        return this.httpClient.post(url, finalPayload);
+      })
+    );
+  }
+
+  deleteObjFromS3(id:string){
+      const url = `${this.BaseUrl}/ecommerce/s3/${id}`
+      return this.httpClient.delete(url);
+    }
+
+  updateWithNewFileBanner(file: File, bannerInfo: any, id: any, objId:any ): Observable<any> {
+    const url = `${this.BaseUrl}/ecommerce/banner/${id}`;
+
+    // 1. Delete old file from s3
+    
+    return this.deleteObjFromS3(objId).pipe(
+      switchMap(() => {
+        // 2. Upload new file to S3
+        this.toast.info("Uploading ... ")
+        return this.uploadFileToS3(file);
+      }),
+      switchMap((uploadRes: any) => {
+        // 3. Build final URL and save to DB
+        let uploadedUrl: string = uploadRes.uploadedUrl;
+        uploadedUrl = environment.CLOUDFRONT_DOMAIN + uploadedUrl.split('/').pop();
+
+        const finalPayload = {
+          ...bannerInfo,
+          imageUrl: uploadedUrl
+        };
+        // console.log("final payload => ", finalPayload)
+        return this.httpClient.patch(url, finalPayload);
+      })
+    );
   }
 
 

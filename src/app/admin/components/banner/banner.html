@@ -1,16 +1,378 @@
-<div animate.enter="fade-in-element" class="mb-6">
-  <h2 class="text-3xl font-bold text-gray-800">Banner</h2>
-  <p class="text-gray-600 mt-1">Manage Banner </p>
+<!--  PAGE HEADER                                            -->
+
+<div animate.enter="fade-in-element" class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+  <div>
+    <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">Banners</h2>
+    <p class="text-gray-500 mt-1 text-sm sm:text-base">Manage storefront banner images and schedules</p>
+  </div>
+
+  <button (click)="openCreateForm()" class="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl
+           bg-[#14b8a6] hover:bg-teal-400 active:scale-95 hover:cursor-pointer
+           text-white hover:text-gray-800 font-semibold shadow-md shadow-teal-200
+           transition-all duration-150 w-full sm:w-auto">
+    <i class="pi pi-plus text-sm"></i>
+    Add Banner
+  </button>
 </div>
 
 
-<div class="w-full  sm:justify-center items-center sm:flex flex-col">
-  <div class="w-full flex  justify-center ">
-    <div class="w-full  md:max-w-[95vw]">
+<div class="w-full sm:flex sm:justify-center sm:items-start">
+  <div class="w-full md:max-w-[95vw] flex flex-col gap-6 sm:gap-8">
 
 
 
+    <!--  CAROUSEL -->
 
+    @if (activeBanners().length > 0) {
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+
+      <!-- Header -->
+      <div class="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-gray-100">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+          <h3 class="font-semibold text-gray-700 text-sm sm:text-base">Live Preview</h3>
+          <span class="text-xs text-gray-400 bg-gray-100 rounded-full px-2 py-0.5">
+            {{ activeBanners().length }} active
+          </span>
+        </div>
+        <!-- Dot indicators -->
+        <div class="flex items-center gap-1 flex-wrap justify-end max-w-[50%]">
+          @for (b of activeBanners(); track b.id; let i = $index) {
+          <button (click)="goToSlide(i)" [class]="i === activeCarouselIndex
+                  ? 'w-5 sm:w-6 h-2 rounded-full bg-[#14b8a6] transition-all'
+                  : 'w-2 h-2 rounded-full bg-gray-300 hover:bg-teal-300 transition-all'"></button>
+          }
+        </div>
+      </div>
+
+      <!-- Slide -->
+      <div class="relative group">
+        <img [src]="activeBanners()[activeCarouselIndex]?.imageUrl" [alt]="activeBanners()[activeCarouselIndex]?.title" class="w-full object-cover transition-all duration-500" style="height: clamp(160px, 30vw, 320px);" />
+
+        <!-- Gradient caption -->
+        <div class="absolute bottom-0 inset-x-0 bg-linear-to-t from-black/60 to-transparent px-4 sm:px-6 py-3 sm:py-4">
+          <p class="text-white font-bold text-base sm:text-xl drop-shadow line-clamp-1">
+            {{ activeBanners()[activeCarouselIndex]?.title }}
+          </p>
+          @if (activeBanners()[activeCarouselIndex]?.redirectUrl) {
+          <p class="text-white/70 text-xs sm:text-sm mt-0.5 truncate">
+            {{ activeBanners()[activeCarouselIndex]?.redirectUrl }}
+          </p>
+          }
+        </div>
+
+        <!-- Hover action buttons -->
+        <div class="absolute inset-0 flex items-center justify-center gap-3
+                      opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black/40">
+          <button (click)="openEditForm(activeBanners()[activeCarouselIndex])" class="flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg
+                     bg-[#14b8a6] hover:bg-teal-700 hover:cursor-pointer
+                     text-white font-medium text-xs sm:text-sm shadow transition-all active:scale-95">
+            <i class="pi pi-pencil text-xs sm:text-sm"></i>
+            <span class="hidden xs:inline">Edit</span>
+          </button>
+          <button (click)="onDelete(activeBanners()[activeCarouselIndex])" class="flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg
+                     bg-red-500 hover:bg-red-600 hover:cursor-pointer
+                     text-white font-medium text-xs sm:text-sm shadow transition-all active:scale-95">
+            <i class="pi pi-trash text-xs sm:text-sm"></i>
+            <span class="hidden xs:inline">Delete</span>
+          </button>
+        </div>
+
+        <!-- Nav arrows -->
+        @if (activeBanners().length > 1) {
+        <button (click)="prevSlide()" class="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2
+                     w-8 sm:w-9 h-8 sm:h-9 rounded-full bg-white/80 hover:bg-white hover:cursor-pointer
+                     flex items-center justify-center shadow transition-all">
+          <i class="pi pi-chevron-left text-gray-700 text-xs sm:text-sm"></i>
+        </button>
+        <button (click)="nextSlide()" class="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2
+                     w-8 sm:w-9 h-8 sm:h-9 rounded-full bg-white/80 hover:bg-white hover:cursor-pointer
+                     flex items-center justify-center shadow transition-all">
+          <i class="pi pi-chevron-right text-gray-700 text-xs sm:text-sm"></i>
+        </button>
+        }
+      </div>
     </div>
+    }
+
+
+
+    <!--  CREATE / EDIT FORM                                      -->
+    @if (showForm()) {
+    <div id="banner-form" class="bg-white rounded-2xl shadow-sm border border-teal-100">
+
+      <!-- Form header -->
+      <div class="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-teal-100">
+        <div class="flex items-center gap-2">
+          <span class="w-1 h-6 rounded-full bg-[#14b8a6]"></span>
+          <h3 class="font-bold text-gray-800 text-base sm:text-lg">
+            {{ editingId() !== null ? 'Edit Banner' : 'Add New Banner' }}
+          </h3>
+        </div>
+        <button (click)="closeForm()" class="w-8 h-8 rounded-full hover:bg-teal-50 flex items-center justify-center
+                   text-gray-400 hover:text-teal-600 transition-colors hover:cursor-pointer">
+          <i class="pi pi-times text-sm"></i>
+        </button>
+      </div>
+
+      <form [formGroup]="bannerForm" (ngSubmit)="onSubmit()" class="px-4 sm:px-6 py-5 sm:py-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+
+          @for (field of bannerFieldConfig; track field.id) {
+
+          @if (field.type === 'toggle') {
+          <div class="col-span-1 md:col-span-2 flex items-center justify-between
+                            p-4 rounded-xl bg-teal-50 border border-teal-200">
+            <div>
+              <p class="font-semibold text-gray-700 text-sm flex items-center gap-1.5">
+                <i class="pi pi-eye text-[#14b8a6] text-xs"></i>
+                {{ field.label }}
+              </p>
+              @if (field.hint) {
+              <p class="text-xs text-gray-400 mt-0.5">
+                {{ field.hint }}
+              </p>
+              }
+            </div>
+            <button type="button" (click)="bannerForm.get('isActive')!.setValue(!bannerForm.get('isActive')!.value)" [class]="bannerForm.get('isActive')!.value
+                      ? 'relative inline-flex w-12 h-6 rounded-full bg-[#14b8a6] hover:cursor-pointer transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-teal-300'
+                      : 'relative inline-flex w-12 h-6 rounded-full bg-gray-300 hover:cursor-pointer transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-200'">
+              <span [class]="bannerForm.get('isActive')!.value
+                        ? 'inline-block w-5 h-5 rounded-full bg-white shadow translate-x-6 transition-transform duration-200 mt-0.5'
+                        : 'inline-block w-5 h-5 rounded-full bg-white shadow translate-x-0.5 transition-transform duration-200 mt-0.5'"></span>
+            </button>
+          </div>
+          }
+
+          <!-- ── FILE UPLOAD ── -->
+          @else if (field.type === 'file') {
+          <div class="col-span-1 md:col-span-2">
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">
+              <i class="pi pi-image text-[#14b8a6] mr-1 text-xs"></i>
+              {{ field.label }}
+              <span class="text-red-500 ml-0.5">*</span>
+            </label>
+
+            <div (click)="triggerFileInput()" (dragover)="onDragOver($event)" (dragleave)="onDragLeave()" (drop)="onDrop($event)" [class]="isDragging()
+                      ? 'relative flex flex-col items-center justify-center gap-3 p-6 sm:p-8 rounded-xl border-2 border-dashed border-[#14b8a6] bg-teal-50 cursor-pointer transition-all scale-[1.01]'
+                      : isInvalid('imageUrl')
+                        ? 'relative flex flex-col items-center justify-center gap-3 p-6 sm:p-8 rounded-xl border-2 border-dashed border-red-400 bg-red-50 cursor-pointer transition-all hover:border-teal-500 hover:bg-teal-50'
+                        : 'relative flex flex-col items-center justify-center gap-3 p-6 sm:p-8 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 cursor-pointer transition-all hover:border-teal-400 hover:bg-teal-50'">
+              <input #fileInput type="file" accept="image/*" class="hidden" (change)="onFileSelected($event)" />
+
+              @if (previewUrl()) {
+              <img [src]="previewUrl()" alt="Preview" class="w-full max-h-40 sm:max-h-48 object-cover rounded-lg shadow-sm" />
+              <p class="text-xs text-gray-400 flex items-center gap-1">
+                <i class="pi pi-refresh text-teal-400 text-xs"></i>
+                Click or drag to replace
+              </p>
+              } @else {
+              <div class="w-12 sm:w-14 h-12 sm:h-14 rounded-full bg-teal-100 flex items-center justify-center
+                                  shadow-inner animate-[pulse_2s_ease-in-out_infinite]">
+                <i class="pi pi-cloud-upload text-[#14b8a6] text-2xl sm:text-3xl"></i>
+              </div>
+              <div class="text-center px-2">
+                <p class="font-semibold text-gray-700 text-sm sm:text-base">
+                  Drop image here, or
+                  <span class="text-[#14b8a6] underline underline-offset-2">browse</span>
+                </p>
+                @if (field.hint) {
+                <p class="text-xs text-gray-400 mt-1">
+                  {{ field.hint }}
+                </p>
+                }
+              </div>
+              }
+            </div>
+
+            @if (fileError) {
+            <p class="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+              <i class="pi pi-exclamation-circle text-xs"></i>
+              {{ fileError }}
+            </p>
+            }
+
+            @if (!fileError && isInvalid('imageUrl')) {
+            <p class="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+              <i class="pi pi-exclamation-circle text-xs"></i>
+              {{ getError(field) }}
+            </p>
+            }
+
+            @if (isInvalid('imageUrl')) {
+            <p class="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+              <i class="pi pi-exclamation-circle text-xs"></i>
+              {{ getError(field) }}
+            </p>
+            }
+          </div>
+          }
+
+          <!-- ── ALL OTHER FIELDS ── -->
+          @else {
+          <div [class]="field.id === 'redirectUrl' ? 'col-span-1 md:col-span-2' : 'col-span-1'">
+            <label [for]="field.id" class="block text-sm font-semibold text-gray-700 mb-1.5">
+              <!-- Field-specific icons -->
+              @if (field.id === 'title') {
+              <i class="pi pi-tag text-[#14b8a6] mr-1 text-xs"></i>
+              } @else if (field.id === 'redirectUrl') {
+              <i class="pi pi-link text-[#14b8a6] mr-1 text-xs"></i>
+              } @else if (field.id === 'priority') {
+              <i class="pi pi-sort-amount-up text-[#14b8a6] mr-1 text-xs"></i>
+              } @else if (field.id === 'startDate') {
+              <i class="pi pi-calendar-plus text-[#14b8a6] mr-1 text-xs"></i>
+              } @else if (field.id === 'endDate') {
+              <i class="pi pi-calendar-minus text-[#14b8a6] mr-1 text-xs"></i>
+              }
+              {{ field.label }}
+              @if (field.validation?.['required']) {
+              <span class="text-red-500 ml-0.5">*</span>
+              }
+            </label>
+
+            <input [id]="field.id" [type]="field.type" [formControlName]="field.id" [placeholder]="field.placeholder ?? ''" [class]="isInvalid(field.id)
+                      ? 'w-full px-4 py-2.5 rounded-xl border border-red-400 bg-red-50 text-gray-800 text-sm placeholder-gray-400 outline-none ring-1 ring-red-400 transition-all'
+                      : 'w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-800 text-sm placeholder-gray-400 outline-none focus:border-[#14b8a6] focus:ring-2 focus:ring-teal-100 transition-all'" />
+
+            @if (field.hint && !isInvalid(field.id)) {
+            <p class="mt-1 text-xs text-gray-400">
+              {{ field.hint }}
+            </p>
+            }
+            @if (isInvalid(field.id)) {
+            <p class="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+              <i class="pi pi-exclamation-circle text-xs shrink-0"></i>
+              {{ getError(field) }}
+            </p>
+            }
+          </div>
+          }
+
+          }
+        </div>
+
+        <!-- Form actions -->
+        <div class="flex flex-col-reverse sm:flex-row items-stretch sm:items-center
+                      justify-end gap-3 mt-6 sm:mt-8 pt-5 sm:pt-6 border-t border-teal-100">
+          <button type="button" (click)="closeForm()" class="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl
+                     border border-gray-200 text-gray-600 text-sm font-semibold
+                     hover:bg-gray-50 active:scale-95 transition-all hover:cursor-pointer">
+            <i class="pi pi-times text-xs"></i>
+            Cancel
+          </button>
+          <button type="submit" class="flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl
+                     bg-[#14b8a6] hover:bg-teal-500 text-white text-sm font-semibold
+                     shadow-sm shadow-teal-200 active:scale-95 transition-all hover:cursor-pointer">
+            <i class="pi pi-check text-xs"></i>
+            {{ editingId() !== null ? 'Save Changes' : 'Create Banner' }}
+          </button>
+        </div>
+      </form>
+    </div>
+    }
+
+
+
+    <!--  BANNER LIST                                             -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
+
+      <!-- List header -->
+      <div class="flex flex-col xs:flex-row xs:items-center justify-between gap-2
+                  px-4 sm:px-6 py-4 border-b border-gray-100">
+        <h3 class="font-bold text-gray-800 text-sm sm:text-base">
+          All Banners
+          <span class="ml-2 text-sm font-normal text-gray-400">
+            {{ banners().length }} total</span>
+        </h3>
+        <div class="flex items-center gap-3 text-xs text-gray-400">
+          <span class="flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-green-400 inline-block"></span> Active
+          </span>
+          <span class="flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-gray-300 inline-block"></span> Inactive
+          </span>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      @if (banners().length === 0) {
+      <div class="flex flex-col items-center justify-center py-16 sm:py-20 text-gray-400 gap-3">
+        <i class="pi pi-images text-6xl sm:text-7xl opacity-20"></i>
+        <p class="font-semibold text-base sm:text-lg">No banners yet</p>
+        <p class="text-xs sm:text-sm">Click "Add Banner" to create your first one.</p>
+      </div>
+      }
+
+      <!-- Rows -->
+      @if (banners().length > 0) {
+      <div class="divide-y divide-gray-50">
+        @for (banner of sortedBanners(); track banner.id) {
+        <div class="flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-3 sm:py-4
+                        hover:bg-teal-100 hover:cursor-pointer transition-colors group">
+
+          <!-- Thumbnail -->
+          <div class="relative shrink-0">
+            <img [src]="banner.imageUrl" [alt]="banner.title" class="w-20 sm:w-28 h-12 sm:h-14 object-cover rounded-lg border border-gray-100 shadow-sm" />
+            <span [class]="banner.isActive
+                    ? 'absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-green-400 border-2 border-white shadow'
+                    : 'absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-gray-300 border-2 border-white shadow'"></span>
+          </div>
+
+          <!-- Info -->
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+              <p class="font-semibold text-gray-800 truncate text-xs sm:text-sm">
+                {{ banner.title }}
+              </p>
+
+            </div>
+            <div class="flex items-center gap-2 sm:gap-3 mt-1 flex-wrap">
+              @if (banner.redirectUrl) {
+              <span class="text-xs text-teal-500 truncate max-w-[120px] sm:max-w-[180px] flex items-center gap-1">
+                <i class="pi pi-link text-xs"></i>
+                {{ banner.redirectUrl }}
+              </span>
+              }
+              <span class="text-xs text-gray-400 flex items-center gap-1">
+                <i class="pi pi-calendar text-xs"></i>
+                {{ banner.startDate }} →
+                {{ banner.endDate }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Toggle active -->
+          <button type="button" (click)="toggleActive(banner)" [title]="banner.isActive ? 'Deactivate' : 'Activate'" [class]="banner.isActive
+                  ? 'relative inline-flex w-9 sm:w-10 h-5 rounded-full bg-[#14b8a6] hover:cursor-pointer transition-colors duration-200 focus:outline-none shrink-0'
+                  : 'relative inline-flex w-9 sm:w-10 h-5 rounded-full bg-gray-300 hover:cursor-pointer transition-colors duration-200 focus:outline-none shrink-0'">
+            <span [class]="banner.isActive
+                    ? 'inline-block w-4 h-4 rounded-full bg-white shadow translate-x-4 sm:translate-x-5 transition-transform duration-200 mt-0.5'
+                    : 'inline-block w-4 h-4 rounded-full bg-white shadow translate-x-0.5 transition-transform duration-200 mt-0.5'"></span>
+          </button>
+
+          <!-- Edit / Delete  -->
+          <div class="flex items-center gap-1.5 sm:gap-2 shrink-0
+                          sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+            <button (click)="openEditForm(banner)" class="flex hover:cursor-pointer items-center gap-1 sm:gap-1.5
+                         px-2 sm:px-3 py-1.5 rounded-lg border border-teal-200
+                         text-teal-600 text-xs font-semibold hover:bg-teal-50 active:scale-95 transition-all">
+              <i class="pi pi-pencil text-xs"></i>
+              <span class="hidden sm:inline">Edit</span>
+            </button>
+            <button (click)="onDelete(banner)" class="flex items-center gap-1 sm:gap-1.5
+                         px-2 sm:px-3 py-1.5 rounded-lg border border-red-200 hover:cursor-pointer
+                         text-red-500 text-xs font-semibold hover:bg-red-50 active:scale-95 transition-all">
+              <i class="pi pi-trash text-xs"></i>
+              <span class="hidden sm:inline">Delete</span>
+            </button>
+          </div>
+
+        </div>
+        }
+      </div>
+      }
+    </div>
+
+
   </div>
 </div>
