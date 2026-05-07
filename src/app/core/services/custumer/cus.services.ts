@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { from, Observable, switchMap } from 'rxjs';
 import { environment } from '../../../environments/environment.development';
 import { addItemToCart, updateItemCart } from '../../models/cart.model';
 import { loadProductType } from '../../models/product.model';
@@ -80,7 +81,6 @@ export class CusServices {
   }
 
     updateItemToCart(data: updateItemCart ) {
-      // console.log("data from delete update => ", data )
       const url = `${this.BaseUrl}/ecommerce/cart/items/${data.cartItemId}`
       return this.httpClient.patch(url, data );
     }
@@ -94,5 +94,50 @@ export class CusServices {
       const url = `${this.BaseUrl}/ecommerce/orders/getByUser`
       return this.httpClient.get(url, { params: { page:page, limit:limit, id:userId } });
     }
-  
+    
+    GetAllOrdersByUserId(userId: any, ){
+      const url = `${this.BaseUrl}/ecommerce/orders/user/${userId}`
+      return this.httpClient.get(url );
+    }
+    
+    GetOrdersByUserIdAndOrderNo(userId: any, orderNo:any ){
+      // console.log('orderNo => ', orderNo, userId) 
+      const url = `${this.BaseUrl}/ecommerce/order/userId/${orderNo}`
+      return this.httpClient.get(url, { params: {  userId:userId } });
+    }
+    
+    // s3 
+    private getSignedUrl(){
+      const url = `${this.BaseUrl}/ecommerce/s3/Url`
+      return this.httpClient.get(url);
+    }
+
+    uploadFileToS3(file: File): Observable<any> {
+      return this.getSignedUrl().pipe(
+        switchMap((response: any) => {
+          const presignedUrl = response.data; 
+          // console.log('presignedUrl =>', presignedUrl)
+          return from(
+            fetch(presignedUrl, {
+              method: 'PUT',
+              headers: { 'Content-Type': file.type },
+              body: file,
+            }).then(res => {
+              if (!res.ok) throw new Error(`S3 upload failed: ${res.status}`);
+              
+              return { uploadedUrl: presignedUrl.split('?')[0] }; 
+            })
+          );
+        })
+      );
+    }
+
+    // delete file from s3 
+    deleteObjFromS3(id:string){
+      const url = `${this.BaseUrl}/ecommerce/s3/${id}`
+      return this.httpClient.delete(url);
+    }
+
+    
+
 }

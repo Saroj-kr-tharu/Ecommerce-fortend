@@ -3,6 +3,7 @@ import { Store } from '@ngrx/store';
 import { DividerModule } from 'primeng/divider';
 import { LoginState } from '../../../core/models/auth.model';
 import { logoutAction } from '../../../store/auth/auth.actions';
+import { Banner } from '../banner/banner';
 import { Dashboarditem } from "../dashboarditem/dashboarditem";
 import { Orders } from "../orders/orders";
 import { Products } from "../products/products";
@@ -10,7 +11,7 @@ import { Users } from "../users/users";
 
 @Component({
   selector: 'app-dashboard',
-  imports: [DividerModule, Products, Users, Orders, Dashboarditem],
+  imports: [DividerModule, Products, Users, Orders, Dashboarditem, Banner],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
   
@@ -27,6 +28,7 @@ export class Dashboard {
 
   menuItems = [
     { label: 'Dashboard', icon: 'pi pi-th-large', component: 'dashboard', active: true },
+    { label: 'Banner', icon: 'pi pi-th-large', component: 'banner', active: false },
     { label: 'Users', icon: 'pi pi-users', component: 'users', active: false },
     { label: 'Products', icon: 'pi pi-shopping-bag', component: 'products', active: false },
     { label: 'Orders', icon: 'pi pi-shopping-cart', component: 'orders', active: false },

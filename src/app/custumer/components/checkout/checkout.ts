@@ -16,6 +16,14 @@ import { Navigation } from '../../../core/services/custumer/navigation';
 import { Payment } from '../../../core/services/payment/payment';
 import { environment } from '../../../environments/environment.development';
 
+interface FormFieldConfig {
+  id: string;
+  label: string;
+  type: string;
+  placeholder: string;
+  validation: ValidationConfig;  
+}
+
 @Component({
   selector: 'app-checkout',
   standalone: true,
@@ -35,6 +43,8 @@ import { environment } from '../../../environments/environment.development';
   styleUrl: './checkout.css',
 })
 
+
+
 export class Checkout implements OnInit {
   activeStep: number = 1;
   OrderSummaryData: any; 
@@ -47,7 +57,7 @@ export class Checkout implements OnInit {
   
 
   //  Form Config 
-billingFormConfig = [
+billingFormConfig :FormFieldConfig[] = [
   {
     id: 'firstName', label: 'First Name', type: 'text',
     placeholder: 'John',

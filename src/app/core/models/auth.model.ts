@@ -1,6 +1,5 @@
-export  interface ValidationConfig {
-  [key: string]: string;
-}
+// export  interface ValidationConfig {[key: string]: string;}
+export type ValidationConfig = Record<string, string>;
 
 // export type ValidationConfig = {
 //   [key: string]: string | undefined;

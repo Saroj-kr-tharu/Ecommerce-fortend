@@ -329,7 +329,7 @@ export class Dashboarditem implements OnInit {
       const surfaceBorder = documentStyle.getPropertyValue('--p-content-border-color');
        const chartData = this.getMonthlyOrderData();
 
-       console.log('chartDAta => ', chartData)
+      //  console.log('chartDAta => ', chartData)
 
       this.linedata = {
         labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],

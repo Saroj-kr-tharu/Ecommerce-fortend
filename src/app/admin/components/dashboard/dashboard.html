@@ -93,6 +93,14 @@
     </div>
     }
 
+    @if (currentView === 'banner') {
+    <div class=" w-full min-h-screen">
+      <div class="w-full overflow-y-auto">
+        <app-banner />
+      </div>
+    </div>
+    }
+
     <!-- Products View -->
     @if (currentView === 'products') {
     <div class=" w-full min-h-screen">

@@ -12,7 +12,6 @@ export const routes: Routes = [
     }, 
      
     {
-        
         path: 'product/:id/:slug',
         pathMatch:'full',
         loadComponent: () => {
@@ -20,7 +19,6 @@ export const routes: Routes = [
         }
     }, 
     {
-        
         path: 'search',
         pathMatch:'full',
         loadComponent: () => {
@@ -64,6 +62,22 @@ export const routes: Routes = [
         loadComponent: () => {
             return import('./custumer/components/cart/cart').then( (m) => 
             m.Cart  )
+        }
+    },
+    {
+        path:'Orders/:id',
+        canActivate:[authGuard],
+        loadComponent: () => {
+            return import('./custumer/components/orders/orders').then( (m) => 
+            m.Orders  )
+        }
+    },
+    {
+        path:'Ordersdetail/:id',
+        canActivate:[authGuard],
+        loadComponent: () => {
+            return import('./custumer/components/orderdetails/orderdetails').then( (m) => 
+            m.Orderdetails  )
         }
     },
     {

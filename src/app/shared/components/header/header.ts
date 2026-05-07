@@ -41,9 +41,8 @@ export class Header implements OnInit {
 
    constructor( private store: Store<{LoginReducer : LoginState }>, private route: ActivatedRoute ) {
           this.cartState = this.store.selectSignal(selectCart);
-          this.loginState = this.store.selectSignal(selectLogin);
+          this.loginState = this.store.selectSignal(selectLogin); 
 
-          
           
           effect( ()=> {
             this.loginState = this.store.selectSignal(selectLogin);
@@ -92,7 +91,7 @@ export class Header implements OnInit {
     } else if (this.loginState().isLogin) {
       return [
         {text: 'Cart', to: '/cart',} , 
-        // {text: 'Checkout', to: '/checkout'},  
+        {text: 'Orders', to: `/Orders/${this.loginState().users?.id}`},  
         {text: 'Logout', to: null},  
       ];
     } else {

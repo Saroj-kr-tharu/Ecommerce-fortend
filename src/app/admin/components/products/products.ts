@@ -22,10 +22,11 @@ import { FormSignin, ValidationConfig } from '../../../core/models/auth.model';
 import { DashboardState } from '../../../core/models/dashboard.model';
 import { loadProductInitalType, ProductType, SelectOption } from '../../../core/models/product.model';
 import { AdminService } from '../../../core/services/admin/admin-service';
+import { CusServices } from '../../../core/services/custumer/cus.services';
+import { environment } from '../../../environments/environment.development';
 import { Cardbanner } from "../../../shared/components/cardbanner/cardbanner";
 import { selectProducts } from '../../../store/admin/admin.selectors';
 import { selectGetAllProduct } from '../../../store/custumer/cus.selectors';
-
 
 @Component({
   selector: 'app-products',
@@ -63,6 +64,7 @@ export class Products implements OnInit {
   bannerItems = signal<any[]>([]);
 
   private store = inject(Store<{ DashboardReducer: DashboardState }>);
+  private cusService = inject(CusServices)
   productstate!: Signal<ProductType[]>;
   
   
@@ -80,6 +82,13 @@ export class Products implements OnInit {
   selectedProducts: ProductType[] = [];
   submitted: boolean = false;
   globalFilterValue: string = '';
+
+  selectedFile: File | null = null;
+  isUploading: boolean = false;
+  uploadSuccess: boolean = false;
+  uploadError: boolean = false;
+  fileError: string | null = null;
+  uploadedImages: string[] = [];
   
   totalProduct = computed(() => this.products().length);
   totalDelete = computed(() => this.products().filter(product => product.isActive === false).length);
@@ -88,18 +97,17 @@ export class Products implements OnInit {
 
     // table header 
   tableHeaders = [
-
-{ title: "id", width: "8rem", icon: "sortIcon", }, 
-{ title: "name", width: "12rem", icon: "sortIcon", }, 
-{ title: "image", width: "10rem", icon: null, }, 
-{ title: "price", width: "8rem", icon: "sortIcon", }, 
-{ title: "category", width: "10rem", icon: "sortIcon", }, 
-{ title: "brand", width: "8rem", icon: null, }, 
-{ title: "rating", width: "8rem", icon: "sortIcon", }, 
-{ title: "stock", width: "8rem", icon: "sortIcon", }, 
-{ title: "isActive", width: "5rem", icon: "sortIcon", }, 
-{ title: "Actions", width: "10rem", icon: null, }, 
-]
+    { title: "id", width: "8rem", icon: "sortIcon", }, 
+    { title: "name", width: "12rem", icon: "sortIcon", }, 
+    { title: "image", width: "10rem", icon: null, }, 
+    { title: "price", width: "8rem", icon: "sortIcon", }, 
+    { title: "category", width: "10rem", icon: "sortIcon", }, 
+    { title: "brand", width: "8rem", icon: null, }, 
+    { title: "rating", width: "8rem", icon: "sortIcon", }, 
+    { title: "stock", width: "8rem", icon: "sortIcon", }, 
+    { title: "isActive", width: "5rem", icon: "sortIcon", }, 
+    { title: "Actions", width: "10rem", icon: null, }, 
+  ]
 
 
  tableSchema = [
@@ -121,6 +129,8 @@ export class Products implements OnInit {
   // For autocomplete filtering
   filteredCategories: SelectOption[] = [];
 
+  
+
   constructor(
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
@@ -128,20 +138,19 @@ export class Products implements OnInit {
     // private store: Store<{GetAllProductsReducer : loadProductInitalType }>
   ) {
       this.allState = this.store.selectSignal(selectGetAllProduct)
+      effect(() => { 
+        this.bannerItems.set([
+          
+          { title: "Total Product", value: this.totalProduct(), icon: "pi pi-users" },
+          { title: "Total Delete", value: this.totalDelete(), icon: "pi pi-shopping-bag" },
+          { title: "Stock Out", value: this.totalStockOut(), icon: "pi pi-shopping-cart" },
+          { title: "Stock IN ", value: this.totalStockIN(), icon: "pi pi-check-circle" },
       
-
-        effect(() => {
-    this.bannerItems.set([
-       
-      { title: "Total Product", value: this.totalProduct(), icon: "pi pi-users" },
-      { title: "Total Delete", value: this.totalDelete(), icon: "pi pi-shopping-bag" },
-      { title: "Stock Out", value: this.totalStockOut(), icon: "pi pi-shopping-cart" },
-      { title: "Stock IN ", value: this.totalStockIN(), icon: "pi pi-check-circle" },
-  
-    ]);
-  });
-
+        ]);
+      });
   }
+
+  
 
   navigateToProduct(product: any) {
     this.router.navigate(['/product', product.id, product.name]);
@@ -150,18 +159,108 @@ export class Products implements OnInit {
   get mutableProducts() {
   return [...this.products()];   
 }
-
+ 
   ngOnInit(): void {
     this.loadInitialData();
   }
 
   loadInitialData() {
     this.productstate = this.store.selectSignal(selectProducts);
+
     this.products.set(this.productstate())
     this.cd.markForCheck();
   }
 
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.uploadSuccess = false;
+    this.uploadError = false;
+    this.fileError = null;
+
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+    const maxSizeMB = 10;
+    const maxSizeBytes = maxSizeMB * 1024 * 1024;
+
+    if (!allowedTypes.includes(file.type)) {
+      this.fileError = 'Invalid file type. Only JPG, PNG, WEBP, GIF are allowed.';
+      input.value = '';
+      return;
+    }
+
+    if (file.size > maxSizeBytes) {
+      this.fileError = `File too large. Maximum size is ${maxSizeMB}MB.`;
+      input.value = '';
+      return;
+    }
+
+    this.selectedFile = file;
+  }
+
+uploadImage(): void {
+  if (!this.selectedFile) return;
+
+  this.isUploading = true;
+  this.uploadSuccess = false;
+  this.uploadError = false;
+
+  this.cusService.uploadFileToS3(this.selectedFile).subscribe({
+    next: (res: any) => {
+      this.isUploading = false;
+      this.uploadSuccess = true;
+ 
+     
+    let uploadedUrl: string = res.uploadedUrl;
+    uploadedUrl= environment.CLOUDFRONT_DOMAIN+uploadedUrl.split('/').pop(); 
+    
+    this.uploadedImages.push(uploadedUrl);
+
+    const current: string = this.productForm.get('images')?.value ?? '';
+    const updated = current ? `${current},"${uploadedUrl}"` : `"${uploadedUrl}"`;
+    this.productForm.get('images')?.setValue(updated);
+
+      this.selectedFile = null;
+      this.cd.detectChanges();
+    },
+    error: () => {
+      this.isUploading = false;
+      this.uploadError = true;
+      this.cd.detectChanges();
+    }
+  });
+}
+
+removeImage(url: string): void {
+  // Remove from preview list
+  this.uploadedImages = this.uploadedImages.filter(img => img !== url);
+
+  if(this.isAddOpen() ){
+    let hash = url.split('/').pop(); 
+    
+    if (!hash) { return  }
+
+    this.toast.success("deleting s3 ")
+    this.cusService.deleteObjFromS3(hash).subscribe({
+    next: (res: any) => {      
+      this.toast.success("Sucessfull remove obj from s3 ")
   
+    },
+    error: () => {
+     this.toast.error("Fail remove obj from s3")
+    }
+  });
+   
+    
+  }
+  // Rebuild the images form string
+  const updated = this.uploadedImages
+    .map(img => `"${img}"`)
+    .join(',');
+  this.productForm.get('images')?.setValue(updated);
+  this.cd.detectChanges();
+}
 
        
   productForm : FormGroup = new FormGroup({
@@ -177,111 +276,108 @@ export class Products implements OnInit {
       });
 
         
- addProductFormConfig:FormSignin[] = [
-   {
+  addProductFormConfig:FormSignin[] = [
+    {
+      type: 'text',
+      id: 'name',
+      label: 'Product Name',
+      placeholder: 'Enter product name...',
+      autocomplete: '',
+      validation: {
+        required: 'Product name is required',
+        minlength: 'Product name must be at least 3 characters'
+      },
+    },
+    {
+      type: 'textarea',
+      id: 'description',
+      label: 'Description',
+      placeholder: 'Enter product description...',
+      autocomplete: '',
+      validation: {
+        required: 'Description is required',
+        minlength: 'Description is required'
+      },
+    },
+    {
+      type: 'text',
+      id: 'category',
+      label: 'Category',
+      placeholder: 'Select or enter category...',
+      autocomplete: '',
+
+      validation: {
+        required: 'Category is required'
+      },
+    },
+    {
+      type: 'number',
+      id: 'price',
+      label: 'Price (npr)',
+      placeholder: '0.00',
+      autocomplete: '',
+      validation: {
+        required: 'Price is required',
+        min: 'min value is 0'
+      },
+    },
+    {
+      type: 'text',
+      id: 'brand',
+      label: 'Brand',
+      placeholder: 'Enter brand name...',
+      autocomplete: '',
+      validation: {
+        required: 'Brand is required',
+        min: 'min value is 0'
+      },
+    },
+    {
+      type: 'number',
+      id: 'stock',
+      label: 'Stock Quantity',
+      placeholder: '0',
+      autocomplete: '',
+      validation: {
+        required: 'Stock quantity is required',
+        min: 'min value is 0'
+      },
+    },
+    {
+      type: 'number',
+      id: 'ratings',
+      label: 'Rating',
+      placeholder: '0.0',
+      autocomplete: '',
+      validation: {
+        required: 'Rating is required',
+        min: 'min value is 0'
+      },
+    },
+    {
+      type: 'number',
+      id: 'totalRatings',
+      label: 'Total Count',
+      placeholder: '0',
+      autocomplete: '',
+      validation: {
+        required: 'Total ratings is required',
+        min: 'min value is 0'
+      },
+    },
+
+    {
     type: 'text',
-    id: 'name',
-    label: 'Product Name',
-    placeholder: 'Enter product name...',
+    id: 'images',
+    label: 'Images',
+    placeholder: "Enter image URLs separated by commas...",
     autocomplete: '',
     validation: {
-      required: 'Product name is required',
-      minlength: 'Product name must be at least 3 characters'
+      required: 'At least one image URL is required'
     },
+    transform: (value: string) => value.split(',').map(url => url.trim()).filter(url => url)
   },
-  {
-    type: 'textarea',
-    id: 'description',
-    label: 'Description',
-    placeholder: 'Enter product description...',
-    autocomplete: '',
-    validation: {
-      required: 'Description is required',
-      minlength: 'Description is required'
-    },
-  },
-  {
-    type: 'text',
-    id: 'category',
-    label: 'Category',
-    placeholder: 'Select or enter category...',
-    autocomplete: '',
-
-    validation: {
-      required: 'Category is required'
-    },
-  },
-  {
-    type: 'number',
-    id: 'price',
-    label: 'Price (npr)',
-    placeholder: '0.00',
-    autocomplete: '',
-    validation: {
-      required: 'Price is required',
-       min: 'min value is 0'
-    },
-  },
-  {
-    type: 'text',
-    id: 'brand',
-    label: 'Brand',
-    placeholder: 'Enter brand name...',
-    autocomplete: '',
-    validation: {
-      required: 'Brand is required',
-       min: 'min value is 0'
-    },
-  },
-  {
-    type: 'number',
-    id: 'stock',
-    label: 'Stock Quantity',
-    placeholder: '0',
-    autocomplete: '',
-    validation: {
-      required: 'Stock quantity is required',
-       min: 'min value is 0'
-    },
-  },
-  {
-    type: 'number',
-    id: 'ratings',
-    label: 'Rating',
-    placeholder: '0.0',
-    autocomplete: '',
-    validation: {
-      required: 'Rating is required',
-       min: 'min value is 0'
-    },
-  },
-  {
-    type: 'number',
-    id: 'totalRatings',
-    label: 'Total Count',
-    placeholder: '0',
-    autocomplete: '',
-    validation: {
-      required: 'Total ratings is required',
-       min: 'min value is 0'
-    },
-  },
-
-  {
-  type: 'text',
-  id: 'images',
-  label: 'Images',
-  placeholder: "Enter image URLs separated by commas...",
-  autocomplete: '',
-  validation: {
-    required: 'At least one image URL is required'
-  },
-  transform: (value: string) => value.split(',').map(url => url.trim()).filter(url => url)
-},
-];
-
-
-
+  ];
 
 
   // Autocomplete filter for Category
@@ -306,7 +402,7 @@ export class Products implements OnInit {
 
   // Open dialog to create new product
   openNew() {
-         this.isAddOpen.set(true)
+        this.isAddOpen.set(true)
         this.submitted = false;
         this.productDialog = true;
 
@@ -319,6 +415,11 @@ export class Products implements OnInit {
     this.submitted = false;
     this.isEditOpen.set(false)
     this.isAddOpen.set(false)
+
+    this.selectedFile = null;
+    this.isUploading = false;
+    this.uploadSuccess = false;
+    this.uploadError = false;
   }
 
 
@@ -340,8 +441,9 @@ export class Products implements OnInit {
   editProduct(product: ProductType) {
         this.isEditOpen.set(true)
         this.originalValue = product;
+        this.uploadedImages= [];
 
-    console.log('edit click ', this.originalValue)
+    // console.log('edit click ', this.originalValue)
       this.product = {
         isActive: product.isActive, 
         brand: product.brand,
@@ -356,7 +458,7 @@ export class Products implements OnInit {
       }
 
         this.productForm.setValue({
-          name: product.name,
+          name: product.name, 
           description: product.description,
           category: product.category,
           price: product.price,
@@ -367,23 +469,25 @@ export class Products implements OnInit {
           images: product.images
         });
 
-      // this.product = {...product, id: product.id};
-      
-    this.submitted = false;
-    this.productDialog = true;
+      this.uploadedImages = [...this.product.images];
+      this.submitted = false;
+      this.productDialog = true;
   }
 
 
     // Save product (create or update)
   saveProduct() {
-     const formValue = this.productForm.value ; 
+      const formValue = this.productForm.value ; 
       const { id, images, ...payload } = formValue;
-
+      const parsedImages: string[] = (images as string)
+      .split('","')
+      .map((url: string) => url.replace(/^"|"$/g, '').trim())
+      .filter((url: string) => url.startsWith('http'));
 
     if(this.isAddOpen()){
-      // console.log('product add btn is click')
+      console.log('product add btn is click =>', formValue)
       
-      this.adminService.addProductService({...payload, images: [images]}).subscribe({
+      this.adminService.addProductService({...payload, images: parsedImages}).subscribe({
       next: (res)=>  {this.toast.success('Adding Product'); 
         // console.log('res => ', res)
       }, 
@@ -395,22 +499,22 @@ export class Products implements OnInit {
     if(this.isEditOpen()){
      
     const isUpdated = !this.areProductFieldsEqual(this.originalValue, formValue);
+    // console.log('Is value updated?', this.originalValue);
     
-    // console.log('Is value updated?', isUpdated);
-
     if(!isUpdated) return ;
 
-    this.adminService.updateProductService(this.originalValue.id , {...formValue, images: [images]}).subscribe({
-      next: (res)=>  {this.toast.success('Editting'); 
-        console.log('res => ', res)
+    this.adminService.updateProductService(this.originalValue.id , {...formValue, images: parsedImages}).subscribe({
+      next: (res)=>  {
+        this.toast.success('Editting'); 
+        // console.log('res => ', res)
       }, 
       complete: () => {this.toast.success('Sucessfully edited product')},
-      error: () => {this.toast.error('Faile to Edit Product')}
+      error: () => {this.toast.error('Failed to Edit Product')}
     });
  
     }
     this.submitted = true;
-    console.log(this.productForm.value)
+    // console.log(this.productForm.value)
     this.hideDialog();
 
     
@@ -493,10 +597,6 @@ export class Products implements OnInit {
     });
   }
 
-
-
-
-
   // Helper: Find product index by ID
   findIndexById(id: string): number {
   //   // return this.products.findIndex(p => p.id === id);
@@ -505,14 +605,14 @@ export class Products implements OnInit {
 
 
 
-loadProducts(event: any) {
-  const page = event.first / event.rows + 1;
-  const limit = event.rows;
+  loadProducts(event: any) {
+    const page = event.first / event.rows + 1;
+    const limit = event.rows;
 
-  console.log('Lazy load triggered: ', event);
-  console.log('Page: ', page);
-  console.log('Limit: ', limit);
-}
+    console.log('Lazy load triggered: ', event);
+    console.log('Page: ', page);
+    console.log('Limit: ', limit);
+  }
 
 
 

@@ -72,7 +72,8 @@ homeItem: MenuItem = {
     // Effect to update selected image when product changes
     effect(() => {
       const prod = this.product();
-      console.log('breadCumb = >', this.breadcrumbItems())
+      // console.log('breadCumb = >', this.breadcrumbItems())
+      console.log("this prod => ", prod)
       if (prod && prod.images && prod.images.length > 0) {
         this.selectedImage.set(prod.images[0]);
       }

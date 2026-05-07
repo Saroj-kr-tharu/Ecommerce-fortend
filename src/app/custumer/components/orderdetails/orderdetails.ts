@@ -1,7 +1,12 @@
-import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, computed, inject, OnInit, signal } from '@angular/core';
+import { DecimalPipe, NgClass, TitleCasePipe } from '@angular/common';
+import { Component, computed, effect, inject, Signal, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AdminService } from '../../../core/services/admin/admin-service';
+import { Store } from '@ngrx/store';
+import { LoginState } from '../../../core/models/auth.model';
+import { CusServices } from '../../../core/services/custumer/cus.services';
+import { selectLogin } from '../../../store/auth/auth.selectors';
+
+
 
 export interface OrderProduct {
   id: number;
@@ -60,21 +65,21 @@ export interface OrderType {
 }
 
 @Component({
-  selector: 'app-ordersdetails',
-  standalone: true,
-  imports: [CommonModule, ],
-  templateUrl: './ordersdetails.html',
-  styleUrl: './ordersdetails.css',
+  selector: 'app-orderdetails',
+  imports: [NgClass, TitleCasePipe, DecimalPipe],
+  templateUrl: './orderdetails.html',
+  styleUrl: './orderdetails.css',
 })
-export class Ordersdetails implements OnInit, AfterViewInit {
-
+export class Orderdetails {
+  
   route = inject(ActivatedRoute);
-  adminService = inject(AdminService);
+  cusService = inject(CusServices);
   router = inject(Router)
 
   orderSignal = signal<OrderType | null>(null);
   isLoading = signal<boolean>(false);
   error = signal<string | null>(null);
+  loginState: Signal<LoginState>;
 
   // Date helpers 
   formatDate = (dateStr: string | null, withTime = false) => {
@@ -146,10 +151,23 @@ export class Ordersdetails implements OnInit, AfterViewInit {
     return 'pi-clock';
   });
 
-  // Lifecycle 
+  constructor( private store: Store<{LoginReducer : LoginState }>, ) {
+          this.loginState = this.store.selectSignal(selectLogin); 
+          effect( ()=> {
+            this.loginState = this.store.selectSignal(selectLogin);
+          } );
+
+    }
+
+
+  // Lifecycle  
   ngOnInit(): void {
     const orderId = this.route.snapshot.paramMap.get('id');
-    if (orderId) this.loadOrder(orderId);
+    const userId = this.loginState().users?.id;
+    // console.log("id => ", orderId)
+    if (orderId && userId !== undefined) {
+      this.loadOrder(orderId,userId);
+    }
   }
 
    ngAfterViewInit() {
@@ -167,17 +185,18 @@ export class Ordersdetails implements OnInit, AfterViewInit {
   navigateToProduct(product: any) {
     this.router.navigate(['/product', product.id, product.name]);
   }
+
   navigateToUser(user: any) {
-    this.router.navigate(['/admin/user', user.id]);
   }
 
-  private loadOrder(id: string): void {
+  private loadOrder(id: any, userId:any ): void {
     this.isLoading.set(true);
     this.error.set(null);
-    this.adminService.getOrderByOrderNo(id).subscribe({
+     console.log('orderNo => ', id, " UserId => ", userId)
+    this.cusService.GetOrdersByUserIdAndOrderNo(userId, id).subscribe({
       next: (res: any) => {
         this.orderSignal.set(res?.data ?? null);
-        
+        console.log("Order signal ", this.orderSignal())
         this.isLoading.set(false);
       },
       error: () => {
