@@ -64,7 +64,7 @@ export class LoginComponent {
 
   onSaveUser() {
     if (this.signupForm.invalid || this.loginState().loading) {
-      console.log('form is invalid ');
+      // console.log('form is invalid ');
       return;
     }
 

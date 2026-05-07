@@ -1,28 +1,25 @@
-<p-carousel animate.enter="fade-in-element" #carousel [value]="products" [numVisible]="1" [numScroll]="1" [circular]="true" [responsiveOptions]="responsiveOptions" autoplayInterval="3000" [showNavigators]="false" [indicatorsContentStyle]="{'display': isMobile ? 'none' : 'flex'}">
-  <ng-template let-product #item>
+<div class="relative w-full">
 
-    <div class=" rounded  hover:cursor-pointer ">
-
-      <div class="  relative w-full h-full   ">
-        <img src="{{ product.url }}" [alt]="product.name" class="w-full h-full  object-contain" />
-
-        <!-- PREV BUTTON -->
-        <button (click)="carousel.navBackward($event)" class="absolute left-0  top-1/2 -translate-y-1/2  hover:bg-black/50
-                   text-white py-2 px-2 rounded-full bg-black/20  transition hover:cursor-pointer">
-          <i class="pi  pi-chevron-left text-xl" style="color:white size; font-size:1rem ">
-          </i>
-        </button>
-
-        <!-- NEXT BUTTON -->
-        <button (click)="carousel.navForward($event)" class="absolute right-0  top-1/2 -translate-y-1/2  hover:bg-black/50
-                   text-white py-2 px-2 rounded-full bg-black/20  transition hover:cursor-pointer">
-          <i class="pi  pi-chevron-right text-xl" style="color:white size; font-size:1rem "> </i>
-        </button>
+  <p-carousel animate.enter="fade-in-element" #carousel [value]="products()" [numVisible]="1" [numScroll]="1" [circular]="true" [responsiveOptions]="responsiveOptions" autoplayInterval="3000" [showNavigators]="false" [indicatorsContentStyle]="{'display': isMobile ? 'none' : 'flex'}">
+    <ng-template let-product #item>
+      <div class="rounded hover:cursor-pointer w-full h-full" (click)="navigate(product.redirectUrl)">
+        <img [src]="product.imageUrl" [alt]="product.title" class="w-full h-full object-contain" />
       </div>
+    </ng-template>
+  </p-carousel>
 
+  <!-- PREV BUTTON — outside the item template, no aria-hidden ancestor -->
+  <button (click)="carousel.navBackward($event)" aria-label="Previous slide" class="absolute left-0 top-1/2 -translate-y-1/2 z-10
+           bg-black/20 hover:bg-black/50 text-white
+           py-2 px-2 rounded-full transition hover:cursor-pointer">
+    <i class="pi pi-chevron-left" style="font-size: 1rem; color: white;"></i>
+  </button>
 
+  <!-- NEXT BUTTON — outside the item template, no aria-hidden ancestor -->
+  <button (click)="carousel.navForward($event)" aria-label="Next slide" class="absolute right-0 top-1/2 -translate-y-1/2 z-10
+           bg-black/20 hover:bg-black/50 text-white
+           py-2 px-2 rounded-full transition hover:cursor-pointer">
+    <i class="pi pi-chevron-right" style="font-size: 1rem; color: white;"></i>
+  </button>
 
-    </div>
-  </ng-template>
-
-</p-carousel>
+</div>

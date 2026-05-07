@@ -15,7 +15,7 @@ export const adminGuard: CanActivateFn = (route, state) => {
      map((state) => {
        if (!state?.isLogin) {
          toast.warning('please login   ! ');
-         console.log('auth guard => here  ', state?.isLogin)
+        //  console.log('auth guard => here  ', state?.isLogin)
         return false ;
        }
        

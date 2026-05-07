@@ -28,7 +28,7 @@ export const getProductReducer = createReducer(
 
     on(getAllProductsAction.sucessLoading, (state, action) => {
  
-            console.log(" product loading sucess => ", action?.payload.rows)
+            // console.log(" product loading sucess => ", action?.payload.rows)
             const DisplayData = action?.payload?.rows.filter((item) => item.isActive !== true)
             const cate = DisplayData.map( (item) =>  item.category   );
             const brand = DisplayData.map( (item) =>  item.brand   );

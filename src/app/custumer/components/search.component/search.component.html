@@ -23,7 +23,7 @@
       </p-drawer>
 
       <!-- Desktop Sidebar -->
-      <aside class="hidden lg:block w-64 shrink-0">
+      <aside animate.enter="fade-in-element" class="hidden lg:block w-64 shrink-0">
         <div class="bg-white rounded-lg shadow-sm p-6 sticky top-6">
           <ng-container *ngTemplateOutlet="filterContent"></ng-container>
         </div>
@@ -33,7 +33,7 @@
       <main class="flex-1 pb-0">
         <!-- Header -->
         <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div animate.enter="fade-in-element" class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <h1 class="text-2xl font-bold text-[#17998b]">
                 {{ searchQuery() }}
@@ -52,7 +52,7 @@
 
           <!-- Active Filters -->
           @if(hasActiveFilters()){
-          <div class="mt-4 flex flex-wrap gap-2">
+          <div animate.enter="fade-in-element" class="mt-4 flex flex-wrap gap-2">
             <span class="text-sm font-medium text-gray-700">Active Filters:</span>
             <div class="flex flex-wrap gap-2">
               <!-- Category Filter Chip -->
@@ -82,7 +82,7 @@
 
         <!-- Products Grid -->
         <div>
-          <div class="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
+          <div animate.enter="fade-in-element" class="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
             @for (item of products(); track item.id) {
             <div class="" [routerLink]="['/product', item.id, item.name]">
               <app-producet-item [ProductItem]="item"></app-producet-item>
@@ -93,7 +93,7 @@
 
         <!-- No Results -->
         @if(products()?.length === 0){
-        <div class="bg-white rounded-lg shadow-sm p-12 text-center">
+        <div animate.enter="fade-in-element" class="bg-white rounded-lg shadow-sm p-12 text-center">
           <i class="pi pi-search text-6xl text-gray-300 mb-4"></i>
           <h3 class="text-xl font-semibold text-gray-700 mb-2">No products found</h3>
           <p class="text-gray-500">Try adjusting your filters or search criteria</p>
@@ -105,7 +105,7 @@
 
         <!-- Paginator  -->
         @if((products()?.length ?? 0) > 0) {
-        <div class="flex justify-center">
+        <div animate.enter="fade-in-element" class="flex justify-center">
           <div class="w-full shadow-lg z-10">
             <div class="w-full sm:container flex justify-center mx-auto px-2 sm:px-4">
               <span class="border-2  border-[#1DB1A1] rounded-xl">
@@ -131,7 +131,7 @@
 <!-- Filter Template -->
 <ng-template #filterContent>
   <!-- Category Dropdown -->
-  <div>
+  <div animate.enter="fade-in-element">
     <h3 class="text-lg font-semibold mb-3 flex text-[#17998b] items-center gap-2">
       <i class="pi pi-list"></i>
       Category
@@ -141,7 +141,7 @@
   </div>
 
   <!-- Price Range with Input Fields -->
-  <div class="border-t pt-6 mt-6 text-[#17998b]">
+  <div animate.enter="fade-in-element" class="border-t pt-6 mt-6 text-[#17998b]">
     <h3 class="text-lg font-semibold mb-3 flex items-center gap-2">
       Price Range
     </h3>
@@ -163,7 +163,7 @@
   </div>
 
   <!-- Rating Filter -->
-  <div class="border-t pt-6 mt-6 text-[#17998b]">
+  <div animate.enter="fade-in-element" class="border-t pt-6 mt-6 text-[#17998b]">
     <h3 class="text-lg font-semibold mb-3 flex items-center gap-2">
       <i class="pi pi-star-fill"></i>
       Rating
@@ -184,7 +184,7 @@
   </div>
 
   <!-- Brand Checkboxes -->
-  <div class="border-t pt-6 mt-6 text-[#17998b]">
+  <div animate.enter="fade-in-element" class="border-t pt-6 mt-6 text-[#17998b]">
     <h3 class="text-lg font-semibold mb-3 flex items-center gap-2">
       <i class="pi pi-tag"></i>
       Brand
@@ -203,7 +203,7 @@
   </div>
 
   <!-- Reset Button -->
-  <div class="border-t pt-6 mt-6">
+  <div animate.enter="fade-in-element" class="border-t pt-6 mt-6">
     <p-button label="Reset Filters" icon="pi pi-refresh" (onClick)="clearAllFilters()" severity="secondary" [outlined]="true" styleClass="w-full">
     </p-button>
   </div>

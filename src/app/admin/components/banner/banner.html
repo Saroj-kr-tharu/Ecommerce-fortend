@@ -1,9 +1,19 @@
-<!--  PAGE HEADER                                            -->
+<!--  PAGE HEADER -->
 
 <div animate.enter="fade-in-element" class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
   <div>
     <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">Banners</h2>
     <p class="text-gray-500 mt-1 text-sm sm:text-base">Manage storefront banner images and schedules</p>
+  </div>
+
+
+</div>
+
+
+<div animate.enter="fade-in-element" class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+  <div>
+    <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">Manage Banners</h2>
+
   </div>
 
   <button (click)="openCreateForm()" class="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl
@@ -24,7 +34,7 @@
     <!--  CAROUSEL -->
 
     @if (activeBanners().length > 0) {
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div animate.enter="fade-in-element" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
       <!-- Header -->
       <div class="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-gray-100">
@@ -97,9 +107,9 @@
 
 
 
-    <!--  CREATE / EDIT FORM                                      -->
+    <!--  CREATE / EDIT FORM -->
     @if (showForm()) {
-    <div id="banner-form" class="bg-white rounded-2xl shadow-sm border border-teal-100">
+    <div animate.enter="fade-in-element" id="banner-form" class="bg-white rounded-2xl shadow-sm border border-teal-100">
 
       <!-- Form header -->
       <div class="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-teal-100">
@@ -260,11 +270,19 @@
             <i class="pi pi-times text-xs"></i>
             Cancel
           </button>
-          <button type="submit" class="flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl
-                     bg-[#14b8a6] hover:bg-teal-500 text-white text-sm font-semibold
-                     shadow-sm shadow-teal-200 active:scale-95 transition-all hover:cursor-pointer">
+          <button type="submit" [disabled]="isLoading()" class="flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl
+         bg-[#14b8a6] hover:bg-teal-500 text-white text-sm font-semibold
+         shadow-sm shadow-teal-200 active:scale-95 transition-all hover:cursor-pointer
+         disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100">
+
+            @if (isLoading()) {
+            <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+            <span>Processing...</span>
+            } @else {
             <i class="pi pi-check text-xs"></i>
             {{ editingId() !== null ? 'Save Changes' : 'Create Banner' }}
+            }
+
           </button>
         </div>
       </form>
@@ -273,8 +291,8 @@
 
 
 
-    <!--  BANNER LIST                                             -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
+    <!--  BANNER LIST -->
+    <div animate.enter="fade-in-element" class="bg-white rounded-2xl shadow-sm border border-gray-100">
 
       <!-- List header -->
       <div class="flex flex-col xs:flex-row xs:items-center justify-between gap-2

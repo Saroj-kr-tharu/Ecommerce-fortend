@@ -34,7 +34,7 @@ export class AdminService {
   }
 
   bulkDeleteProductService( data: any ) {
-    console.log('data => ', data)
+    // console.log('data => ', data)
     const url = `${this.BaseUrl}/ecommerce/products/bulkdelete`
     return this.httpClient.delete(url,  {body: {'data': data}} );
   }
@@ -158,7 +158,7 @@ export class AdminService {
     const url = `${this.BaseUrl}/ecommerce/banner/${id}`;
 
     // 1. Delete old file from s3
-    
+    this.toast.info("Deleting old image ... ")
     return this.deleteObjFromS3(objId).pipe(
       switchMap(() => {
         // 2. Upload new file to S3

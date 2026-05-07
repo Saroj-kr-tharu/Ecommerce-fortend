@@ -43,7 +43,7 @@ export class RegisterComponent {
     const repeatPassword = control.get('repeatpassword');
 
     if (!password || !repeatPassword) {
-      console.log(`password => ${password} and repeat => ${repeatPassword} `);
+      // console.log(`password => ${password} and repeat => ${repeatPassword} `);
       return null;
     }
 

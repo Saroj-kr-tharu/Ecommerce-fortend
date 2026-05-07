@@ -73,7 +73,7 @@ homeItem: MenuItem = {
     effect(() => {
       const prod = this.product();
       // console.log('breadCumb = >', this.breadcrumbItems())
-      console.log("this prod => ", prod)
+      // console.log("this prod => ", prod)
       if (prod && prod.images && prod.images.length > 0) {
         this.selectedImage.set(prod.images[0]);
       }

@@ -167,7 +167,7 @@ deleteSelected(): void {
 }
 
   addToWishlist(itemId: number): void {
-    console.log('Add to wishlist:', itemId);
+    // console.log('Add to wishlist:', itemId);
     // Implement wishlist functionality
   }
 

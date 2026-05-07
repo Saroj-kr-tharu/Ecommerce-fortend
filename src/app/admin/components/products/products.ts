@@ -54,7 +54,7 @@ import { selectGetAllProduct } from '../../../store/custumer/cus.selectors';
 ],
   providers: [MessageService, ConfirmationService]
 })
-export class Products implements OnInit {
+export class Products implements OnInit { 
   @ViewChild('dt') dt!: Table;
 
   adminService = inject(AdminService)
@@ -83,7 +83,7 @@ export class Products implements OnInit {
   submitted: boolean = false;
   globalFilterValue: string = '';
 
-  selectedFile: File | null = null;
+  selectedFile: File | null = null; 
   isUploading: boolean = false;
   uploadSuccess: boolean = false;
   uploadError: boolean = false;
@@ -163,7 +163,7 @@ export class Products implements OnInit {
   ngOnInit(): void {
     this.loadInitialData();
   }
-
+ 
   loadInitialData() {
     this.productstate = this.store.selectSignal(selectProducts);
 
@@ -236,24 +236,19 @@ removeImage(url: string): void {
   // Remove from preview list
   this.uploadedImages = this.uploadedImages.filter(img => img !== url);
 
-  if(this.isAddOpen() ){
-    let hash = url.split('/').pop(); 
-    
+  let hash = url.split('/').pop(); 
     if (!hash) { return  }
-
     this.toast.success("deleting s3 ")
     this.cusService.deleteObjFromS3(hash).subscribe({
     next: (res: any) => {      
-      this.toast.success("Sucessfull remove obj from s3 ")
+      this.toast.success("Sucessfull delete image ")
   
     },
     error: () => {
      this.toast.error("Fail remove obj from s3")
     }
   });
-   
-    
-  }
+
   // Rebuild the images form string
   const updated = this.uploadedImages
     .map(img => `"${img}"`)
@@ -485,7 +480,7 @@ removeImage(url: string): void {
       .filter((url: string) => url.startsWith('http'));
 
     if(this.isAddOpen()){
-      console.log('product add btn is click =>', formValue)
+      // console.log('product add btn is click =>', formValue)
       
       this.adminService.addProductService({...payload, images: parsedImages}).subscribe({
       next: (res)=>  {this.toast.success('Adding Product'); 
@@ -503,7 +498,7 @@ removeImage(url: string): void {
     
     if(!isUpdated) return ;
 
-    this.adminService.updateProductService(this.originalValue.id , {...formValue, images: parsedImages}).subscribe({
+    this.adminService.updateProductService(this.originalValue.id , {...formValue, images: parsedImages}).subscribe({ 
       next: (res)=>  {
         this.toast.success('Editting'); 
         // console.log('res => ', res)
@@ -535,7 +530,9 @@ removeImage(url: string): void {
           this.adminService.deleteProductService(
             product.id
           ).subscribe({
-            next: (res:any) => { console.log(res.data) },
+            next: (res:any) => { 
+              // console.log(res.data)
+             },
             complete: ()=> { this.toast.success(`Sucessfully Delete Product id : ${product.id}`) },
             error: () => { this.toast.error('Failed to delete Due to Reference Constaints') }
           });
@@ -584,7 +581,7 @@ removeImage(url: string): void {
         // console.log('data => ',data)
         this.adminService.bulkDeleteProductService(data).subscribe({
           next: (res) => {
-            console.log('res => ', res)
+            // console.log('res => ', res)
             this.toast.success('Bulk deleteing')
           },
           complete: () => {
@@ -609,9 +606,9 @@ removeImage(url: string): void {
     const page = event.first / event.rows + 1;
     const limit = event.rows;
 
-    console.log('Lazy load triggered: ', event);
-    console.log('Page: ', page);
-    console.log('Limit: ', limit);
+    // console.log('Lazy load triggered: ', event);
+    // console.log('Page: ', page);
+    // console.log('Limit: ', limit);
   }
 
 

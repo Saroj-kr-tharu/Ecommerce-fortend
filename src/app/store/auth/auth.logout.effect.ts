@@ -58,7 +58,7 @@ export class LogoutEffect {
         ofType(logoutAction.sucesslogout),
         tap(() => {
             localStorage.removeItem('marketManduAuth')
-            console.log('sucessfully logout ==> effect ')
+            // console.log('sucessfully logout ==> effect ')
             this.router.navigateByUrl('/');
         })
       ),

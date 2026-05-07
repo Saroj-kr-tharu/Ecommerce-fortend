@@ -247,7 +247,7 @@ tableSchema = [
     this.error.set(null);
     this.adminService.getUserByUserId(id).subscribe({
       next: (res:any) => {
-        console.log('User loaded:', res?.data);
+        // console.log('User loaded:', res?.data);
         this.userSignal.set(res?.data ?? null);
         this.isLoading.set(false);
       },
@@ -288,7 +288,7 @@ tableSchema = [
                   created: order.createdAt ? new Date(order.createdAt).toISOString() : null
                 }));
             this.Orders.set(formattedOrders);
-            console.log("orders => ", this.Orders())
+            // console.log("orders => ", this.Orders())
             this.cd.markForCheck();
         this.isLoading.set(false);
       },

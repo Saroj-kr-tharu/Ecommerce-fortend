@@ -14,7 +14,7 @@ export class AuthServices {
 
   registerService(data: registerType) {
     const url = `${this.BaseUrl}/signup`
-    console.log('url => ', url , ' and data => ', data)
+    // console.log('url => ', url , ' and data => ', data)
     return  this.httpClient.post(url, data) ; 
   }
 

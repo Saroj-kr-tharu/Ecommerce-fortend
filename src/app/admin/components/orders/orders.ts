@@ -185,7 +185,7 @@ orderFormConfig: FormSignin[] = [
    }
 
   mutableOrders = computed(() => {
-    console.log('computed orders  =>', this.Orders());
+    // console.log('computed orders  =>', this.Orders());
     return [...this.Orders()];   
     })
 
@@ -196,7 +196,7 @@ orderFormConfig: FormSignin[] = [
 
   loadInitialData() {
     this.orderState = this.store.selectSignal(selectOrders);
-    console.log("orders state => ", this.orderState())
+    // console.log("orders state => ", this.orderState())
     const formattedOrders: FormattedOrder[] = this.orderState().map((order: any): FormattedOrder => ({
           itemId: order.id,
           id: order.orderNumber,
@@ -340,7 +340,7 @@ orderFormConfig: FormSignin[] = [
 
     this.adminService.updateOrdersService(Number(this.originalValue.itemId) , {...formValue}).subscribe({
       next: (res)=>  {this.toast.success('Updating '); 
-        console.log('res => ', res)
+        // console.log('res => ', res)
       }, 
       complete: () => {this.toast.success('Sucessfully edited orders')},
       error: () => {this.toast.error('Faile to Edit orders')}

@@ -255,13 +255,13 @@ export class Users implements OnInit {
      
     const isUpdated = !this.areProductFieldsEqual(this.originalValue, formValue);
     
-    console.log('Is value updated?', isUpdated);
+    // console.log('Is value updated?', isUpdated);
 
     if(!isUpdated) return ;
 
     this.adminService.updateUsersByIdService(this.originalValue.id , {...formValue}).subscribe({
       next: (res)=>  {this.toast.success('Editting'); 
-        console.log('res => ', res)
+        // console.log('res => ', res)
       }, 
       complete: () => {this.toast.success('Sucessfully edited product')},
       error: () => {this.toast.error('Faile to Edit Product')}
@@ -269,7 +269,7 @@ export class Users implements OnInit {
  
 
     this.submitted = true;
-    console.log(this.UsersForm.value)
+    // console.log(this.UsersForm.value)
     this.hideDialog();
   }
 

@@ -8,32 +8,12 @@ import {
   Validators,
 } from '@angular/forms';
 import { HotToastService } from '@ngxpert/hot-toast';
+import { BannerField, BannerItem } from '../../../core/models/banner.model';
 import { AdminService } from '../../../core/services/admin/admin-service';
 
-//  Field config interface
-export interface BannerField {
-  type: 'text' | 'number' | 'url' | 'date' | 'toggle' | 'file';
-  id: string;
-  label: string;
-  placeholder?: string;
-  hint?: string;
-  validation?: Record<string, string>;
-}
 
-//  Banner data interface (mirrors Sequelize model) 
-export interface BannerItem {
-  id: number;
-  title: string;
-  imageUrl: string;
-  redirectUrl?: string;
-  isActive: boolean;
-  priority: number;
-  startDate: string;
-  endDate: string;
-  createdAt?: Date;
-}
 
-//  Group-level validator: endDate must be after startDate 
+
 function endAfterStart(group: AbstractControl) {
   const start = group.get('startDate')?.value;
   const end   = group.get('endDate')?.value;
@@ -68,6 +48,7 @@ export class Banner implements OnInit {
   activeCarouselIndex = 0;
   selectedFile: File | null = null;
   fileError: string | null = null;
+  isLoading = signal(false);
 
 
   bannerForm: FormGroup = new FormGroup(
@@ -228,7 +209,7 @@ export class Banner implements OnInit {
   private handleFile(file: File): void {
     this.fileError = null;
 
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif','image/avif'];
     const maxSizeBytes = 10 * 1024 * 1024; // 10 MB
 
     if (!allowedTypes.includes(file.type)) {
@@ -255,7 +236,7 @@ export class Banner implements OnInit {
     reader.onload = (ev) => this.previewUrl.set(ev.target!.result as string);
     reader.readAsDataURL(file);
   }
-
+ 
   private clearFile(): void {
     this.selectedFile = null;
     this.previewUrl.set(null);
@@ -325,15 +306,13 @@ export class Banner implements OnInit {
   if (id !== null) {
     // EDIT — if a new file was picked, upload it first
     if (this.selectedFile) {
-      // 1. delete the old s3  
-      // 2. upload new file 
-      // 3. save into db 
+      
        let item =  this.banners().find((item)=> item.id === id ) 
        let hash = item?.imageUrl.split('/').pop(); 
-
+      this.isLoading.set(true);
       this.adminService.updateWithNewFileBanner(this.selectedFile, raw, id, hash).subscribe({
         next: (res: any) => {
-               
+                this.isLoading.set(false);
                 this.saveBanner(res.data, id);
                 this.toast.success("Sucessfully update banner")
               },
@@ -344,8 +323,10 @@ export class Banner implements OnInit {
 
     } else {
       // save into db 
+       this.isLoading.set(true);
       this.adminService.editBanner(id, raw).subscribe({
       next: (res: any) => {
+              this.isLoading.set(false);
               this.saveBanner(raw, id);
               this.toast.success("Sucessfully update banner")
             },
@@ -358,10 +339,11 @@ export class Banner implements OnInit {
   } else {
     // create new 
     if(!this.selectedFile)  return; 
-    
+     this.isLoading.set(true);
     this.adminService.createBanner(this.selectedFile, raw).subscribe({
       next: (res: any) => {
           // console.log('res data => ', res.data)
+            this.isLoading.set(false);
             this.saveBanner(res.data, null);
              this.toast.success("Sucessfully create banner")
             },
@@ -377,10 +359,8 @@ export class Banner implements OnInit {
 private saveBanner(data: any, id: number | null): void {
   if (id !== null) {
     this.banners.update(list => list.map(b => b.id === id ? { ...b, ...data } : b));
-    // console.log('Update banner =>', data);
   } else {
     this.banners.update(list => [...list, { id: Date.now(), ...data }]);
-    // console.log('Create banner =>', data);
   }
   this.closeForm();
 }

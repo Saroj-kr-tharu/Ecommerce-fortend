@@ -94,3 +94,11 @@ export interface FormattedOrder {
   itemslength ?: number ,
   itemId ?: number ,
 }
+
+
+export interface OrderProduct {
+  id: number;
+  name: string;
+  price: string;
+  stock: number;
+}

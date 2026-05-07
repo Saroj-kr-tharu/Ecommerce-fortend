@@ -34,7 +34,7 @@ export interface OrderAddress {
   zip: string;
   country: string;
 }
-
+ 
 export interface OrderUser {
   id: string;
   username: string;
@@ -192,11 +192,11 @@ export class Orderdetails {
   private loadOrder(id: any, userId:any ): void {
     this.isLoading.set(true);
     this.error.set(null);
-     console.log('orderNo => ', id, " UserId => ", userId)
+    //  console.log('orderNo => ', id, " UserId => ", userId)
     this.cusService.GetOrdersByUserIdAndOrderNo(userId, id).subscribe({
       next: (res: any) => {
         this.orderSignal.set(res?.data ?? null);
-        console.log("Order signal ", this.orderSignal())
+        // console.log("Order signal ", this.orderSignal())
         this.isLoading.set(false);
       },
       error: () => {
