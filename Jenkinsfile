@@ -54,22 +54,35 @@ pipeline{
 
 
          stage("Docker Image Build"){
-           steps{
-            echo "Building the Docker Image "
+  steps{
+    echo "Building the Docker Image"
 
-            withCredentials(  [usernamePassword(
-                        credentialsId: "dockerHubCreds",
-                        passwordVariable:"dockerHubPass" ,
-                        usernameVariable:"dockerHubUser" )]
-                    ){
-                        sh '''
-                          echo "Building Fortend-Marketmandu "
-                          cd /Agent/workspace/Marketmandu--Fortend
-                          docker build -t ${dockerHubUser}/marketmandu-fortend:latest .
-                        '''
-                     }
-          
-         } }
+    withCredentials([
+      usernamePassword(
+        credentialsId: "dockerHubCreds",
+        passwordVariable: "dockerHubPass",
+        usernameVariable: "dockerHubUser"
+      ),
+      string(credentialsId: 'apiURL',               variable: 'apiURL'),
+      string(credentialsId: 'PAYMENT_BACKEND_URL',  variable: 'PAYMENT_BACKEND_URL'),
+      string(credentialsId: 'esewa_url',             variable: 'esewa_url'),
+      string(credentialsId: 'esewa_secret',          variable: 'esewa_secret'),
+      string(credentialsId: 'CLOUDFRONT_DOMAIN',     variable: 'CLOUDFRONT_DOMAIN')
+    ]){
+      sh '''
+        echo "Building Fortend-Marketmandu"
+        cd /Agent/workspace/Marketmandu--Fortend
+        docker build \
+          --build-arg apiURL="${apiURL}" \
+          --build-arg PAYMENT_BACKEND_URL="${PAYMENT_BACKEND_URL}" \
+          --build-arg esewa_url="${esewa_url}" \
+          --build-arg esewa_secret="${esewa_secret}" \
+          --build-arg CLOUDFRONT_DOMAIN="${CLOUDFRONT_DOMAIN}" \
+          -t ${dockerHubUser}/marketmandu-fortend:latest .
+      '''
+    }
+  }
+}
 
          stage("Docker Image Scan "){
            steps{
