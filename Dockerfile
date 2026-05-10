@@ -1,18 +1,30 @@
-
-### STAGE 1: Build the project 
+### STAGE 1: Build ###
 FROM node:22-alpine AS build
-# from the base image node 
 WORKDIR /Ecommerce/fortend
-# working directory define 
+
 COPY package*.json ./
 RUN npm install --legacy-peer-deps
-#npm install 
+
 COPY . .
-#copy all the file for the host to working directory 
+
+# declare ARGs
+ARG apiURL
+ARG PAYMENT_BACKEND_URL
+ARG esewa_url
+ARG esewa_secret
+ARG CLOUDFRONT_DOMAIN
+
+# convert ARGs to ENV so Node.js can read via process.env
+ENV apiURL=${apiURL}
+ENV PAYMENT_BACKEND_URL=${PAYMENT_BACKEND_URL}
+ENV esewa_url=${esewa_url}
+ENV esewa_secret=${esewa_secret}
+ENV CLOUDFRONT_DOMAIN=${CLOUDFRONT_DOMAIN}
+
+
+RUN node set-env.js
+
 RUN npm run build
-# buld the project
-
-
 
 ### STAGE 2: Run ###
 FROM nginx:alpine
