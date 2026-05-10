@@ -28,6 +28,7 @@ RUN npm run build
 
 ### STAGE 2: Run ###
 FROM nginx:alpine
-RUN apk update && apk upgrade --no-cache nghttp2-libs
+RUN apk update && apk upgrade --no-cache
+
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY --from=build /Ecommerce/fortend/dist/ecommerce/browser /usr/share/nginx/html
