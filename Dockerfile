@@ -14,7 +14,7 @@ ARG esewa_url
 ARG esewa_secret
 ARG CLOUDFRONT_DOMAIN
 
-# convert ARGs to ENV so Node.js can read via process.env
+
 ENV apiURL=${apiURL}
 ENV PAYMENT_BACKEND_URL=${PAYMENT_BACKEND_URL}
 ENV esewa_url=${esewa_url}
@@ -28,5 +28,6 @@ RUN npm run build
 
 ### STAGE 2: Run ###
 FROM nginx:alpine
+RUN apk update && apk upgrade --no-cache nghttp2-libs
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY --from=build /Ecommerce/fortend/dist/ecommerce/browser /usr/share/nginx/html
