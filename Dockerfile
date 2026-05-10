@@ -21,7 +21,7 @@ ENV esewa_url=${esewa_url}
 ENV esewa_secret=${esewa_secret}
 ENV CLOUDFRONT_DOMAIN=${CLOUDFRONT_DOMAIN}
 
-
+RUN mkdir -p src/app/environments/
 RUN node set-env.js
 
 RUN npm run build
