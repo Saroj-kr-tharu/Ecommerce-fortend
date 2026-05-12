@@ -474,9 +474,12 @@ removeImage(url: string): void {
   saveProduct() {
       const formValue = this.productForm.value ; 
       const { id, images, ...payload } = formValue;
-      const parsedImages: string[] = (images as string)
-      .split('","')
-      .map((url: string) => url.replace(/^"|"$/g, '').trim())
+      const rawImages = Array.isArray(images) 
+      ? images 
+      : (images as string).split('","');
+
+      const parsedImages: string[] = rawImages
+      .map((url: any) => String(url).replace(/^"|"$/g, '').trim())
       .filter((url: string) => url.startsWith('http'));
 
     if(this.isAddOpen()){
