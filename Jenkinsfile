@@ -128,6 +128,9 @@ pipeline{
          stage("K8s Deployment/Pod Restart"){
            steps{
             echo "k8s Deploymnet/Pod restarting  "
+            sh """
+              kubectl rollout restart deployment/fortend-dep -n marketmandu-ns
+            """
          } }
 
          stage("Generate Security Report") {

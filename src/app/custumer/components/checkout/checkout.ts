@@ -9,12 +9,14 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { StepperModule } from 'primeng/stepper';
+import { v4 as uuidv4 } from 'uuid';
 import { ValidationConfig } from '../../../core/models/auth.model';
 import { orderSummary } from '../../../core/models/order.model';
 import { CusServices } from '../../../core/services/custumer/cus.services';
 import { Navigation } from '../../../core/services/custumer/navigation';
 import { Payment } from '../../../core/services/payment/payment';
 import { environment } from '../../../environments/environment.development';
+
 
 interface FormFieldConfig {
   id: string;
@@ -298,7 +300,7 @@ shippingForm: FormGroup = new FormGroup({
 
         });
 
-      const idempotencyKey = window.crypto.randomUUID();
+      const idempotencyKey = uuidv4();
       let data = {
         idempotencyKey: idempotencyKey,
         userId: localDa.id, 
