@@ -14,7 +14,9 @@
 [![Jenkins](https://img.shields.io/badge/Jenkins-CI%2FCD-D24939?logo=jenkins&logoColor=white)](https://www.jenkins.io/)
 [![Nginx](https://img.shields.io/badge/Nginx-alpine-009639?logo=nginx&logoColor=white)](https://nginx.org/)
 
-<img src="Images/home1.jpg" alt="MarketMandu Storefront" width="85%" />
+<img src="Images/figma/overview.png" alt="MarketMandu — Platform Overview" width="90%" />
+
+<sub><i>Figure 1 — End-to-end overview of the MarketMandu platform: frontend, backend, infrastructure, and integrations.</i></sub>
 
 </div>
 
@@ -305,6 +307,16 @@
 ---
 
 ## 🏗️ Architecture
+
+MarketMandu follows a **cloud-native, microservices-friendly architecture** with a clear separation between the presentation tier (this repository), backend services, data stores, and third-party integrations. The frontend is a stateless Angular SPA served by Nginx, deployed as a horizontally-scaled Kubernetes Deployment behind an Ingress, with assets accelerated through AWS CloudFront.
+
+<div align="center">
+  <img src="Images/figma/architecture.png" alt="MarketMandu architecture diagram" width="92%" />
+  <br/>
+  <sub><i>Figure 2 — Application architecture: clients → Ingress → Nginx + Angular pods (HPA) → Backend API → Database / S3+CloudFront / payment gateways.</i></sub>
+</div>
+
+### Reference flow (text view)
 
 ```
                               ┌──────────────────────────┐
@@ -676,11 +688,61 @@ kubectl port-forward -n marketmandu-ns svc/fortend-svc 8080:80
 
 > 💡 The `Service` is `ClusterIP` by design — expose it publicly via an `Ingress` controller (e.g. NGINX Ingress, Traefik) or a `LoadBalancer` override suitable for your cloud.
 
+### 🗺️ Kubernetes Topology
+
+<div align="center">
+  <img src="Images/figma/k8s%20deployemnt.png" alt="Kubernetes deployment topology" width="92%" />
+  <br/>
+  <sub><i>Figure 3 — Cluster topology: Ingress → Service → Deployment (replicas) with HPA, namespaced under <code>marketmandu-ns</code>.</i></sub>
+</div>
+
+### 📸 Cluster Snapshots
+
+<table>
+  <tr>
+    <td width="50%" align="center"><strong>Cluster (kind)</strong><br/><img src="Images/kind%201%20.jpg" alt="kind cluster bootstrap" /></td>
+    <td width="50%" align="center"><strong>Pods & Workloads</strong><br/><img src="Images/kube1.jpg" alt="kubectl get all" /></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Services</strong><br/><img src="Images/kube%202%20.jpg" alt="Services view" /></td>
+    <td align="center"><strong>Deployments</strong><br/><img src="Images/kube%203%20.jpg" alt="Deployments view" /></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Horizontal Pod Autoscaler</strong><br/><img src="Images/hpa%201%20.jpg" alt="HPA in action" /></td>
+    <td align="center"><strong>Ingress</strong><br/><img src="Images/ingress%201%20.jpg" alt="Ingress resource" /></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Persistent Volume Claim</strong><br/><img src="Images/pvc%201%20.jpg" alt="PVC" /></td>
+    <td align="center"><strong>Live Application</strong><br/><img src="Images/live%201%20.jpg" alt="Live application running on cluster" /></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><img src="Images/live%202%20.jpg" alt="Live application — secondary view" width="75%" /></td>
+  </tr>
+</table>
+
+<div align="center">
+  <img src="Images/figma/LIVE.png" alt="Live deployment topology" width="85%" />
+  <br/>
+  <sub><i>Figure 4 — Live deployment view of MarketMandu running in the cluster.</i></sub>
+</div>
+
 ---
 
 ## 🔁 CI/CD Pipeline
 
-Defined in [`Jenkinsfile`](./Jenkinsfile) and triggered on pushes to `main`.
+Defined in [`Jenkinsfile`](./Jenkinsfile) and triggered on pushes to `main`. The pipeline performs supply-chain scanning, builds and pushes a hardened container image, rolls out the new version to Kubernetes, and emails a consolidated security report to stakeholders.
+
+<div align="center">
+  <img src="Images/figma/cicd%20architecture.png" alt="CI/CD pipeline architecture" width="92%" />
+  <br/>
+  <sub><i>Figure 5 — CI/CD architecture: GitHub → Jenkins → OWASP/Trivy scans → Docker Hub → Kubernetes rollout → Email notification.</i></sub>
+</div>
+
+<div align="center">
+  <img src="Images/figma/jenkins.png" alt="Jenkins pipeline stages" width="92%" />
+  <br/>
+  <sub><i>Figure 6 — Jenkins declarative pipeline stages.</i></sub>
+</div>
 
 | # | Stage | What happens |
 |---|-------|--------------|
@@ -696,6 +758,35 @@ Defined in [`Jenkinsfile`](./Jenkinsfile) and triggered on pushes to `main`.
 | 10 | **Email Notification** | HTML email via `emailext` on both **success** ✅ and **failure** ❌ with the PDF attached |
 
 **Secrets used (Jenkins credentials):** `dockerHubCreds`, `NVD_API_KEY`, `apiURL`, `PAYMENT_BACKEND_URL`, `esewa_url`, `esewa_secret`, `CLOUDFRONT_DOMAIN`.
+
+### 🧪 Pipeline Run Snapshots
+
+<table>
+  <tr>
+    <td width="50%"><img src="Images/jenkins%201.jpg" alt="Jenkins — pipeline overview" /></td>
+    <td width="50%"><img src="Images/jenkins%202%20.jpg" alt="Jenkins — stage view" /></td>
+  </tr>
+  <tr>
+    <td><img src="Images/jenkins%203%20.jpg" alt="Jenkins — checkout stage" /></td>
+    <td><img src="Images/jenkins%204%20.jpg" alt="Jenkins — OWASP Dependency-Check" /></td>
+  </tr>
+  <tr>
+    <td><img src="Images/jenkins%205.jpg" alt="Jenkins — Trivy filesystem scan" /></td>
+    <td><img src="Images/jenkins%206%20.jpg" alt="Jenkins — Docker image build" /></td>
+  </tr>
+  <tr>
+    <td><img src="Images/jenkins%207.jpg" alt="Jenkins — Trivy image scan" /></td>
+    <td><img src="Images/jenkins%208.jpg%20.jpg" alt="Jenkins — push to Docker Hub" /></td>
+  </tr>
+  <tr>
+    <td><img src="Images/jenkins%209.jpg" alt="Jenkins — Kubernetes rollout" /></td>
+    <td><img src="Images/jenkins%2010.jpg" alt="Jenkins — security report generation" /></td>
+  </tr>
+  <tr>
+    <td><img src="Images/jenkins%2011.jpg" alt="Jenkins — email notification" /></td>
+    <td><img src="Images/jenkins%2012.jpg" alt="Jenkins — successful build" /></td>
+  </tr>
+</table>
 
 ---
 
